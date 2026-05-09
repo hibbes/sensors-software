@@ -105,6 +105,9 @@ String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 #include "./DHT.h"
 #include <Adafruit_HTU21DF.h>
 #include <Adafruit_AHTX0.h>
+#if defined(ESP8266)
+#include <ESP8266HTTPUpdateServer.h>
+#endif
 #include <Adafruit_BMP085.h>
 #include <Adafruit_SHT31.h>
 #include <StreamString.h>
@@ -265,6 +268,7 @@ bool airrohr_selftest_failed = false;
 
 #if defined(ESP8266)
 ESP8266WebServer server(80);
+ESP8266HTTPUpdateServer httpUpdater;
 #endif
 #if defined(ESP32)
 WebServer server(80);
@@ -2749,6 +2753,16 @@ static void setup_webserver()
 	server.on(F("/favicon.ico"), webserver_favicon);
 	server.on(F(STATIC_PREFIX), webserver_static);
 	server.onNotFound(webserver_not_found);
+
+#if defined(ESP8266)
+	// /update endpoint für lokale OTA-Pushes via curl -F "image=@firmware.bin" http://<sensor>/update
+	// Auth folgt cfg::www_basicauth_enabled — wenn an, dann mit configurierten Creds, sonst offen
+	if (cfg::www_basicauth_enabled) {
+		httpUpdater.setup(&server, "/update", cfg::www_username, cfg::www_password);
+	} else {
+		httpUpdater.setup(&server, "/update");
+	}
+#endif
 
 	debug_outln_info(F("Starting Webserver... "), WiFi.localIP().toString());
 	server.begin();
