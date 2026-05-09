@@ -6222,6 +6222,14 @@ void loop(void)
 			sum_send_time += sendSensorCommunity(result, HTU21D_API_PIN, FPSTR(SENSORS_HTU21D), "HTU21D_");
 			result = emptyString;
 		}
+		if (cfg::aht20_read && (!aht20_init_failed))
+		{
+			// getting temperature and humidity from AHT20
+			fetchSensorAHT20(result);
+			data += result;
+			sum_send_time += sendSensorCommunity(result, AHT20_API_PIN, FPSTR(SENSORS_AHT20), "AHT20_");
+			result = emptyString;
+		}
 		if (cfg::bmp_read && (!bmp_init_failed))
 		{
 			// getting temperature and pressure (optional)
