@@ -2211,6 +2211,14 @@ static void webserver_values()
 		add_table_value(FPSTR(SENSORS_HTU21D), FPSTR(INTL_DEW_POINT), isnan(dew_point_temp) ? "-" : String(dew_point_temp, 1), unit_T);
 		page_content += FPSTR(EMPTY_ROW);
 	}
+	if (cfg::aht20_read)
+	{
+		add_table_t_value(FPSTR(SENSORS_AHT20), FPSTR(INTL_TEMPERATURE), last_value_AHT20_T);
+		add_table_h_value(FPSTR(SENSORS_AHT20), FPSTR(INTL_HUMIDITY), last_value_AHT20_H);
+		dew_point_temp = dew_point(last_value_AHT20_T, last_value_AHT20_H);
+		add_table_value(FPSTR(SENSORS_AHT20), FPSTR(INTL_DEW_POINT), isnan(dew_point_temp) ? "-" : String(dew_point_temp, 1), unit_T);
+		page_content += FPSTR(EMPTY_ROW);
+	}
 	if (cfg::bmp_read)
 	{
 		add_table_t_value(FPSTR(SENSORS_BMP180), FPSTR(INTL_TEMPERATURE), last_value_BMP_T);
