@@ -104,6 +104,7 @@ String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 #include <DNSServer.h>
 #include "./DHT.h"
 #include <Adafruit_HTU21DF.h>
+#include <Adafruit_AHTX0.h>
 #include <Adafruit_BMP085.h>
 #include <Adafruit_SHT31.h>
 #include <StreamString.h>
@@ -161,6 +162,7 @@ namespace cfg
 	// (in)active sensors
 	bool dht_read = DHT_READ;
 	bool htu21d_read = HTU21D_READ;
+	bool aht20_read = AHT20_READ;
 	bool ppd_read = PPD_READ;
 	bool sds_read = SDS_READ;
 	bool pms_read = PMS_READ;
@@ -252,6 +254,7 @@ LoggerConfig loggerConfigs[LoggerCount];
 
 long int sample_count = 0;
 bool htu21d_init_failed = false;
+bool aht20_init_failed = false;
 bool bmp_init_failed = false;
 bool bmx280_init_failed = false;
 bool sht3x_init_failed = false;
@@ -323,6 +326,11 @@ DHT dht(ONEWIRE_PIN, DHT_TYPE);
  * HTU21D declaration                                            *
  *****************************************************************/
 Adafruit_HTU21DF htu21d;
+
+/*****************************************************************
+ * AHT20 declaration                                             *
+ *****************************************************************/
+Adafruit_AHTX0 aht20;
 
 /*****************************************************************
  * BMP declaration                                               *
@@ -456,6 +464,8 @@ float last_value_DHT_H = -1.0;
 float last_value_DS18B20_T = -1.0;
 float last_value_HTU21D_T = -128.0;
 float last_value_HTU21D_H = -1.0;
+float last_value_AHT20_T = -128.0;
+float last_value_AHT20_H = -1.0;
 float last_value_SHT3X_T = -128.0;
 float last_value_SHT3X_H = -1.0;
 float last_value_SCD30_T = -128.0;
