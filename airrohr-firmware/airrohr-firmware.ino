@@ -3317,6 +3317,32 @@ static void fetchSensorHTU21D(String &s)
 }
 
 /*****************************************************************
+ * read AHT20 sensor values                                      *
+ *****************************************************************/
+static void fetchSensorAHT20(String &s)
+{
+	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_AHT20));
+
+	sensors_event_t humidity_event;
+	sensors_event_t temp_event;
+	if (!aht20.getEvent(&humidity_event, &temp_event))
+	{
+		last_value_AHT20_T = -128.0;
+		last_value_AHT20_H = -1.0;
+		debug_outln_error(F("AHT20 read failed"));
+	}
+	else
+	{
+		last_value_AHT20_T = temp_event.temperature;
+		last_value_AHT20_H = humidity_event.relative_humidity;
+		add_Value2Json(s, F("AHT20_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_AHT20_T);
+		add_Value2Json(s, F("AHT20_humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_AHT20_H);
+	}
+
+	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_AHT20));
+}
+
+/*****************************************************************
  * read BMP180 sensor values                                     *
  *****************************************************************/
 static void fetchSensorBMP(String &s)
