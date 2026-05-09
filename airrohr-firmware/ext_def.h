@@ -232,7 +232,7 @@ static const char MEASUREMENT_NAME_INFLUX[] PROGMEM = "feinstaub";
 #define HTU21D_READ 0
 #define HTU21D_API_PIN 7
 
-// AHT20, temperature, humidity (DHT22-Ersatz, oft in Combo mit BMP280)
+// AHT20, temperature, humidity (DHT22 replacement, often in combo with BMP280)
 #define AHT20_READ 0
 #define AHT20_API_PIN 7
 
