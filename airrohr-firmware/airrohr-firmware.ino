@@ -5651,6 +5651,16 @@ static void powerOnTestSensors()
 		}
 	}
 
+	if (cfg::aht20_read)
+	{
+		debug_outln_info(F("Read AHT20..."));
+		if (!aht20.begin())
+		{
+			debug_outln_error(F("Check AHT20 wiring"));
+			aht20_init_failed = true;
+		}
+	}
+
 	if (cfg::bmp_read)
 	{
 		debug_outln_info(F("Read BMP..."));
