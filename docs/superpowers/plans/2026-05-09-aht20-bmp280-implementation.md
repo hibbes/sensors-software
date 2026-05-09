@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** AHT20+BMP280-Combo-Boards (z.B. GY-21P) als DHT22-Ersatz in airrohr-Firmware integrieren, fein2wunder-Wrapper passend erweitern, sodass 20 Schul-Stationen auf saubere Sensoren umgerüstet werden können.
+**Goal:** AHT20+BMP280-Combo-Boards (z.B. GY-21P) als DHT22-Ersatz in airrohr-Firmware integrieren, fein2wunder-Wrapper passend erweitern, sodass die Feinstaubsensoren auf saubere Sensoren umgerüstet werden können.
 
 **Architecture:** AHT20 als HTU21D-Klon (gleiches I²C-T+H-Sensor-Pattern, andere Adresse 0x38). BMP280-Support ist im airrohr-Bestand bereits da, wird mitbenutzt. Eigene JSON-Schlüssel `AHT20_temperature`/`AHT20_humidity`/`BMP280_pressure`. fein2wunder bekommt neue Modus-Codes `t=4`, `h=4`, `p=3`.
 
@@ -1171,5 +1171,5 @@ Diese Tasks sind Hardware- und Operations-Schritte. Sie werden vom User händisc
 1. ✅ `pio run -e nodemcuv2` läuft ohne Errors, mit Flash-Auslastung < 95%
 2. ✅ `./tests/test-aht20.sh` in fein2wunder gibt `OK: alle Werte in CSV gelandet`
 3. ✅ Eine Test-Station meldet 24h plausible Werte über fein2wunder an Wunderground und CSV
-4. ✅ Roll-out auf 20 Stationen mit Datenverlust < 2h pro Station
+4. ✅ Roll-out auf die Stationen mit Datenverlust < 2h pro Station
 5. ✅ (späte Phase) Upstream-PR an opendata-stuttgart eingereicht

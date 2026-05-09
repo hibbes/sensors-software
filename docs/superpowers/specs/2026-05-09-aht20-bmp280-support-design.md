@@ -6,7 +6,7 @@
 
 ## Motivation
 
-20 Schul-Feinstaubsensoren (Sensor.Community / airrohr-Kit, NodeMCU ESP8266 + SDS011 + DHT22) sollen von DHT22 auf AHT20+BMP280 umgerüstet werden. AHT20 hat keine signifikante Eigenerwärmung wie DHT22 und liefert stabilere Feuchte-Werte über Jahre.
+Die Feinstaubsensoren (Sensor.Community / airrohr-Kit, NodeMCU ESP8266 + SDS011 + DHT22) sollen von DHT22 auf AHT20+BMP280 umgerüstet werden. AHT20 hat keine signifikante Eigenerwärmung wie DHT22 und liefert stabilere Feuchte-Werte über Jahre.
 
 Problem: airrohr-Firmware (`opendata-stuttgart/sensors-software`, Stand NRZ-2024-134-B5 / April 2024) hat **keinen** AHT10/AHT20/AHTx0-Support, weder in master, beta, noch in einem der 20 aktiven Forks. Die Combo-Boards (z.B. GY-21P) müssen also selbst eingearbeitet werden.
 
@@ -126,7 +126,7 @@ Saubere neue Schlüssel, keine Maskerade unter BME280-Schlüsseln:
 - Keine Hardware nötig, nur Compile-Validation
 
 **Phase 2 — Hardware-Test auf einer Station**
-- Eine der 20 Stationen wird Test-Kandidat (die mit Combo-Board auf dem Tisch)
+- Eine Station wird Test-Kandidat (die mit Combo-Board auf dem Tisch)
 - Verkabelung: 3V3, GND, D1=SCL, D2=SDA
 - Firmware via OTA (`/update`) flashen
 - Beide Checkboxes aktivieren (AHT20 + BMP280)
@@ -137,7 +137,7 @@ Saubere neue Schlüssel, keine Maskerade unter BME280-Schlüsseln:
 - Parallel zweite Station mit DHT22 daneben für Drift-Kalibrierung
 - Optional, AHT20 ist gut spezifiziert; nur sinnvoll wenn historische Reihen lückenlos bleiben sollen
 
-**Phase 4 — Roll-out auf die restlichen 19**
+**Phase 4 — Roll-out auf die restlichen Stationen**
 - Einmal `firmware.bin` aus PlatformIO bauen
 - Auf alle `/update`-Endpoints pushen (Curl-Schleife über die Station-Hostnamen)
 - DHT22 → Combo-Board manuell tauschen, eine pro Tag oder im Block
@@ -152,14 +152,14 @@ Saubere neue Schlüssel, keine Maskerade unter BME280-Schlüsseln:
 
 - **I²C-Adressen-Kollision** — 0x38 ist im airrohr-Bestand unbenutzt, also sicher.
 - **BMP280-Adresse 0x77 vs. 0x76** — airrohr hat bereits Auto-Fallback. GY-21P-Combo sitzt auf 0x76, kein Eingriff nötig.
-- **Wunderground-PWS-Konsistenz** — AHT20-Temp ist trockene Sensor-Temp ohne Eigen-Heating-Offset. Erwarteter Sprung von 0.5–1°C nach unten gegenüber DHT22-Historie. Bei 20 Stationen über die Zeit eine sichtbare Konsistenz-Frage. Mitigation: in der Wunderground-Station-Beschreibung Sensor-Tausch und Datum dokumentieren.
+- **Wunderground-PWS-Konsistenz** — AHT20-Temp ist trockene Sensor-Temp ohne Eigen-Heating-Offset. Erwarteter Sprung von 0.5–1°C nach unten gegenüber DHT22-Historie. Über die Zeit eine sichtbare Konsistenz-Frage. Mitigation: in der Wunderground-Station-Beschreibung Sensor-Tausch und Datum dokumentieren.
 - **OTA-Flash-Größe** — Adafruit_AHTX0 fügt ~5KB hinzu. ESP8266-OTA braucht doppelten Flash für sich selbst. Smoke-Test in Phase 1 wird das sichtbar machen, falls knapp.
 - **Custom-API-URL-Migration** — die `t=`/`h=`/`p=`-Schalter in der Sensor-Web-UI sind pro Station gespeichert. Roll-out muss diese 20 URLs umsetzen. Skript-Pfad: HTTP POST gegen `/config.json` oder Bulk-Update via SPIFFS-Image-Reflash.
 - **AHT20-Lib-Deps** — Adafruit_AHTX0 hängt von Adafruit_BusIO + Adafruit_Sensor ab. Beide sind ohnehin als BMP280-Lib-Dep schon präsent, also kein neuer Footprint.
 
 ## Out of Scope
 
-- ESP32-Targets (airrohr-firmware hat ESP32-Support, aber unsere 20 Stationen sind alle ESP8266; ESP32-Variante kann später trivial nachgezogen werden, alle Code-Pfade sind bereits doppelt geführt)
+- ESP32-Targets (airrohr-firmware hat ESP32-Support, aber unsere Stationen sind alle ESP8266; ESP32-Variante kann später trivial nachgezogen werden, alle Code-Pfade sind bereits doppelt geführt)
 - Andere AHT-Varianten (AHT10, AHT15, AHT21). Adafruit_AHTX0-Lib unterstützt sie zwar transparent, aber wir testen nur AHT20.
 - Migration historischer DHT22-Reihen — die DHT22-Werte bleiben in den alten CSVs, die neuen AHT20-Werte landen ab Tausch-Datum in den neuen Spalten.
 - Kalibrierungs-Korrektur-Faktoren in der Firmware (gibt's nicht in airrohr-Bestand, würde Inkonsistenz mit anderen Sensoren erzeugen).
@@ -169,5 +169,5 @@ Saubere neue Schlüssel, keine Maskerade unter BME280-Schlüsseln:
 1. Firmware kompiliert ohne Warnings/Errors gegen ESP8266-Target.
 2. Eine Test-Station meldet 24h lang plausible AHT20+BMP280-Werte an fein2wunder.
 3. fein2wunder routet korrekt: `t=4&h=4&p=3` → AHT20-T, AHT20-H, BMP280-P landen in Wunderground-PWS und CSV.
-4. Roll-out auf 20 Stationen abgeschlossen ohne Datenverlust >2h pro Station.
+4. Roll-out auf die Stationen abgeschlossen ohne Datenverlust >2h pro Station.
 5. (Späte Phase) Upstream-PR an opendata-stuttgart eingereicht und review-ready.
