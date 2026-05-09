@@ -3348,6 +3348,7 @@ static void fetchSensorAHT20(String &s)
 		add_Value2Json(s, F("AHT20_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_AHT20_T);
 		add_Value2Json(s, F("AHT20_humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_AHT20_H);
 	}
+	debug_outln_info(FPSTR(DBG_TXT_SEP));
 
 	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_AHT20));
 }
