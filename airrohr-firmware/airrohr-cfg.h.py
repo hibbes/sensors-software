@@ -11,6 +11,7 @@ Password		fs_pwd
 Bool		www_basicauth_enabled
 Bool		dht_read
 Bool		htu21d_read
+Bool		aht20_read
 Bool		ppd_read
 Bool		sds_read
 Bool		pms_read
