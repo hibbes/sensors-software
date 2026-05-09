@@ -2908,6 +2908,7 @@ static void wifiConfig()
 	debug_outln_info_bool(F("DHT: "), cfg::dht_read);
 	debug_outln_info_bool(F("DS18B20: "), cfg::ds18b20_read);
 	debug_outln_info_bool(F("HTU21D: "), cfg::htu21d_read);
+	debug_outln_info_bool(F("AHT20: "), cfg::aht20_read);
 	debug_outln_info_bool(F("BMP: "), cfg::bmp_read);
 	debug_outln_info_bool(F("DNMS: "), cfg::dnms_read);
 	debug_outln_info(FPSTR(DBG_TXT_SEP));
@@ -5056,6 +5057,12 @@ static void display_values()
 		t_value = last_value_HTU21D_T;
 		h_value = last_value_HTU21D_H;
 	}
+	if (cfg::aht20_read)
+	{
+		h_sensor = t_sensor = FPSTR(SENSORS_AHT20);
+		t_value = last_value_AHT20_T;
+		h_value = last_value_AHT20_H;
+	}
 	if (cfg::bmp_read)
 	{
 		t_sensor = h_sensor = FPSTR(SENSORS_BMP180);
@@ -5109,7 +5116,7 @@ static void display_values()
 	{
 		screens[screen_count++] = 2;
 	}
-	if (cfg::dht_read || cfg::ds18b20_read || cfg::htu21d_read || cfg::bmp_read || cfg::bmx280_read || cfg::sht3x_read)
+	if (cfg::dht_read || cfg::ds18b20_read || cfg::htu21d_read || cfg::aht20_read || cfg::bmp_read || cfg::bmx280_read || cfg::sht3x_read)
 	{
 		screens[screen_count++] = 3;
 	}
