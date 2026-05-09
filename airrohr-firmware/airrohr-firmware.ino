@@ -3345,8 +3345,11 @@ static void fetchSensorAHT20(String &s)
 	{
 		last_value_AHT20_T = temp_event.temperature;
 		last_value_AHT20_H = humidity_event.relative_humidity;
-		add_Value2Json(s, F("AHT20_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_AHT20_T);
-		add_Value2Json(s, F("AHT20_humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_AHT20_H);
+		// Maskerade: bare keys (DHT22-Format) statt AHT20_* — Sensor.Community + OpenSenseMap
+		// luftdaten-Parser kennen keine AHT20-Keys, akzeptieren aber bare temperature/humidity.
+		// fein2wunder routet weiter via t=4-Fallback auf 'temperature'/'humidity' korrekt.
+		add_Value2Json(s, F("temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_AHT20_T);
+		add_Value2Json(s, F("humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_AHT20_H);
 	}
 	debug_outln_info(FPSTR(DBG_TXT_SEP));
 
@@ -3468,8 +3471,11 @@ static void fetchSensorBMX280(String &s)
 		}
 		else
 		{
-			add_Value2Json(s, F("BMP280_pressure"), FPSTR(DBG_TXT_PRESSURE), last_value_BMX280_P);
-			add_Value2Json(s, F("BMP280_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_BMX280_T);
+			// Maskerade: BMP_-Prefix (BMP180-Format) statt BMP280_* — Sensor.Community + OpenSenseMap
+			// luftdaten-Parser kennen keine BMP280-Keys, akzeptieren aber BMP_pressure/BMP_temperature.
+			// fein2wunder routet weiter via p=3-Fallback auf BMP_pressure korrekt.
+			add_Value2Json(s, F("BMP_pressure"), FPSTR(DBG_TXT_PRESSURE), last_value_BMX280_P);
+			add_Value2Json(s, F("BMP_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_BMX280_T);
 		}
 	}
 	debug_outln_info(FPSTR(DBG_TXT_SEP));
@@ -6266,7 +6272,8 @@ void loop(void)
 			}
 			else
 			{
-				sum_send_time += sendSensorCommunity(result, BMP280_API_PIN, FPSTR(SENSORS_BMP280), "BMP280_");
+				// Maskerade: prefix "BMP_" damit Strip die BMP_*-Keys auf bare temperature/pressure reduziert (BMP180-Pin-3-Format)
+				sum_send_time += sendSensorCommunity(result, BMP280_API_PIN, FPSTR(SENSORS_BMP280), "BMP_");
 			}
 			result = emptyString;
 		}
