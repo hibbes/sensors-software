@@ -150,6 +150,9 @@ constexpr const unsigned long DURATION_BEFORE_FORCED_RESTART_MS = ONE_DAY_IN_MS 
 #endif
 
 // smaller cipher list to speed up TLS connections
+// hibbes-Patch (Issue #7): BearSSL-Cipher-Liste mit Guard, damit defines.h von
+// sensor-cpp-Files inkludiert werden kann ohne <ESP8266WiFi.h>-Vorlauf
+#ifdef BR_TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
 static const uint16_t suites_P[] PROGMEM = {
     BR_TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256,
     BR_TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
@@ -169,3 +172,4 @@ static const uint16_t suites_P[] PROGMEM = {
     BR_TLS_RSA_WITH_AES_128_CBC_SHA,
     BR_TLS_RSA_WITH_AES_256_CBC_SHA,
 };
+#endif // BR_TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256

@@ -108,8 +108,24 @@ String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 #if defined(ESP8266)
 #include <ESP8266HTTPUpdateServer.h>
 #endif
-// Sensor-Treiber-Module (Issue #7 Phase 1 Refactor, hibbes-Fork)
+// Sensor-Treiber-Module (Issue #7 Phase 1 Refactor, Makerspace Schiller-Gymnasium Offenburg)
 #include "sensors/aht20.h"
+#include "sensors/dht22.h"
+#include "sensors/htu21d.h"
+#include "sensors/bmp180.h"
+#include "sensors/sht3x.h"
+#include "sensors/scd30.h"
+#include "sensors/bmx280.h"
+#include "sensors/ds18b20.h"
+#include "sensors/sds011.h"
+#include "sensors/pms.h"
+#include "sensors/hpm.h"
+#include "sensors/npm.h"
+#include "sensors/ips.h"
+#include "sensors/ppd42ns.h"
+#include "sensors/sps30.h"
+#include "sensors/dnms.h"
+#include "sensors/gps.h"
 #include <Adafruit_BMP085.h>
 #include <Adafruit_SHT31.h>
 #include <StreamString.h>
@@ -405,20 +421,23 @@ unsigned long min_micro = 1000000000;
 unsigned long max_micro = 0;
 
 bool is_SDS_running = true;
-enum
+// hibbes-Patch (Issue #7): de-anonymisiert für cross-TU-extern-Zugriff aus sensors/sds011.cpp + sensors/npm.cpp
+enum SDS_State
 {
 	SDS_REPLY_HDR = 10,
 	SDS_REPLY_BODY = 8
-} SDS_waiting_for;
+};
+int SDS_waiting_for;
 
 // To read NPM responses
-enum
+enum NPM_State_16
 {
 	NPM_REPLY_HEADER_16 = 16,
 	NPM_REPLY_STATE_16 = 14,
 	NPM_REPLY_BODY_16 = 13,
 	NPM_REPLY_CHECKSUM_16 = 1
-} NPM_waiting_for_16; //for concentration
+};
+int NPM_waiting_for_16; //for concentration
 
 enum
 {
@@ -653,6 +672,13 @@ unsigned long NPM_error_count;
 unsigned long IPS_error_count;
 unsigned long WiFi_error_count;
 
+// hibbes-Patch: PPD-Pin-Macros von ext_def.h als file-scope int exposed
+// damit sensors/ppd42ns.cpp sie via extern referenzieren kann (cross-TU)
+// Note: top-level `const` hat internal linkage in C++ — wir brauchen external
+// linkage, daher plain int (effektiv const, wir mutieren sie nirgendwo).
+int ppd_pin_pm1 = PPD_PIN_PM1;
+int ppd_pin_pm2 = PPD_PIN_PM2;
+
 // hibbes-Patch (Issue #4): Silent-failure-detection für WiFi-State-Korruption.
 // Pro Send-Cycle zählen wie viele Pushes versucht/erfolgreich waren. Wenn N
 // Cycles in Folge alle Pushes scheitern trotz WL_CONNECTED, ist der WLAN-Stack
@@ -830,7 +856,8 @@ static uint8_t NPM_get_state()
 	return result;
 }
 
-static bool NPM_start_stop()
+// hibbes-Patch: static dropped — fetchSensorNPM is now in sensors/npm.cpp and needs cross-TU access
+bool NPM_start_stop()
 {
 	bool result;
 	NPM_waiting_for_4 = NPM_REPLY_HEADER_4;
@@ -1010,7 +1037,8 @@ static void NPM_fan_speed()
 
 
 
-static String NPM_temp_humi() 
+// hibbes-Patch: static dropped — fetchSensorNPM is now in sensors/npm.cpp and needs cross-TU access
+String NPM_temp_humi() 
 {
 	uint16_t NPM_temp;
 	uint16_t NPM_humi;
@@ -3468,70 +3496,12 @@ static void send_csv(const String &data)
 /*****************************************************************
  * read DHT22 sensor values                                      *
  *****************************************************************/
-static void fetchSensorDHT(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_DHT22));
-
-	// Check if valid number if non NaN (not a number) will be send.
-	last_value_DHT_T = -128;
-	last_value_DHT_H = -1;
-
-	int count = 0;
-	const int MAX_ATTEMPTS = 5;
-	while ((count++ < MAX_ATTEMPTS))
-	{
-		auto t = dht.readTemperature();
-		auto h = dht.readHumidity();
-		if (isnan(t) || isnan(h))
-		{
-			delay(100);
-			t = dht.readTemperature(false);
-			h = dht.readHumidity();
-		}
-		if (isnan(t) || isnan(h))
-		{
-			debug_outln_error(F("DHT11/DHT22 read failed"));
-		}
-		else
-		{
-			last_value_DHT_T = t + readCorrectionOffset(cfg::temp_correction);
-			last_value_DHT_H = h;
-			add_Value2Json(s, F("temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_DHT_T);
-			add_Value2Json(s, F("humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_DHT_H);
-			break;
-		}
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_DHT22));
-}
+// fetchSensorDHT ausgelagert nach sensors/dht22.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read HTU21D sensor values                                     *
  *****************************************************************/
-static void fetchSensorHTU21D(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_HTU21D));
-
-	const auto t = htu21d.readTemperature();
-	const auto h = htu21d.readHumidity();
-	if (isnan(t) || isnan(h))
-	{
-		last_value_HTU21D_T = -128.0;
-		last_value_HTU21D_H = -1.0;
-		debug_outln_error(F("HTU21D read failed"));
-	}
-	else
-	{
-		last_value_HTU21D_T = t;
-		last_value_HTU21D_H = h;
-		add_Value2Json(s, F("HTU21D_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_HTU21D_T);
-		add_Value2Json(s, F("HTU21D_humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_HTU21D_H);
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_HTU21D));
-}
+// fetchSensorHTU21D ausgelagert nach sensors/htu21d.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 // fetchSensorAHT20 ist ausgelagert nach sensors/aht20.cpp
 // (Issue #7 Phase 1 Pilot, hibbes-Fork-Refactor)
@@ -3539,1348 +3509,75 @@ static void fetchSensorHTU21D(String &s)
 /*****************************************************************
  * read BMP180 sensor values                                     *
  *****************************************************************/
-static void fetchSensorBMP(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_BMP180));
-
-	const auto p = bmp.readPressure();
-	const auto t = bmp.readTemperature();
-	if (isnan(p) || isnan(t))
-	{
-		last_value_BMP_T = -128.0;
-		last_value_BMP_P = -1.0;
-		debug_outln_error(F("BMP180 read failed"));
-	}
-	else
-	{
-		last_value_BMP_T = t;
-		last_value_BMP_P = p;
-		add_Value2Json(s, F("BMP_pressure"), FPSTR(DBG_TXT_PRESSURE), last_value_BMP_P);
-		add_Value2Json(s, F("BMP_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_BMP_T);
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_BMP180));
-}
+// fetchSensorBMP ausgelagert nach sensors/bmp180.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read SHT3x sensor values                                      *
  *****************************************************************/
-static void fetchSensorSHT3x(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_SHT3X));
-
-	const auto t = sht3x.readTemperature();
-	const auto h = sht3x.readHumidity();
-	if (isnan(h) || isnan(t))
-	{
-		last_value_SHT3X_T = -128.0;
-		last_value_SHT3X_H = -1.0;
-		debug_outln_error(F("SHT3X read failed"));
-	}
-	else
-	{
-		last_value_SHT3X_T = t;
-		last_value_SHT3X_H = h;
-		add_Value2Json(s, F("SHT3X_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_SHT3X_T);
-		add_Value2Json(s, F("SHT3X_humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_SHT3X_H);
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_SHT3X));
-}
+// fetchSensorSHT3x ausgelagert nach sensors/sht3x.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read SCD30 sensor values                                      *
  *****************************************************************/
-static void fetchSensorSCD30(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_SCD30));
-
-	const auto t = scd30.getTemperature();
-	const auto h = scd30.getHumidity();
-	const auto c = scd30.getCO2();
-
-	if (isnan(h) || isnan(t) || isnan(c))
-	{
-		last_value_SCD30_T = -128.0;
-		last_value_SCD30_H = -1.0;
-		last_value_SCD30_CO2 = 0;
-		debug_outln_error(F("SCD30 read failed"));
-	}
-	else
-	{
-		last_value_SCD30_T = t;
-		last_value_SCD30_H = h;
-		last_value_SCD30_CO2 = c;
-		add_Value2Json(s, F("SCD30_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_SCD30_T);
-		add_Value2Json(s, F("SCD30_humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_SCD30_H);
-		add_Value2Json(s, F("SCD30_co2_ppm"), FPSTR(DBG_TXT_CO2PPM), last_value_SCD30_CO2);
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_SCD30));
-}
+// fetchSensorSCD30 ausgelagert nach sensors/scd30.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read BMP280/BME280 sensor values                              *
  *****************************************************************/
-static void fetchSensorBMX280(String &s)
-{
-	const char *const sensor_name = (bmx280.sensorID() == BME280_SENSOR_ID) ? SENSORS_BME280 : SENSORS_BMP280;
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(sensor_name));
-
-	bmx280.takeForcedMeasurement();
-	const auto t = bmx280.readTemperature();
-	const auto p = bmx280.readPressure();
-	const auto h = bmx280.readHumidity();
-	if (isnan(t) || isnan(p))
-	{
-		last_value_BMX280_T = -128.0;
-		last_value_BMX280_P = -1.0;
-		last_value_BME280_H = -1.0;
-		debug_outln_error(F("BMP/BME280 read failed"));
-	}
-	else
-	{
-		last_value_BMX280_T = t + readCorrectionOffset(cfg::temp_correction);
-		last_value_BMX280_P = p;
-		if (bmx280.sensorID() == BME280_SENSOR_ID)
-		{
-			add_Value2Json(s, F("BME280_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_BMX280_T);
-			add_Value2Json(s, F("BME280_pressure"), FPSTR(DBG_TXT_PRESSURE), last_value_BMX280_P);
-			last_value_BME280_H = h;
-			add_Value2Json(s, F("BME280_humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_BME280_H);
-		}
-		else
-		{
-			// Maskerade: BMP_-Prefix (BMP180-Format) statt BMP280_* — Sensor.Community + OpenSenseMap
-			// luftdaten-Parser kennen keine BMP280-Keys, akzeptieren aber BMP_pressure/BMP_temperature.
-			// fein2wunder routet weiter via p=3-Fallback auf BMP_pressure korrekt.
-			add_Value2Json(s, F("BMP_pressure"), FPSTR(DBG_TXT_PRESSURE), last_value_BMX280_P);
-			add_Value2Json(s, F("BMP_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_BMX280_T);
-		}
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(sensor_name));
-}
+// fetchSensorBMX280 ausgelagert nach sensors/bmx280.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read DS18B20 sensor values                                    *
  *****************************************************************/
-static void fetchSensorDS18B20(String &s)
-{
-	float t;
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_DS18B20));
-
-	//it's very unlikely (-127: impossible) to get these temperatures in reality. Most times this means that the sensor is currently faulty
-	//try 5 times to read the sensor, otherwise fail
-	const int MAX_ATTEMPTS = 5;
-	int count = 0;
-	do
-	{
-		ds18b20.requestTemperatures();
-		//for now, we want to read only the first sensor
-		t = ds18b20.getTempCByIndex(0);
-		++count;
-		debug_outln_info(F("DS18B20 trying...."));
-	} while (count < MAX_ATTEMPTS && (isnan(t) || t >= 85.0f || t <= (-127.0f)));
-
-	if (count == MAX_ATTEMPTS)
-	{
-		last_value_DS18B20_T = -128.0;
-		debug_outln_error(F("DS18B20 read failed"));
-	}
-	else
-	{
-		last_value_DS18B20_T = t + readCorrectionOffset(cfg::temp_correction);
-		add_Value2Json(s, F("DS18B20_temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_DS18B20_T);
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_DS18B20));
-}
+// fetchSensorDS18B20 ausgelagert nach sensors/ds18b20.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read SDS011 sensor values                                     *
  *****************************************************************/
-static void fetchSensorSDS(String &s)
-{
-	if (cfg::sending_intervall_ms > (WARMUPTIME_SDS_MS + READINGTIME_SDS_MS) &&
-		msSince(starttime) < (cfg::sending_intervall_ms - (WARMUPTIME_SDS_MS + READINGTIME_SDS_MS)))
-	{
-		if (is_SDS_running)
-		{
-			is_SDS_running = SDS_cmd(PmSensorCmd::Stop);
-		}
-	}
-	else
-	{
-		if (!is_SDS_running)
-		{
-			is_SDS_running = SDS_cmd(PmSensorCmd::Start);
-			SDS_waiting_for = SDS_REPLY_HDR;
-		}
-
-		while (serialSDS.available() >= SDS_waiting_for)
-		{
-			const uint8_t constexpr hdr_measurement[2] = {0xAA, 0xC0};
-			uint8_t data[8];
-
-			switch (SDS_waiting_for)
-			{
-			case SDS_REPLY_HDR:
-				if (serialSDS.find(hdr_measurement, sizeof(hdr_measurement)))
-					SDS_waiting_for = SDS_REPLY_BODY;
-				break;
-			case SDS_REPLY_BODY:
-				debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_SDS011));
-				if (serialSDS.readBytes(data, sizeof(data)) == sizeof(data) && SDS_checksum_valid(data))
-				{
-					uint32_t pm25_serial = data[0] | (data[1] << 8);
-					uint32_t pm10_serial = data[2] | (data[3] << 8);
-
-					if (msSince(starttime) > (cfg::sending_intervall_ms - READINGTIME_SDS_MS))
-					{
-						sds_pm10_sum += pm10_serial;
-						sds_pm25_sum += pm25_serial;
-						UPDATE_MIN_MAX(sds_pm10_min, sds_pm10_max, pm10_serial);
-						UPDATE_MIN_MAX(sds_pm25_min, sds_pm25_max, pm25_serial);
-						debug_outln_verbose(F("PM10 (sec.) : "), String(pm10_serial / 10.0f));
-						debug_outln_verbose(F("PM2.5 (sec.): "), String(pm25_serial / 10.0f));
-						sds_val_count++;
-					}
-				}
-				debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_SDS011));
-				SDS_waiting_for = SDS_REPLY_HDR;
-				break;
-			}
-		}
-	}
-	if (send_now)
-	{
-		last_value_SDS_P1 = -1;
-		last_value_SDS_P2 = -1;
-		if (sds_val_count > 2)
-		{
-			sds_pm10_sum = sds_pm10_sum - sds_pm10_min - sds_pm10_max;
-			sds_pm25_sum = sds_pm25_sum - sds_pm25_min - sds_pm25_max;
-			sds_val_count = sds_val_count - 2;
-		}
-		if (sds_val_count > 0)
-		{
-			last_value_SDS_P1 = float(sds_pm10_sum) / (sds_val_count * 10.0f);
-			last_value_SDS_P2 = float(sds_pm25_sum) / (sds_val_count * 10.0f);
-			add_Value2Json(s, F("SDS_P1"), F("PM10:  "), last_value_SDS_P1);
-			add_Value2Json(s, F("SDS_P2"), F("PM2.5: "), last_value_SDS_P2);
-			debug_outln_info(FPSTR(DBG_TXT_SEP));
-			if (sds_val_count < 3)
-			{
-				SDS_error_count++;
-			}
-		}
-		else
-		{
-			SDS_error_count++;
-		}
-		sds_pm10_sum = 0;
-		sds_pm25_sum = 0;
-		sds_val_count = 0;
-		sds_pm10_max = 0;
-		sds_pm10_min = 20000;
-		sds_pm25_max = 0;
-		sds_pm25_min = 20000;
-		if ((cfg::sending_intervall_ms > (WARMUPTIME_SDS_MS + READINGTIME_SDS_MS)))
-		{
-
-			if (is_SDS_running)
-			{
-				is_SDS_running = SDS_cmd(PmSensorCmd::Stop);
-			}
-		}
-	}
-}
+// fetchSensorSDS ausgelagert nach sensors/sds011.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read Plantronic PM sensor sensor values                       *
  *****************************************************************/
-static __noinline void fetchSensorPMS(String &s)
-{
-	char buffer;
-	int value;
-	int len = 0;
-	int pm1_serial = 0;
-	int pm10_serial = 0;
-	int pm25_serial = 0;
-	int checksum_is = 0;
-	int checksum_should = 0;
-	bool checksum_ok = false;
-	int frame_len = 24; // min. frame length
-
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_PMSx003));
-	if (msSince(starttime) < (cfg::sending_intervall_ms - (WARMUPTIME_SDS_MS + READINGTIME_SDS_MS)))
-	{
-		if (is_PMS_running)
-		{
-			is_PMS_running = PMS_cmd(PmSensorCmd::Stop);
-		}
-	}
-	else
-	{
-		if (!is_PMS_running)
-		{
-			is_PMS_running = PMS_cmd(PmSensorCmd::Start);
-		}
-
-		while (serialSDS.available() > 0)
-		{
-			buffer = serialSDS.read();
-			debug_outln(String(len) + " - " + String(buffer, DEC) + " - " + String(buffer, HEX) + " - " + int(buffer) + " .", DEBUG_MAX_INFO);
-			//			"aa" = 170, "ab" = 171, "c0" = 192
-			value = int(buffer);
-			switch (len)
-			{
-			case 0:
-				if (value != 66)
-				{
-					len = -1;
-				};
-				break;
-			case 1:
-				if (value != 77)
-				{
-					len = -1;
-				};
-				break;
-			case 2:
-				checksum_is = value;
-				break;
-			case 3:
-				frame_len = value + 4;
-				break;
-			case 10:
-				pm1_serial += (value << 8);
-				break;
-			case 11:
-				pm1_serial += value;
-				break;
-			case 12:
-				pm25_serial = (value << 8);
-				break;
-			case 13:
-				pm25_serial += value;
-				break;
-			case 14:
-				pm10_serial = (value << 8);
-				break;
-			case 15:
-				pm10_serial += value;
-				break;
-			case 22:
-				if (frame_len == 24)
-				{
-					checksum_should = (value << 8);
-				};
-				break;
-			case 23:
-				if (frame_len == 24)
-				{
-					checksum_should += value;
-				};
-				break;
-			case 30:
-				checksum_should = (value << 8);
-				break;
-			case 31:
-				checksum_should += value;
-				break;
-			}
-			if ((len > 2) && (len < (frame_len - 2)))
-			{
-				checksum_is += value;
-			}
-			len++;
-			if (len == frame_len)
-			{
-				debug_outln_verbose(FPSTR(DBG_TXT_CHECKSUM_IS), String(checksum_is + 143));
-				debug_outln_verbose(FPSTR(DBG_TXT_CHECKSUM_SHOULD), String(checksum_should));
-				if (checksum_should == (checksum_is + 143))
-				{
-					checksum_ok = true;
-				}
-				else
-				{
-					len = 0;
-				};
-				if (checksum_ok && (msSince(starttime) > (cfg::sending_intervall_ms - READINGTIME_SDS_MS)))
-				{
-					if ((!isnan(pm1_serial)) && (!isnan(pm10_serial)) && (!isnan(pm25_serial)))
-					{
-						pms_pm1_sum += pm1_serial;
-						pms_pm10_sum += pm10_serial;
-						pms_pm25_sum += pm25_serial;
-						UPDATE_MIN_MAX(pms_pm1_min, pms_pm1_max, pm1_serial);
-						UPDATE_MIN_MAX(pms_pm25_min, pms_pm25_max, pm25_serial);
-						UPDATE_MIN_MAX(pms_pm10_min, pms_pm10_max, pm10_serial);
-						debug_outln_verbose(F("PM1 (sec.): "), String(pm1_serial));
-						debug_outln_verbose(F("PM2.5 (sec.): "), String(pm25_serial));
-						debug_outln_verbose(F("PM10 (sec.) : "), String(pm10_serial));
-						pms_val_count++;
-					}
-					len = 0;
-					checksum_ok = false;
-					pm1_serial = 0;
-					pm10_serial = 0;
-					pm25_serial = 0;
-					checksum_is = 0;
-				}
-			}
-			yield();
-		}
-	}
-
-	if (send_now)
-	{
-		last_value_PMS_P0 = -1;
-		last_value_PMS_P1 = -1;
-		last_value_PMS_P2 = -1;
-		if (pms_val_count > 2)
-		{
-			pms_pm1_sum = pms_pm1_sum - pms_pm1_min - pms_pm1_max;
-			pms_pm10_sum = pms_pm10_sum - pms_pm10_min - pms_pm10_max;
-			pms_pm25_sum = pms_pm25_sum - pms_pm25_min - pms_pm25_max;
-			pms_val_count = pms_val_count - 2;
-		}
-		if (pms_val_count > 0)
-		{
-			last_value_PMS_P0 = float(pms_pm1_sum) / float(pms_val_count);
-			last_value_PMS_P1 = float(pms_pm10_sum) / float(pms_val_count);
-			last_value_PMS_P2 = float(pms_pm25_sum) / float(pms_val_count);
-			add_Value2Json(s, F("PMS_P0"), F("PM1:   "), last_value_PMS_P0);
-			add_Value2Json(s, F("PMS_P1"), F("PM10:  "), last_value_PMS_P1);
-			add_Value2Json(s, F("PMS_P2"), F("PM2.5: "), last_value_PMS_P2);
-			debug_outln_info(FPSTR(DBG_TXT_SEP));
-		}
-		pms_pm1_sum = 0;
-		pms_pm10_sum = 0;
-		pms_pm25_sum = 0;
-		pms_val_count = 0;
-		pms_pm1_max = 0;
-		pms_pm1_min = 20000;
-		pms_pm10_max = 0;
-		pms_pm10_min = 20000;
-		pms_pm25_max = 0;
-		pms_pm25_min = 20000;
-		if (cfg::sending_intervall_ms > (WARMUPTIME_SDS_MS + READINGTIME_SDS_MS))
-		{
-			is_PMS_running = PMS_cmd(PmSensorCmd::Stop);
-		}
-	}
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_PMSx003));
-}
+// fetchSensorPMS ausgelagert nach sensors/pms.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read Honeywell PM sensor sensor values                        *
  *****************************************************************/
-static __noinline void fetchSensorHPM(String &s)
-{
-	char buffer;
-	int value;
-	int len = 0;
-	int pm10_serial = 0;
-	int pm25_serial = 0;
-	int checksum_is = 0;
-	int checksum_should = 0;
-	bool checksum_ok = false;
-
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_HPM));
-	if (msSince(starttime) < (cfg::sending_intervall_ms - (WARMUPTIME_SDS_MS + READINGTIME_SDS_MS)))
-	{
-		if (is_HPM_running)
-		{
-			is_HPM_running = HPM_cmd(PmSensorCmd::Stop);
-		}
-	}
-	else
-	{
-		if (!is_HPM_running)
-		{
-			is_HPM_running = HPM_cmd(PmSensorCmd::Start);
-		}
-
-		while (serialSDS.available() > 0)
-		{
-			buffer = serialSDS.read();
-			debug_outln(String(len) + " - " + String(buffer, DEC) + " - " + String(buffer, HEX) + " - " + int(buffer) + " .", DEBUG_MAX_INFO);
-			//			"aa" = 170, "ab" = 171, "c0" = 192
-			value = int(buffer);
-			switch (len)
-			{
-			case 0:
-				if (value != 66)
-				{
-					len = -1;
-				};
-				break;
-			case 1:
-				if (value != 77)
-				{
-					len = -1;
-				};
-				break;
-			case 2:
-				checksum_is = value;
-				break;
-			case 6:
-				pm25_serial += (value << 8);
-				break;
-			case 7:
-				pm25_serial += value;
-				break;
-			case 8:
-				pm10_serial = (value << 8);
-				break;
-			case 9:
-				pm10_serial += value;
-				break;
-			case 30:
-				checksum_should = (value << 8);
-				break;
-			case 31:
-				checksum_should += value;
-				break;
-			}
-			if (len > 2 && len < 30)
-			{
-				checksum_is += value;
-			}
-			len++;
-			if (len == 32)
-			{
-				debug_outln_verbose(FPSTR(DBG_TXT_CHECKSUM_IS), String(checksum_is + 143));
-				debug_outln_verbose(FPSTR(DBG_TXT_CHECKSUM_SHOULD), String(checksum_should));
-				if (checksum_should == (checksum_is + 143))
-				{
-					checksum_ok = true;
-				}
-				else
-				{
-					len = 0;
-				};
-				if (checksum_ok && (long(msSince(starttime)) > (long(cfg::sending_intervall_ms) - long(READINGTIME_SDS_MS))))
-				{
-					if ((!isnan(pm10_serial)) && (!isnan(pm25_serial)))
-					{
-						hpm_pm10_sum += pm10_serial;
-						hpm_pm25_sum += pm25_serial;
-						UPDATE_MIN_MAX(hpm_pm10_min, hpm_pm10_max, pm10_serial);
-						UPDATE_MIN_MAX(hpm_pm25_min, hpm_pm25_max, pm25_serial);
-						debug_outln_verbose(F("PM2.5 (sec.): "), String(pm25_serial));
-						debug_outln_verbose(F("PM10 (sec.) : "), String(pm10_serial));
-						hpm_val_count++;
-					}
-					len = 0;
-					checksum_ok = false;
-					pm10_serial = 0;
-					pm25_serial = 0;
-					checksum_is = 0;
-				}
-			}
-			yield();
-		}
-	}
-	if (send_now)
-	{
-		last_value_HPM_P1 = -1.0f;
-		last_value_HPM_P2 = -1.0f;
-		if (hpm_val_count > 2)
-		{
-			hpm_pm10_sum = hpm_pm10_sum - hpm_pm10_min - hpm_pm10_max;
-			hpm_pm25_sum = hpm_pm25_sum - hpm_pm25_min - hpm_pm25_max;
-			hpm_val_count = hpm_val_count - 2;
-		}
-		if (hpm_val_count > 0)
-		{
-			last_value_HPM_P1 = float(hpm_pm10_sum) / float(hpm_val_count);
-			last_value_HPM_P2 = float(hpm_pm25_sum) / float(hpm_val_count);
-			add_Value2Json(s, F("HPM_P1"), F("PM2.5: "), last_value_HPM_P1);
-			add_Value2Json(s, F("HPM_P2"), F("PM10:  "), last_value_HPM_P2);
-			debug_outln_info(FPSTR(DBG_TXT_SEP));
-		}
-		hpm_pm10_sum = 0;
-		hpm_pm25_sum = 0;
-		hpm_val_count = 0;
-		hpm_pm10_max = 0;
-		hpm_pm10_min = 20000;
-		hpm_pm25_max = 0;
-		hpm_pm25_min = 20000;
-		if (cfg::sending_intervall_ms > (WARMUPTIME_SDS_MS + READINGTIME_SDS_MS))
-		{
-			is_HPM_running = HPM_cmd(PmSensorCmd::Stop);
-		}
-	}
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_HPM));
-}
+// fetchSensorHPM ausgelagert nach sensors/hpm.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read Tera Sensor Next PM sensor sensor values                 *
  *****************************************************************/
 
-static void fetchSensorNPM(String &s)
-{
-
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_NPM));
-	if (cfg::sending_intervall_ms > (WARMUPTIME_NPM_MS + READINGTIME_NPM_MS) && msSince(starttime) < (cfg::sending_intervall_ms - (WARMUPTIME_NPM_MS + READINGTIME_NPM_MS)))
-	{
-		if (is_NPM_running && !cfg::npm_fulltime)
-		{
-			debug_outln_info(F("Change NPM to stop..."));
-			is_NPM_running = NPM_start_stop();
-		}
-	}
-	else
-	{
-		if (!is_NPM_running && !cfg::npm_fulltime)
-		{
-			debug_outln_info(F("Change NPM to start..."));
-			is_NPM_running = NPM_start_stop();
-			NPM_waiting_for_16 = NPM_REPLY_HEADER_16;
-		}
-
-		if (is_NPM_running && cfg::npm_fulltime)
-		{
-				NPM_waiting_for_16 = NPM_REPLY_HEADER_16;
-		}
-
-	
-		if (msSince(starttime) > (cfg::sending_intervall_ms - READINGTIME_NPM_MS))
-		{ //DIMINUER LE READING TIME
-
-			debug_outln_info(F("Concentration NPM..."));
-			NPM_cmd(PmSensorCmd2::Concentration);
-			while (!serialNPM.available())
-			{
-				debug_outln("Wait for Serial...", DEBUG_MAX_INFO);
-			}
-
-			while (serialNPM.available() >= NPM_waiting_for_16)
-			{
-				const uint8_t constexpr header[2] = {0x81, 0x11};
-				uint8_t state[1];
-				uint8_t data[12];
-				uint8_t checksum[1];
-				uint8_t test[16];
-				uint16_t N1_serial;
-				uint16_t N25_serial;
-				uint16_t N10_serial;
-				uint16_t pm1_serial;
-				uint16_t pm25_serial;
-				uint16_t pm10_serial;
-
-				switch (NPM_waiting_for_16)
-				{
-				case NPM_REPLY_HEADER_16:
-					if (serialNPM.find(header, sizeof(header)))
-						NPM_waiting_for_16 = NPM_REPLY_STATE_16;
-					break;
-				case NPM_REPLY_STATE_16:
-					serialNPM.readBytes(state, sizeof(state));
-					current_state_npm = NPM_state(state[0]);
-					NPM_waiting_for_16 = NPM_REPLY_BODY_16;
-					break;
-				case NPM_REPLY_BODY_16:
-					if (serialNPM.readBytes(data, sizeof(data)) == sizeof(data))
-					{
-						NPM_data_reader(data, 12);
-						N1_serial = word(data[0], data[1]);
-						N25_serial = word(data[2], data[3]);
-						N10_serial = word(data[4], data[5]);
-
-						pm1_serial = word(data[6], data[7]);
-						pm25_serial = word(data[8], data[9]);
-						pm10_serial = word(data[10], data[11]);
-
-						debug_outln_info(F("Next PM Measure..."));
-
-						debug_outln_verbose(F("PM1 (μg/m3) : "), String(pm1_serial / 10.0f));
-						debug_outln_verbose(F("PM2.5 (μg/m3): "), String(pm25_serial / 10.0f));
-						debug_outln_verbose(F("PM10 (μg/m3) : "), String(pm10_serial / 10.0f));
-
-						debug_outln_verbose(F("PM1 (pcs/L) : "), String(N1_serial));
-						debug_outln_verbose(F("PM2.5 (pcs/L): "), String(N25_serial));
-						debug_outln_verbose(F("PM10 (pcs/L) : "), String(N10_serial));
-					}
-					NPM_waiting_for_16 = NPM_REPLY_CHECKSUM_16;
-					break;
-				case NPM_REPLY_CHECKSUM_16:
-					serialNPM.readBytes(checksum, sizeof(checksum));
-					memcpy(test, header, sizeof(header));
-					memcpy(&test[sizeof(header)], state, sizeof(state));
-					memcpy(&test[sizeof(header) + sizeof(state)], data, sizeof(data));
-					memcpy(&test[sizeof(header) + sizeof(state) + sizeof(data)], checksum, sizeof(checksum));
-					NPM_data_reader(test, 16);
-					if (NPM_checksum_valid_16(test))
-					{
-							debug_outln_info(F("Checksum OK..."));
-													npm_pm1_sum += pm1_serial;
-						npm_pm25_sum += pm25_serial;
-						npm_pm10_sum += pm10_serial;
-
-						npm_pm1_sum_pcs += N1_serial;
-						npm_pm25_sum_pcs += N25_serial;
-						npm_pm10_sum_pcs += N10_serial;
-
-						UPDATE_MIN_MAX(npm_pm1_min, npm_pm1_max, pm1_serial);
-						UPDATE_MIN_MAX(npm_pm25_min, npm_pm25_max, pm25_serial);
-						UPDATE_MIN_MAX(npm_pm10_min, npm_pm10_max, pm10_serial);
-
-						UPDATE_MIN_MAX(npm_pm1_min_pcs, npm_pm1_max_pcs, N1_serial);
-						UPDATE_MIN_MAX(npm_pm25_min_pcs, npm_pm25_max_pcs, N25_serial);
-						UPDATE_MIN_MAX(npm_pm10_min_pcs, npm_pm10_max_pcs, N10_serial);
-
-						npm_val_count++;
-						debug_outln(String(npm_val_count), DEBUG_MAX_INFO);
-					}
-					NPM_waiting_for_16 = NPM_REPLY_HEADER_16;
-					break;
-				}
-			}
-		}
-	}
-
-	if (send_now)
-	{
-		last_value_NPM_P0 = -1.0f;
-		last_value_NPM_P1 = -1.0f;
-		last_value_NPM_P2 = -1.0f;
-		last_value_NPM_N1 = -1.0f;
-		last_value_NPM_N10 = -1.0f;
-		last_value_NPM_N25 = -1.0f;
-
-		if (npm_val_count > 2)
-		{
-			npm_pm1_sum = npm_pm1_sum - npm_pm1_min - npm_pm1_max;
-			npm_pm10_sum = npm_pm10_sum - npm_pm10_min - npm_pm10_max;
-			npm_pm25_sum = npm_pm25_sum - npm_pm25_min - npm_pm25_max;
-			npm_pm1_sum_pcs = npm_pm1_sum_pcs - npm_pm1_min_pcs - npm_pm1_max_pcs;
-			npm_pm10_sum_pcs = npm_pm10_sum_pcs - npm_pm10_min_pcs - npm_pm10_max_pcs;
-			npm_pm25_sum_pcs = npm_pm25_sum_pcs - npm_pm25_min_pcs - npm_pm25_max_pcs;
-			npm_val_count = npm_val_count - 2;
-		}
-		if (npm_val_count > 0)
-		{
-			last_value_NPM_P0 = float(npm_pm1_sum) / (npm_val_count * 10.0f);
-			last_value_NPM_P1 = float(npm_pm10_sum) / (npm_val_count * 10.0f);
-			last_value_NPM_P2 = float(npm_pm25_sum) / (npm_val_count * 10.0f);
-
-			last_value_NPM_N1 = float(npm_pm1_sum_pcs) / (npm_val_count * 1000.0f);
-			last_value_NPM_N10 = float(npm_pm10_sum_pcs) / (npm_val_count * 1000.0f);
-			last_value_NPM_N25 = float(npm_pm25_sum_pcs) / (npm_val_count * 1000.0f);
-
-			add_Value2Json(s, F("NPM_P0"), F("PM1: "), last_value_NPM_P0);
-			add_Value2Json(s, F("NPM_P1"), F("PM10:  "), last_value_NPM_P1);
-			add_Value2Json(s, F("NPM_P2"), F("PM2.5: "), last_value_NPM_P2);
-
-			add_Value2Json(s, F("NPM_N1"), F("NC1.0: "), last_value_NPM_N1);
-			add_Value2Json(s, F("NPM_N10"), F("NC10:  "), last_value_NPM_N10);
-			add_Value2Json(s, F("NPM_N25"), F("NC2.5: "), last_value_NPM_N25);
-
-			debug_outln_info(FPSTR(DBG_TXT_SEP));
-			if (npm_val_count < 3)
-			{
-				NPM_error_count++;
-			}
-		}
-		else
-		{
-			NPM_error_count++;
-		}
-
-		npm_pm1_sum = 0;
-		npm_pm10_sum = 0;
-		npm_pm25_sum = 0;
-
-		npm_val_count = 0;
-
-		npm_pm1_max = 0;
-		npm_pm1_min = 20000;
-		npm_pm10_max = 0;
-		npm_pm10_min = 20000;
-		npm_pm25_max = 0;
-		npm_pm25_min = 20000;
-
-		npm_pm1_sum_pcs = 0;
-		npm_pm10_sum_pcs = 0;
-		npm_pm25_sum_pcs = 0;
-
-		npm_pm1_max_pcs = 0;
-		npm_pm1_min_pcs = 60000;
-		npm_pm10_max_pcs = 0;
-		npm_pm10_min_pcs = 60000;
-		npm_pm25_max_pcs = 0;
-		npm_pm25_min_pcs = 60000;
-
-		if (cfg::sending_intervall_ms > (WARMUPTIME_NPM_MS + READINGTIME_NPM_MS))
-		{
-			debug_outln_info(F("Temperature and humidity in NPM after measure..."));
-			current_th_npm = NPM_temp_humi();
-			if (is_NPM_running && !cfg::npm_fulltime)
-			{
-				debug_outln_info(F("Change NPM to stop after measure..."));
-				is_NPM_running = NPM_start_stop();
-			}
-		}
-	}
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_NPM));
-}
+// fetchSensorNPM ausgelagert nach sensors/npm.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 
 /*****************************************************************
  * read Piera Systems IPS-7100 sensor sensor values                 *
  *****************************************************************/
 
-static void fetchSensorIPS(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_IPS));
+// fetchSensorIPS ausgelagert nach sensors/ips.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
-			while (serialIPS.available() > 0)
-			{
-				serialIPS.read();				
-			}
-
-
-	if (cfg::sending_intervall_ms > (WARMUPTIME_IPS_MS + READINGTIME_IPS_MS) && msSince(starttime) < (cfg::sending_intervall_ms - (WARMUPTIME_IPS_MS + READINGTIME_IPS_MS)))
-	{
-		if (is_IPS_running)
-		{
-			debug_outln_info(F("Change IPS to stop..."));
-			IPS_cmd(PmSensorCmd3::Stop);
-			is_IPS_running = false;
-		}
-	}
-	else
-	{
-		if (!is_IPS_running)
-		{
-			debug_outln_info(F("Change IPS to start..."));
-			IPS_cmd(PmSensorCmd3::Start);
-			is_IPS_running = true;
-		}
-
-		//VIDER LE BUFFER DU START?
-	
-		if (msSince(starttime) > (cfg::sending_intervall_ms - READINGTIME_IPS_MS))
-		{ //DIMINUER LE READING TIME
-
-			debug_outln_info(F("Concentration IPS..."));
-			String serial_data;
-			//String serial_data2;
-
-			// while (Serial.available() > 0) {
-			// 	Serial.read();
-			// }
-
-			IPS_cmd(PmSensorCmd3::Get);
-
-			if (serialIPS.available() > 0)
-			{
-				serial_data = serialIPS.readString();				
-			}
-		 
-
-			// while (serialIPS.available() > 0)
-			// {
-			// 	serialIPS.read();				
-			// }
-
-		 Debug.println(serial_data);
-
-// 		if(serial_data.length()>240){
-
-
-	int index1 = serial_data.indexOf("PC0.1,");
-	int index2 = serial_data.indexOf(",PC0.3,");
-	int index3 = serial_data.indexOf(",PC0.5,");
-	int index4 = serial_data.indexOf(",PC1.0,");
-	int index5 = serial_data.indexOf(",PC2.5,");
-	int index6 = serial_data.indexOf(",PC5.0,");
-	int index7 = serial_data.indexOf(",PC10,");
-	int index8 = serial_data.indexOf(",PM0.1,");
-	int index9 = serial_data.indexOf(",PM0.3,");
-	int index10 = serial_data.indexOf(",PM0.5,");
-	int index11 = serial_data.indexOf(",PM1.0,");
-	int index12 = serial_data.indexOf(",PM2.5,");
-	int index13 = serial_data.indexOf(",PM5.0,");
-	int index14 = serial_data.indexOf(",PM10,");
-	int index15 = serial_data.indexOf(",IPS");	
-
-	String N01_serial = serial_data.substring(index1+6,index2);
-	String N03_serial = serial_data.substring(index2+7,index3);
-	String N05_serial = serial_data.substring(index3+7,index4);
-	String N1_serial = serial_data.substring(index4+7,index5);
-	String N25_serial = serial_data.substring(index5+7,index6);
-	String N5_serial = serial_data.substring(index6+7,index7);
-	String N10_serial = serial_data.substring(index7+6,index8);
-
-	String pm01_serial = serial_data.substring(index8+7,index9-6);
-	String pm03_serial = serial_data.substring(index9+7,index10-6);
-	String pm05_serial = serial_data.substring(index10+7,index11-6);
-	String pm1_serial = serial_data.substring(index11+7,index12-6);
-	String pm25_serial = serial_data.substring(index12+7,index13-6);
-	String pm5_serial = serial_data.substring(index13+7,index14-6);
-	String pm10_serial = serial_data.substring(index14+6,index15-6);
-
-	debug_outln_verbose(F("PM0.1 (μg/m3) : "), pm01_serial);
-	debug_outln_verbose(F("PM0.3 (μg/m3): "), pm03_serial);
-	debug_outln_verbose(F("PM0.5 (μg/m3) : "), pm05_serial);
-	debug_outln_verbose(F("PM1 (μg/m3) : "), pm1_serial);
-	debug_outln_verbose(F("PM2.5 (μg/m3): "), pm25_serial);
-	debug_outln_verbose(F("PM5 (μg/m3) : "), pm5_serial);
-	debug_outln_verbose(F("PM10 (μg/m3) : "), pm10_serial);
-
-	debug_outln_verbose(F("PM0.1 (pcs/L) : "), N01_serial);
-	debug_outln_verbose(F("PM0.3 (pcs/L): "), N03_serial);
-	debug_outln_verbose(F("PM0.5(pcs/L) : "), N05_serial);
-	debug_outln_verbose(F("PM1 (pcs/L) : "), N1_serial);
-	debug_outln_verbose(F("PM2.5 (pcs/L): "), N25_serial);
-	debug_outln_verbose(F("PM5 (pcs/L) : "), N5_serial);
-	debug_outln_verbose(F("PM10 (pcs/L) : "), N10_serial);
-
-	ips_pm01_sum += pm01_serial.toFloat();
-	ips_pm03_sum += pm03_serial.toFloat();
-	ips_pm05_sum += pm05_serial.toFloat();
-	ips_pm1_sum += pm1_serial.toFloat();
-	ips_pm25_sum += pm25_serial.toFloat();
-	ips_pm5_sum += pm5_serial.toFloat();
-	ips_pm10_sum += pm10_serial.toFloat();
-
-	//char *ptr;
-
-    // SI EXCEPTION 28 DECLENCHÈE FLASHER SUR AUTRE PRISE USB.
-
-	ips_pm01_sum_pcs += strtoul(N01_serial.c_str(),NULL,10);
-	ips_pm03_sum_pcs += strtoul(N03_serial.c_str(),NULL,10);
-	ips_pm05_sum_pcs += strtoul(N05_serial.c_str(),NULL,10);
-	ips_pm1_sum_pcs += strtoul(N1_serial.c_str(),NULL,10);
-	ips_pm25_sum_pcs += strtoul(N25_serial.c_str(),NULL,10);
-	ips_pm5_sum_pcs += strtoul(N5_serial.c_str(),NULL,10);
-	ips_pm10_sum_pcs += strtoul(N10_serial.c_str(),NULL,10);
-
-	UPDATE_MIN_MAX(ips_pm01_min, ips_pm01_max, pm01_serial.toFloat());
-	UPDATE_MIN_MAX(ips_pm03_min, ips_pm03_max, pm03_serial.toFloat());
-	UPDATE_MIN_MAX(ips_pm05_min, ips_pm05_max, pm05_serial.toFloat());
-	UPDATE_MIN_MAX(ips_pm1_min, ips_pm1_max, pm1_serial.toFloat());
-	UPDATE_MIN_MAX(ips_pm25_min, ips_pm25_max, pm25_serial.toFloat());
-	UPDATE_MIN_MAX(ips_pm5_min, ips_pm5_max, pm5_serial.toFloat());
-	UPDATE_MIN_MAX(ips_pm10_min, ips_pm10_max, pm10_serial.toFloat());
-	
-	UPDATE_MIN_MAX(ips_pm01_min_pcs, ips_pm01_max_pcs, strtoul(N01_serial.c_str(),NULL,10));
-	UPDATE_MIN_MAX(ips_pm03_min_pcs, ips_pm03_max_pcs, strtoul(N03_serial.c_str(),NULL,10));
-	UPDATE_MIN_MAX(ips_pm05_min_pcs, ips_pm05_max_pcs, strtoul(N05_serial.c_str(),NULL,10));
-	UPDATE_MIN_MAX(ips_pm1_min_pcs, ips_pm1_max_pcs, strtoul(N1_serial.c_str(),NULL,10));
-	UPDATE_MIN_MAX(ips_pm25_min_pcs, ips_pm25_max_pcs, strtoul(N25_serial.c_str(),NULL,10));
-	UPDATE_MIN_MAX(ips_pm5_min_pcs, ips_pm5_max_pcs, strtoul(N5_serial.c_str(),NULL,10));
-	UPDATE_MIN_MAX(ips_pm10_min_pcs, ips_pm10_max_pcs, strtoul(N10_serial.c_str(),NULL,10));
-
-	debug_outln_info(F("IPS Measure..."));
-	ips_val_count++;
-	debug_outln(String(ips_val_count), DEBUG_MAX_INFO);
-	}
-}
-
-	if (send_now)
-	{
-
-		last_value_IPS_P0 = -1.0; //PM1
-		last_value_IPS_P1 = -1.0; //PM10
-		last_value_IPS_P2 = -1.0; //PM2.5
-		last_value_IPS_P01 = -1.0; //PM0.1
-		last_value_IPS_P03 = -1.0; //PM0.3
-		last_value_IPS_P05 = -1.0; //PM0.5
-		last_value_IPS_P5 = -1.0; //PM5
-		last_value_IPS_N1 = -1.0;
-		last_value_IPS_N10 = -1.0;
-		last_value_IPS_N25 = -1.0;
-		last_value_IPS_N01 = -1.0;
-		last_value_IPS_N03 = -1.0;
-		last_value_IPS_N05 = -1.0;
-		last_value_IPS_N5 = -1.0;
-
-		if (ips_val_count > 2)
-		{
-			ips_pm01_sum = ips_pm01_sum - ips_pm01_min - ips_pm01_max;
-			ips_pm03_sum = ips_pm03_sum - ips_pm03_min - ips_pm03_max;
-			ips_pm05_sum = ips_pm05_sum - ips_pm05_min - ips_pm05_max;
-			ips_pm1_sum = ips_pm1_sum - ips_pm1_min - ips_pm1_max;
-			ips_pm25_sum = ips_pm25_sum - ips_pm25_min - ips_pm25_max;
-			ips_pm5_sum = ips_pm5_sum - ips_pm5_min - ips_pm5_max;
-			ips_pm10_sum = ips_pm10_sum - ips_pm10_min - ips_pm10_max;
-
-			ips_pm01_sum_pcs = ips_pm01_sum_pcs - ips_pm01_min_pcs - ips_pm01_max_pcs;
-			ips_pm03_sum_pcs = ips_pm03_sum_pcs - ips_pm03_min_pcs - ips_pm03_max_pcs;
-			ips_pm05_sum_pcs = ips_pm05_sum_pcs - ips_pm05_min_pcs - ips_pm05_max_pcs;
-			ips_pm1_sum_pcs = ips_pm1_sum_pcs - ips_pm1_min_pcs - ips_pm1_max_pcs;
-			ips_pm25_sum_pcs = ips_pm25_sum_pcs - ips_pm25_min_pcs - ips_pm25_max_pcs;
-			ips_pm5_sum_pcs = ips_pm5_sum_pcs - ips_pm5_min_pcs - ips_pm5_max_pcs;
-			ips_pm10_sum_pcs = ips_pm10_sum_pcs - ips_pm10_min_pcs - ips_pm10_max_pcs;
-
-			ips_val_count = ips_val_count - 2;
-		}
-		if (ips_val_count > 0)
-		{
-			last_value_IPS_P0 = float(ips_pm1_sum) / (ips_val_count);
-			last_value_IPS_P1 = float(ips_pm10_sum) / (ips_val_count);
-			last_value_IPS_P2 = float(ips_pm25_sum) / (ips_val_count);
-			last_value_IPS_P01 = float(ips_pm01_sum) / (ips_val_count);
-			last_value_IPS_P03 = float(ips_pm03_sum) / (ips_val_count);
-			last_value_IPS_P05 = float(ips_pm05_sum) / (ips_val_count);
-			last_value_IPS_P5 = float(ips_pm5_sum) / (ips_val_count);
-
-			last_value_IPS_N1 = float(ips_pm1_sum_pcs) / (ips_val_count * 1000.0f);
-			last_value_IPS_N10 = float(ips_pm10_sum_pcs) / (ips_val_count * 1000.0f);
-			last_value_IPS_N25 = float(ips_pm25_sum_pcs) / (ips_val_count * 1000.0f);
-			last_value_IPS_N01 = float(ips_pm01_sum_pcs) / (ips_val_count * 1000.0f);
-			last_value_IPS_N03 = float(ips_pm03_sum_pcs) / (ips_val_count * 1000.0f);
-			last_value_IPS_N05 = float(ips_pm05_sum_pcs) / (ips_val_count * 1000.0f);
-			last_value_IPS_N5 = float(ips_pm5_sum_pcs) / (ips_val_count * 1000.0f);
-
-			add_Value2Json(s, F("IPS_P0"), F("PM1: "), last_value_IPS_P0);
-			add_Value2Json(s, F("IPS_P1"), F("PM10:  "), last_value_IPS_P1);
-			add_Value2Json(s, F("IPS_P2"), F("PM2.5: "), last_value_IPS_P2);
-			add_Value2Json(s, F("IPS_P01"), F("PM0.1: "), last_value_IPS_P01);
-			add_Value2Json(s, F("IPS_P03"), F("PM0.3:  "), last_value_IPS_P03);
-			add_Value2Json(s, F("IPS_P05"), F("PM0.5: "), last_value_IPS_P05);
-			add_Value2Json(s, F("IPS_P5"), F("PM5: "), last_value_IPS_P5);
-
-			add_Value2Json(s, F("IPS_N1"), F("NC1.0: "), last_value_IPS_N1);
-			add_Value2Json(s, F("IPS_N10"), F("NC10:  "), last_value_IPS_N10);
-			add_Value2Json(s, F("IPS_N25"), F("NC2.5: "), last_value_IPS_N25);
-			add_Value2Json(s, F("IPS_N01"), F("NC0.1: "), last_value_IPS_N01);
-			add_Value2Json(s, F("IPS_N03"), F("NC0.3:  "), last_value_IPS_N03);
-			add_Value2Json(s, F("IPS_N05"), F("NC0.5: "), last_value_IPS_N05);
-			add_Value2Json(s, F("IPS_N5"), F("NC5: "), last_value_IPS_N5);
-
-
-			debug_outln_info(FPSTR(DBG_TXT_SEP));
-			if (ips_val_count < 3)
-			{
-				IPS_error_count++;
-			}
-		}
-		else
-		{
-			IPS_error_count++;
-		}
-
-		ips_pm01_sum = 0;
-		ips_pm03_sum = 0;
-		ips_pm05_sum = 0;
-		ips_pm1_sum = 0;
-		ips_pm25_sum = 0;
-		ips_pm5_sum = 0;
-		ips_pm10_sum = 0;
-
-		ips_val_count = 0;
-
-		ips_pm01_max = 0;
-		ips_pm01_min = 200;
-		ips_pm03_max = 0;
-		ips_pm03_min = 200;
-		ips_pm05_max = 0;
-		ips_pm05_min = 200;
-		ips_pm1_max = 0;
-		ips_pm1_min = 200;
-		ips_pm25_max = 0;
-		ips_pm25_min = 200;
-		ips_pm5_max = 0;
-		ips_pm5_min = 200;
-		ips_pm10_max = 0;
-		ips_pm10_min = 200;
-
-		ips_pm01_sum_pcs = 0;
-		ips_pm03_sum_pcs = 0;
-		ips_pm05_sum_pcs = 0;
-		ips_pm1_sum_pcs = 0;
-		ips_pm25_sum_pcs = 0;
-		ips_pm5_sum_pcs = 0;
-		ips_pm10_sum_pcs = 0;
-
-		ips_pm01_max_pcs = 0;
-		ips_pm01_min_pcs = 4000000000;
-		ips_pm03_max_pcs = 0;
-		ips_pm03_min_pcs = 4000000000;
-		ips_pm05_max_pcs = 0;
-		ips_pm05_min_pcs = 4000000000;
-		ips_pm1_max_pcs = 0;
-		ips_pm1_min_pcs = 4000000000;
-		ips_pm25_max_pcs = 0;
-		ips_pm25_min_pcs = 4000000000;
-		ips_pm5_max_pcs = 0;
-		ips_pm5_min_pcs = 4000000000;
-		ips_pm10_max_pcs = 0;
-		ips_pm10_min_pcs = 4000000000;
-
-		if (cfg::sending_intervall_ms > (WARMUPTIME_IPS_MS + READINGTIME_IPS_MS))
-		{
-			if (is_IPS_running)
-			{
-				debug_outln_info(F("Change IPS to stop after measure..."));
-				IPS_cmd(PmSensorCmd3::Stop);
-				is_IPS_running = false;
-			}
-		}
-	}
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_IPS));
-
-}
 /*****************************************************************
  * read PPD42NS sensor values                                    *
  *****************************************************************/
-static __noinline void fetchSensorPPD(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_PPD42NS));
-
-	if (msSince(starttime) <= SAMPLETIME_MS)
-	{
-
-		// Read pins connected to ppd42ns
-		boolean valP1 = digitalRead(PPD_PIN_PM1);
-		boolean valP2 = digitalRead(PPD_PIN_PM2);
-
-		if (valP1 == LOW && trigP1 == false)
-		{
-			trigP1 = true;
-			trigOnP1 = act_micro;
-		}
-
-		if (valP1 == HIGH && trigP1 == true)
-		{
-			lowpulseoccupancyP1 += act_micro - trigOnP1;
-			trigP1 = false;
-		}
-
-		if (valP2 == LOW && trigP2 == false)
-		{
-			trigP2 = true;
-			trigOnP2 = act_micro;
-		}
-
-		if (valP2 == HIGH && trigP2 == true)
-		{
-			unsigned long durationP2 = act_micro - trigOnP2;
-			lowpulseoccupancyP2 += durationP2;
-			trigP2 = false;
-		}
-	}
-	// Checking if it is time to sample
-	if (send_now)
-	{
-		auto calcConcentration = [](const float ratio)
-		{
-			/* spec sheet curve*/
-			return (1.1f * ratio * ratio * ratio - 3.8f * ratio * ratio + 520.0f * ratio + 0.62f);
-		};
-
-		last_value_PPD_P1 = -1;
-		last_value_PPD_P2 = -1;
-		float ratio = lowpulseoccupancyP1 / (SAMPLETIME_MS * 10.0f);
-		float concentration = calcConcentration(ratio);
-
-		// json for push to api / P1
-		last_value_PPD_P1 = concentration;
-		add_Value2Json(s, F("durP1"), F("LPO P10    : "), lowpulseoccupancyP1);
-		add_Value2Json(s, F("ratioP1"), F("Ratio PM10%: "), ratio);
-		add_Value2Json(s, F("P1"), F("PM10 Count : "), last_value_PPD_P1);
-
-		ratio = lowpulseoccupancyP2 / (SAMPLETIME_MS * 10.0f);
-		concentration = calcConcentration(ratio);
-
-		// json for push to api / P2
-		last_value_PPD_P2 = concentration;
-		add_Value2Json(s, F("durP2"), F("LPO PM25   : "), lowpulseoccupancyP2);
-		add_Value2Json(s, F("ratioP2"), F("Ratio PM25%: "), ratio);
-		add_Value2Json(s, F("P2"), F("PM25 Count : "), last_value_PPD_P2);
-
-		debug_outln_info(FPSTR(DBG_TXT_SEP));
-	}
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_PPD42NS));
-}
+// fetchSensorPPD ausgelagert nach sensors/ppd42ns.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
    read SPS30 PM sensor values
  *****************************************************************/
-static void fetchSensorSPS30(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_SPS30));
-
-	last_value_SPS30_P0 = value_SPS30_P0 / SPS30_measurement_count;
-	last_value_SPS30_P2 = value_SPS30_P2 / SPS30_measurement_count;
-	last_value_SPS30_P4 = value_SPS30_P4 / SPS30_measurement_count;
-	last_value_SPS30_P1 = value_SPS30_P1 / SPS30_measurement_count;
-	last_value_SPS30_N05 = value_SPS30_N05 / SPS30_measurement_count;
-	last_value_SPS30_N1 = value_SPS30_N1 / SPS30_measurement_count;
-	last_value_SPS30_N25 = value_SPS30_N25 / SPS30_measurement_count;
-	last_value_SPS30_N4 = value_SPS30_N4 / SPS30_measurement_count;
-	last_value_SPS30_N10 = value_SPS30_N10 / SPS30_measurement_count;
-	last_value_SPS30_TS = value_SPS30_TS / SPS30_measurement_count;
-
-	add_Value2Json(s, F("SPS30_P0"), F("PM1.0: "), last_value_SPS30_P0);
-	add_Value2Json(s, F("SPS30_P2"), F("PM2.5: "), last_value_SPS30_P2);
-	add_Value2Json(s, F("SPS30_P4"), F("PM4.0: "), last_value_SPS30_P4);
-	add_Value2Json(s, F("SPS30_P1"), F("PM 10: "), last_value_SPS30_P1);
-	add_Value2Json(s, F("SPS30_N05"), F("NC0.5: "), last_value_SPS30_N05);
-	add_Value2Json(s, F("SPS30_N1"), F("NC1.0: "), last_value_SPS30_N1);
-	add_Value2Json(s, F("SPS30_N25"), F("NC2.5: "), last_value_SPS30_N25);
-	add_Value2Json(s, F("SPS30_N4"), F("NC4.0: "), last_value_SPS30_N4);
-	add_Value2Json(s, F("SPS30_N10"), F("NC10:  "), last_value_SPS30_N10);
-	add_Value2Json(s, F("SPS30_TS"), F("TPS:   "), last_value_SPS30_TS);
-
-	debug_outln_info(F("SPS30 read counter: "), String(SPS30_read_counter));
-	debug_outln_info(F("SPS30 read error counter: "), String(SPS30_read_error_counter));
-
-	SPS30_measurement_count = 0;
-	SPS30_read_counter = 0;
-	SPS30_read_error_counter = 0;
-	value_SPS30_P0 = value_SPS30_P1 = value_SPS30_P2 = value_SPS30_P4 = 0.0;
-	value_SPS30_N05 = value_SPS30_N1 = value_SPS30_N25 = value_SPS30_N10 = value_SPS30_N4 = 0.0;
-	value_SPS30_TS = 0.0;
-
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_SPS30));
-}
+// fetchSensorSPS30 ausgelagert nach sensors/sps30.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
    read DNMS values
  *****************************************************************/
-static void fetchSensorDNMS(String &s)
-{
-	static bool dnms_error = false;
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_DNMS));
-	last_value_dnms_laeq = -1.0;
-	last_value_dnms_la_min = -1.0;
-	last_value_dnms_la_max = -1.0;
-
-	if (dnms_calculate_leq() != 0)
-	{
-		dnms_error = true;
-	}
-
-	uint16_t data_ready = 0;
-	dnms_error = true;
-
-	for (unsigned i = 0; i < 20; i++)
-	{
-		delay(2);
-		int16_t ret_dnms = dnms_read_data_ready(&data_ready);
-		if ((ret_dnms == 0) && (data_ready != 0))
-		{
-			dnms_error = false;
-			break;
-		}
-	}
-	if (!dnms_error)
-	{
-		struct dnms_measurements dnms_values;
-		if (dnms_read_leq(&dnms_values) == 0)
-		{
-			float dnms_corr_value = readCorrectionOffset(cfg::dnms_correction);
-			last_value_dnms_laeq = dnms_values.leq_a + dnms_corr_value;
-			last_value_dnms_la_min = dnms_values.leq_a_min + dnms_corr_value;
-			last_value_dnms_la_max = dnms_values.leq_a_max + dnms_corr_value;
-		}
-		else
-		{
-			dnms_error = true;
-		}
-	}
-	if (dnms_error)
-	{
-		dnms_reset(); // try to reset dnms
-		debug_outln_error(F("DNMS read failed"));
-	}
-	else
-	{
-		add_Value2Json(s, F("DNMS_noise_LAeq"), F("LAeq: "), last_value_dnms_laeq);
-		add_Value2Json(s, F("DNMS_noise_LA_min"), F("LA_MIN: "), last_value_dnms_la_min);
-		add_Value2Json(s, F("DNMS_noise_LA_max"), F("LA_MAX: "), last_value_dnms_la_max);
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_DNMS));
-}
+// fetchSensorDNMS ausgelagert nach sensors/dnms.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * read GPS sensor values                                        *
  *****************************************************************/
-static __noinline void fetchSensorGPS(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), "GPS");
-
-	if (gps.location.isUpdated())
-	{
-		if (gps.location.isValid())
-		{
-			last_value_GPS_lat = gps.location.lat();
-			last_value_GPS_lon = gps.location.lng();
-		}
-		else
-		{
-			last_value_GPS_lat = -200;
-			last_value_GPS_lon = -200;
-			debug_outln_verbose(F("Lat/Lng INVALID"));
-		}
-		if (gps.altitude.isValid())
-		{
-			last_value_GPS_alt = gps.altitude.meters();
-		}
-		else
-		{
-			last_value_GPS_alt = -1000;
-			debug_outln_verbose(F("Altitude INVALID"));
-		}
-		if (!gps.date.isValid())
-		{
-			debug_outln_verbose(F("Date INVALID"));
-		}
-		if (!gps.time.isValid())
-		{
-			debug_outln_verbose(F("Time: INVALID"));
-		}
-		if (gps.date.isValid() && gps.time.isValid())
-		{
-			char gps_datetime[37];
-			snprintf_P(gps_datetime, sizeof(gps_datetime), PSTR("%04d-%02d-%02dT%02d:%02d:%02d.%03d"),
-					   gps.date.year(), gps.date.month(), gps.date.day(), gps.time.hour(), gps.time.minute(), gps.time.second(), gps.time.centisecond());
-			last_value_GPS_timestamp = gps_datetime;
-		}
-		else
-		{
-			//define a default value
-			last_value_GPS_timestamp = F("1970-01-01T00:00:00.000");
-		}
-	}
-
-	if (send_now)
-	{
-		debug_outln_info(F("Lat: "), String(last_value_GPS_lat, 6));
-		debug_outln_info(F("Lng: "), String(last_value_GPS_lon, 6));
-		debug_outln_info(F("DateTime: "), last_value_GPS_timestamp);
-
-		add_Value2Json(s, F("GPS_lat"), String(last_value_GPS_lat, 6));
-		add_Value2Json(s, F("GPS_lon"), String(last_value_GPS_lon, 6));
-		add_Value2Json(s, F("GPS_height"), F("Altitude: "), last_value_GPS_alt);
-		add_Value2Json(s, F("GPS_timestamp"), last_value_GPS_timestamp);
-		debug_outln_info(FPSTR(DBG_TXT_SEP));
-	}
-
-	if (count_sends > 0 && gps.charsProcessed() < 10)
-	{
-		debug_outln_error(F("No GPS data received: check wiring"));
-		gps_init_failed = true;
-	}
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), "GPS");
-}
+// fetchSensorGPS ausgelagert nach sensors/gps.cpp (Issue #7 Phase 1, Schiller-Gymnasium-Refactor)
 
 /*****************************************************************
  * OTAUpdate                                                     *
