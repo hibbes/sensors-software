@@ -231,6 +231,11 @@ namespace cfg
 	char user_custom[LEN_USER_CUSTOM] = USER_CUSTOM;
 	char pwd_custom[LEN_CFG_PASSWORD] = PWD_CUSTOM;
 
+	// hibbes-Patch (Issue #16): direkter Push an Wunderground PWS-API
+	bool send2wunderground = false;
+	char wu_station_id[LEN_WU_STATION_ID] = "";
+	char wu_password[LEN_CFG_PASSWORD] = "";
+
 	void initNonTrivials(const char *id)
 	{
 		strcpy(cfg::current_lang, CURRENT_LANG);
@@ -1365,6 +1370,12 @@ static void createLoggerConfigs()
 	{
 		loggerConfigs[LoggerCustom].session = new_session();
 	}
+	// hibbes-Patch (Issue #16): Wunderground PWS-API ist immer HTTPS
+	loggerConfigs[LoggerWunderground].destport = PORT_WUNDERGROUND;
+	if (cfg::send2wunderground)
+	{
+		loggerConfigs[LoggerWunderground].session = new_session();
+	}
 }
 
 /*****************************************************************
@@ -1855,6 +1866,17 @@ static void webserver_config_send_body_get(String &page_content)
 	add_form_input(page_content, Config_port_custom, FPSTR(INTL_PORT), MAX_PORT_DIGITS);
 	add_form_input(page_content, Config_user_custom, FPSTR(INTL_USER), LEN_USER_CUSTOM - 1);
 	add_form_input(page_content, Config_pwd_custom, FPSTR(INTL_PASSWORD), LEN_CFG_PASSWORD - 1);
+	page_content += FPSTR(TABLE_TAG_CLOSE_BR);
+
+	page_content += FPSTR(BR_TAG);
+
+	// hibbes-Patch (Issue #16): Wunderground PWS-Upload-API direct
+	server.sendContent(page_content);
+	page_content = form_checkbox(Config_send2wunderground, F("Wunderground PWS"), false);
+	page_content += FPSTR(BR_TAG);
+	page_content += FPSTR(TABLE_TAG_OPEN);
+	add_form_input(page_content, Config_wu_station_id, F("Station-ID (z.B. IAU617)"), LEN_WU_STATION_ID - 1);
+	add_form_input(page_content, Config_wu_password, F("PWS-Upload-Password"), LEN_CFG_PASSWORD - 1);
 	page_content += FPSTR(TABLE_TAG_CLOSE_BR);
 
 	page_content += FPSTR(BR_TAG);
@@ -3218,6 +3240,9 @@ static WiFiClient *getNewLoggerWiFiClient(const LoggerEntry logger)
 		case LoggerInflux:
 		case LoggerCustom:
 		case LoggerFSapp:
+		case LoggerWunderground:
+			// hibbes-Patch (Issue #16): WU's CDN nutzt nicht die airrohr-CA-Trust-Anchor.
+			// setInsecure() trade-off: kein Cert-Verify, dafür funktioniert TLS-Handshake.
 			static_cast<WiFiClientSecure *>(_client)->setInsecure();
 			break;
 		default:
@@ -6032,6 +6057,137 @@ static void setupNetworkTime()
 	configTime(0, 0, ntpServer1, ntpServer2);
 }
 
+/*****************************************************************
+ * sendWundergroundUpdate (hibbes-Patch, Issue #16)               *
+ * Direkter Push an Wunderground PWS-Upload-API ersetzt den       *
+ * fein2wunder-PHP-Wrapper. Liest aktive T/H/P-Sensoren + SDS-PM, *
+ * konvertiert Einheiten in WU-Format und macht GET an die        *
+ * updateweatherstation.php-URL. Höhen-Korrektur via              *
+ * cfg::height_above_sealevel (gleiche Logik wie fein2wunder).    *
+ *****************************************************************/
+static unsigned long sendWundergroundUpdate()
+{
+	if (!cfg::send2wunderground || !*cfg::wu_station_id || !*cfg::wu_password)
+	{
+		return 0;
+	}
+
+	// Picke T+H aus aktiven Sensoren (Priorität: AHT20 > DHT > HTU21D > BME280)
+	float t_c = -128.0f;
+	float h_pct = -1.0f;
+	if (cfg::aht20_read && !aht20_init_failed && last_value_AHT20_T > -100.0f)
+	{
+		t_c = last_value_AHT20_T;
+		h_pct = last_value_AHT20_H;
+	}
+	else if (cfg::dht_read && last_value_DHT_T > -100.0f)
+	{
+		t_c = last_value_DHT_T;
+		h_pct = last_value_DHT_H;
+	}
+	else if (cfg::htu21d_read && !htu21d_init_failed && last_value_HTU21D_T > -100.0f)
+	{
+		t_c = last_value_HTU21D_T;
+		h_pct = last_value_HTU21D_H;
+	}
+	else if (cfg::bmx280_read && !bmx280_init_failed && bmx280.sensorID() == BME280_SENSOR_ID && last_value_BMX280_T > -100.0f)
+	{
+		t_c = last_value_BMX280_T;
+		h_pct = last_value_BME280_H;
+	}
+
+	// Picke Druck aus BMx280 oder BMP180
+	float p_pa = -1.0f;
+	if (cfg::bmx280_read && !bmx280_init_failed && last_value_BMX280_P > 0.0f)
+	{
+		p_pa = last_value_BMX280_P;
+	}
+	else if (cfg::bmp_read && last_value_BMP_P > 0.0f)
+	{
+		p_pa = last_value_BMP_P;
+	}
+
+	if (t_c <= -100.0f || h_pct < 0.0f || p_pa <= 0.0f)
+	{
+		debug_outln_info(F("WU: skip - T/H/P unvollständig"));
+		return 0;
+	}
+
+	// Konvertiere
+	float tempf = t_c * 1.8f + 32.0f;
+	float dew_c = dew_point(t_c, h_pct);
+	float dewptf = dew_c * 1.8f + 32.0f;
+	float p_hpa = p_pa / 100.0f;
+	float p_msl = pressure_at_sealevel(t_c, p_hpa);
+	float baroinch = p_msl / 33.8638866667f;
+
+	// Build URL
+	String url(FPSTR(URL_WUNDERGROUND_BASE));
+	url.reserve(384);
+	url += F("?ID=");
+	url += cfg::wu_station_id;
+	url += F("&PASSWORD=");
+	url += cfg::wu_password;
+	url += F("&dateutc=now");
+	url += F("&tempf=");
+	url += String(tempf, 2);
+	url += F("&dewptf=");
+	url += String(dewptf, 2);
+	url += F("&humidity=");
+	url += String(h_pct, 1);
+	url += F("&baromin=");
+	url += String(baroinch, 4);
+	if (cfg::sds_read && last_value_SDS_P1 >= 0.0f && last_value_SDS_P2 >= 0.0f)
+	{
+		url += F("&AqPM2.5=");
+		url += String(last_value_SDS_P2, 2);
+		url += F("&AqPM10=");
+		url += String(last_value_SDS_P1, 2);
+	}
+	url += F("&softwaretype=airrohr-");
+	url += SOFTWARE_VERSION;
+	url += F("&action=updateraw");
+
+	// GET-Push (WU akzeptiert nur GET, sendData() macht POST -> dedicated path)
+	cycle_send_attempts++;
+	unsigned long start_send = millis();
+
+	std::unique_ptr<WiFiClient> client(getNewLoggerWiFiClient(LoggerWunderground));
+	HTTPClient http;
+	http.setTimeout(20 * 1000);
+	http.setUserAgent(SOFTWARE_VERSION);
+	http.setReuse(false);
+
+	bool send_success = false;
+	debug_outln_info(F("WU: pushing to "), FPSTR(HOST_WUNDERGROUND));
+	if (http.begin(*client, FPSTR(HOST_WUNDERGROUND), PORT_WUNDERGROUND, url, true))
+	{
+		int result = http.GET();
+		if (result >= HTTP_CODE_OK && result <= HTTP_CODE_ALREADY_REPORTED)
+		{
+			debug_outln_info(F("WU response: "), http.getString());
+			send_success = true;
+			cycle_send_successes++;
+		}
+		else
+		{
+			debug_outln_info(F("WU GET failed HTTP "), String(result));
+		}
+		http.end();
+	}
+	else
+	{
+		debug_outln_info(F("WU connect failed"));
+	}
+
+	if (!send_success)
+	{
+		loggerConfigs[LoggerWunderground].errors++;
+	}
+
+	return millis() - start_send;
+}
+
 static unsigned long sendDataToOptionalApis(const String &data)
 {
 	unsigned long sum_send_time = 0;
@@ -6096,6 +6252,13 @@ static unsigned long sendDataToOptionalApis(const String &data)
 	{
 		debug_outln_info(F("## Sending as csv: "));
 		send_csv(data);
+	}
+
+	// hibbes-Patch (Issue #16): direkter Wunderground-PWS-Push
+	if (cfg::send2wunderground)
+	{
+		debug_outln_info(FPSTR(DBG_TXT_SENDING_TO), F("wunderground.com: "));
+		sum_send_time += sendWundergroundUpdate();
 	}
 
 	return sum_send_time;
