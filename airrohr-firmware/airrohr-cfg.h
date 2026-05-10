@@ -64,6 +64,7 @@ enum ConfigShapeId {
 	Config_send2csv,
 	Config_auto_update,
 	Config_use_beta,
+	Config_ota_host,
 	Config_has_display,
 	Config_has_sh1106,
 	Config_has_flipped_display,
@@ -137,6 +138,7 @@ static constexpr char CFG_KEY_SEND2AIRCMS[] PROGMEM = "send2aircms";
 static constexpr char CFG_KEY_SEND2CSV[] PROGMEM = "send2csv";
 static constexpr char CFG_KEY_AUTO_UPDATE[] PROGMEM = "auto_update";
 static constexpr char CFG_KEY_USE_BETA[] PROGMEM = "use_beta";
+static constexpr char CFG_KEY_OTA_HOST[] PROGMEM = "ota_host";
 static constexpr char CFG_KEY_HAS_DISPLAY[] PROGMEM = "has_display";
 static constexpr char CFG_KEY_HAS_SH1106[] PROGMEM = "has_sh1106";
 static constexpr char CFG_KEY_HAS_FLIPPED_DISPLAY[] PROGMEM = "has_flipped_display";
@@ -210,6 +212,7 @@ static constexpr ConfigShapeEntry configShape[] PROGMEM = {
 	{ Config_Type_Bool, 0, CFG_KEY_SEND2CSV, &cfg::send2csv },
 	{ Config_Type_Bool, 0, CFG_KEY_AUTO_UPDATE, &cfg::auto_update },
 	{ Config_Type_Bool, 0, CFG_KEY_USE_BETA, &cfg::use_beta },
+	{ Config_Type_String, sizeof(cfg::ota_host)-1, CFG_KEY_OTA_HOST, cfg::ota_host },
 	{ Config_Type_Bool, 0, CFG_KEY_HAS_DISPLAY, &cfg::has_display },
 	{ Config_Type_Bool, 0, CFG_KEY_HAS_SH1106, &cfg::has_sh1106 },
 	{ Config_Type_Bool, 0, CFG_KEY_HAS_FLIPPED_DISPLAY, &cfg::has_flipped_display },

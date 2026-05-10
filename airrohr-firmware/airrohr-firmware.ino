@@ -197,6 +197,7 @@ namespace cfg
 
 	bool auto_update = AUTO_UPDATE;
 	bool use_beta = USE_BETA;
+	char ota_host[LEN_OTA_HOST] = "";
 
 	// (in)active displays
 	bool has_display = HAS_DISPLAY; // OLED with SSD1306 and I2C
@@ -239,6 +240,7 @@ namespace cfg
 		strcpy_P(wlanpwd, WLANPWD);
 		strcpy_P(host_custom, HOST_CUSTOM);
 		strcpy_P(url_custom, URL_CUSTOM);
+		strcpy_P(ota_host, OTA_HOST);
 		strcpy_P(host_influx, HOST_INFLUX);
 		strcpy_P(url_influx, URL_INFLUX);
 		strcpy_P(measurement_name_influx, MEASUREMENT_NAME_INFLUX);
@@ -1742,12 +1744,14 @@ static void webserver_config_send_body_get(String &page_content)
 
 	page_content += FPSTR(TABLE_TAG_OPEN);
 	page_content += form_select_lang();
+	// hibbes-Patch: konfigurierbarer Update-Server (leer = Default firmware.sensor.community)
+	add_form_input(page_content, Config_ota_host, F("Update-Host (leer = Default)"), LEN_OTA_HOST - 1);
 	page_content += FPSTR(TABLE_TAG_CLOSE_BR);
 
 	page_content += F("<script>"
 					  "var $ = function(e) { return document.getElementById(e); };"
 					  "function updateOTAOptions() { "
-					  "$('current_lang').disabled = $('use_beta').disabled = !$('auto_update').checked; "
+					  "$('current_lang').disabled = $('use_beta').disabled = $('ota_host').disabled = !$('auto_update').checked; "
 					  "}; updateOTAOptions(); $('auto_update').onchange = updateOTAOptions;"
 					  "</script>");
 
@@ -4900,9 +4904,11 @@ static bool fwDownloadStream(WiFiClientSecure &client, const String &url, Stream
 	http.setUserAgent(agent);
 	http.setReuse(false);
 
-	debug_outln_verbose(F("HTTP GET: "), String(FPSTR(FW_DOWNLOAD_HOST)) + ':' + String(FW_DOWNLOAD_PORT) + url);
+	// hibbes-Patch: cfg::ota_host kann den Default-Server überschreiben (Issue #2).
+	String ota_host_eff = strlen(cfg::ota_host) ? String(cfg::ota_host) : String(FPSTR(FW_DOWNLOAD_HOST));
+	debug_outln_verbose(F("HTTP GET: "), ota_host_eff + ':' + String(FW_DOWNLOAD_PORT) + url);
 
-	if (http.begin(client, FPSTR(FW_DOWNLOAD_HOST), FW_DOWNLOAD_PORT, url))
+	if (http.begin(client, ota_host_eff, FW_DOWNLOAD_PORT, url))
 	{
 		int r = http.GET();
 		debug_outln_verbose(F("GET r: "), String(r));
