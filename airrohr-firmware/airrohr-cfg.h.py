@@ -74,6 +74,9 @@ String		user_influx
 Password		pwd_influx
 String		measurement_name_influx
 Bool		ssl_influx
+Bool		send2wunderground
+String		wu_station_id
+Password		wu_password
 """
 
 with open("airrohr-cfg.h", "w") as h:

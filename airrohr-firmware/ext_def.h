@@ -40,6 +40,7 @@ enum LoggerEntry {
     Loggeraircms,
     LoggerInflux,
     LoggerCustom,
+    LoggerWunderground,  // hibbes-Patch: direkt zu Wunderground PWS-API
     LoggerCount
 };
 
@@ -78,6 +79,12 @@ static const char URL_AIRCMS[] PROGMEM = "/php/sensors.php?h=";
 
 static const char FW_DOWNLOAD_HOST[] PROGMEM = "firmware.sensor.community";
 #define FW_DOWNLOAD_PORT 443
+
+// hibbes-Patch: Wunderground PWS-Upload-API (Issue #16)
+#define LEN_WU_STATION_ID 16
+static const char HOST_WUNDERGROUND[] PROGMEM = "weatherstation.wunderground.com";
+#define PORT_WUNDERGROUND 443
+static const char URL_WUNDERGROUND_BASE[] PROGMEM = "/weatherstation/updateweatherstation.php";
 
 // hibbes-Patch: konfigurierbarer Auto-Update-Server.
 // cfg::ota_host kann via Web-UI/JSON-Cfg gesetzt werden; leer = Default oben.

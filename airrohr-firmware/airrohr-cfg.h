@@ -98,6 +98,9 @@ enum ConfigShapeId {
 	Config_pwd_influx,
 	Config_measurement_name_influx,
 	Config_ssl_influx,
+	Config_send2wunderground,
+	Config_wu_station_id,
+	Config_wu_password,
 };
 static constexpr char CFG_KEY_CURRENT_LANG[] PROGMEM = "current_lang";
 static constexpr char CFG_KEY_WLANSSID[] PROGMEM = "wlanssid";
@@ -172,6 +175,9 @@ static constexpr char CFG_KEY_USER_INFLUX[] PROGMEM = "user_influx";
 static constexpr char CFG_KEY_PWD_INFLUX[] PROGMEM = "pwd_influx";
 static constexpr char CFG_KEY_MEASUREMENT_NAME_INFLUX[] PROGMEM = "measurement_name_influx";
 static constexpr char CFG_KEY_SSL_INFLUX[] PROGMEM = "ssl_influx";
+static constexpr char CFG_KEY_SEND2WUNDERGROUND[] PROGMEM = "send2wunderground";
+static constexpr char CFG_KEY_WU_STATION_ID[] PROGMEM = "wu_station_id";
+static constexpr char CFG_KEY_WU_PASSWORD[] PROGMEM = "wu_password";
 static constexpr ConfigShapeEntry configShape[] PROGMEM = {
 	{ Config_Type_String, sizeof(cfg::current_lang)-1, CFG_KEY_CURRENT_LANG, cfg::current_lang },
 	{ Config_Type_String, sizeof(cfg::wlanssid)-1, CFG_KEY_WLANSSID, cfg::wlanssid },
@@ -246,4 +252,7 @@ static constexpr ConfigShapeEntry configShape[] PROGMEM = {
 	{ Config_Type_Password, sizeof(cfg::pwd_influx)-1, CFG_KEY_PWD_INFLUX, cfg::pwd_influx },
 	{ Config_Type_String, sizeof(cfg::measurement_name_influx)-1, CFG_KEY_MEASUREMENT_NAME_INFLUX, cfg::measurement_name_influx },
 	{ Config_Type_Bool, 0, CFG_KEY_SSL_INFLUX, &cfg::ssl_influx },
+	{ Config_Type_Bool, 0, CFG_KEY_SEND2WUNDERGROUND, &cfg::send2wunderground },
+	{ Config_Type_String, sizeof(cfg::wu_station_id)-1, CFG_KEY_WU_STATION_ID, cfg::wu_station_id },
+	{ Config_Type_Password, sizeof(cfg::wu_password)-1, CFG_KEY_WU_PASSWORD, cfg::wu_password },
 };
