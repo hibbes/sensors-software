@@ -1,6 +1,6 @@
 # airrohr-firmware (hibbes-Fork)
 
-> Ein Fork der [airrohr-Firmware von OK Lab Stuttgart](https://github.com/opendata-stuttgart/sensors-software) für moderne Sensor-Hardware (AHT20+BMP280) und lokale Wartung statt Cloud-Auto-Update.
+> Ein Fork der [airrohr-Firmware von OK Lab Stuttgart](https://github.com/opendata-stuttgart/sensors-software) für moderne Sensor-Hardware (AHT20+BMP280) und lokale Wartung statt Cloud-Auto-Update. Refactor-Beiträge: **Makerspace Schiller-Gymnasium Offenburg**.
 
 **Status:** Aktive Wartung außerhalb des Upstream-Pfads. Upstream zeigt seit April 2024 keine Releases mehr, dieser Fork pflegt selbständig Hardware-Support, OTA-Tooling und Build-Toolchain.
 
@@ -24,6 +24,10 @@ Build:
 - ✅ **espressif8266-Platform 4.2.1** (statt upstream-Pin auf 2.6.2 von 2020). Arduino-Core 3.1.2, lwIP 2.1.3, BearSSL aktualisiert.
 - ✅ **4m1m-ldscript** (1MB SPIFFS + 1MB OTA-Reserve) statt 4m3m (3MB SPIFFS, kein OTA).
 - ✅ Adafruit AHTX0-Lib v2.0.5 als Treiber-Dep.
+
+Code-Struktur:
+
+- ✅ **Sensor-Treiber-Module** (`airrohr-firmware/sensors/<name>.{cpp,h}`). Die 16 `fetchSensor*`-Funktionen leben jetzt in eigenen Übersetzungseinheiten statt im monolithischen `airrohr-firmware.ino` (was dadurch ~1500 Zeilen kürzer wurde).
 
 ## Hardware-Stack (typische Konfiguration)
 
