@@ -105,17 +105,31 @@ Hardware-Anschluss der GY-21P-Combo am NodeMCU (airrohr-Standard-I²C-Pinout):
 
 Web-UI nach Boot: AHT20 + BME280-Sammeloption (`bmx280_read`) aktivieren, DHT22 + BMP180 deaktivieren.
 
-## Upstream-PR-Strategie
+## Projekt-Posture
 
-Die Patches sind in drei Klassen unterteilt:
+Dieser Fork wurde ursprünglich als "Branch mit Upstream-PR-Aussicht" gestartet. Stand 2026-05-10 zielt er nicht mehr auf Upstream-Merge, weil [opendata-stuttgart/sensors-software](https://github.com/opendata-stuttgart/sensors-software) seit April 2024 keine neuen Releases mehr hat und im Tracker mehrere Hundert offene Issues stehen. Daraus folgt:
 
-| Klasse | Commits | Upstream-tauglich? |
-|---|---|---|
-| **Sauberer AHT20-Support** | bis `e5e9e65` (DBG_TXT_SEP-fix) | Ja — clean keys (`AHT20_temperature` etc.), kein Verbiegen |
-| **Generische Verbesserungen** | `d8caccf` (/config.json), `5371def` (cfg::ota_host), `edda924` (platform-bump) | Ja — könnten als eigenständige PRs eingereicht werden, lösen häufige User-Pains |
-| **Hibbes-Deployment-spezifisch** | `ba42bd2` (Maskerade) und `2fa5c19` (OTA-Server) | Nein — verändert öffentliches Verhalten, würde Upstream-Reviewer rejecten |
+- Wir können radikaler refactoren ohne Rückwärts-Kompatibilität (siehe Backlog: `.ino` aufsplitten, JSON-Builder, i18n-Konsolidierung)
+- Branch-Stabilität gilt für hibbes-Stationen, nicht für Upstream-Reviewer
+- Die ursprüngliche Trennung "Upstream-tauglich vs. hibbes-spezifisch" ist obsolet
 
-Wenn Upstream-PRs später angegangen werden, jede Klasse einzeln branchen vom passenden Vorgänger-Commit.
+Commit-Inventar zur Orientierung (alle 7 Patches landen kombiniert auf der Heim-Station):
+
+| Commit | Kurz |
+|---|---|
+| `3f1c13f`–`b9e16bb` | AHT20-Treiber-Skeleton (Lib, Defines, Cfg-Enum, i18n, html-content) |
+| `72dcf39` | airrohr-cfg.h.py-Generator-Sync |
+| `6f3d2de` | ext_def.h-Kommentar Englisch |
+| `96cbae1` | platformio.ini AHTX0-Pin |
+| `6749266`–`30bf697` | Driver-Plumbing in `.ino` (Init, fetchSensorAHT20, Send-Loop, UI) |
+| `e5e9e65` | DBG_TXT_SEP-Symmetrie-Fix |
+| `ba42bd2` | Maskerade als DHT22+BMP180 |
+| `2fa5c19` | ESP8266HTTPUpdateServer + 4m1m-ldscript |
+| `a3275a2` | HIBBES_PATCH.md (initiale Doku) |
+| `d8caccf` | /config.json GET+POST |
+| `5371def` | `cfg::ota_host` |
+| `edda924` | espressif8266-Platform 2.6.2 → 4.2.1 |
+| `502f8e0` | HIBBES_PATCH.md mit Issue-Updates |
 
 ## Referenzen
 
