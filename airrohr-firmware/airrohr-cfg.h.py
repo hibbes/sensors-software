@@ -40,6 +40,7 @@ Bool		send2aircms
 Bool		send2csv
 Bool		auto_update
 Bool		use_beta
+String		ota_host
 Bool		has_display
 Bool		has_sh1106
 Bool		has_flipped_display

@@ -79,6 +79,12 @@ static const char URL_AIRCMS[] PROGMEM = "/php/sensors.php?h=";
 static const char FW_DOWNLOAD_HOST[] PROGMEM = "firmware.sensor.community";
 #define FW_DOWNLOAD_PORT 443
 
+// hibbes-Patch: konfigurierbarer Auto-Update-Server.
+// cfg::ota_host kann via Web-UI/JSON-Cfg gesetzt werden; leer = Default oben.
+// Pfad-Struktur (OTA_BASENAME/update/latest_<lang>.bin) muss am eigenen Server gespiegelt sein.
+#define LEN_OTA_HOST 100
+static const char OTA_HOST[] PROGMEM = "";
+
 static const char FW_2ND_LOADER_URL[] PROGMEM = OTA_BASENAME "/loader-002.bin";
 
 static const char NTP_SERVER_1[] PROGMEM = "0.pool.ntp.org";
