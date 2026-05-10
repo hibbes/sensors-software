@@ -646,6 +646,17 @@ unsigned long NPM_error_count;
 unsigned long IPS_error_count;
 unsigned long WiFi_error_count;
 
+// hibbes-Patch (Issue #4): Silent-failure-detection für WiFi-State-Korruption.
+// Pro Send-Cycle zählen wie viele Pushes versucht/erfolgreich waren. Wenn N
+// Cycles in Folge alle Pushes scheitern trotz WL_CONNECTED, ist der WLAN-Stack
+// kaputt (Router-NAT-Stale, ARP-Probleme, BearSSL-Session-Hang) und braucht
+// einen harten Disconnect+Reconnect — das Standard-WiFi.status()-Check sieht
+// das nicht.
+uint8_t cycle_send_attempts = 0;
+uint8_t cycle_send_successes = 0;
+uint8_t consecutive_silent_failures = 0;
+constexpr uint8_t SILENT_FAILURE_THRESHOLD = 3;
+
 unsigned long last_page_load = millis();
 
 bool wificonfig_loop = false;
@@ -3262,6 +3273,9 @@ static unsigned long sendData(const LoggerEntry logger, const String &data, cons
 	{
 		http.setAuthorization(cfg::user_influx, cfg::pwd_influx);
 	}
+	// hibbes-Patch (Issue #4): pro-Cycle-Tracking für silent-failure-Detection
+	cycle_send_attempts++;
+
 	if (http.begin(*client, s_Host, loggerConfigs[logger].destport, s_url, !!loggerConfigs[logger].session))
 	{
 		http.addHeader(F("Content-Type"), contentType);
@@ -3278,6 +3292,7 @@ static unsigned long sendData(const LoggerEntry logger, const String &data, cons
 		{
 			debug_outln_info(F("Succeeded - "), s_Host);
 			send_success = true;
+			cycle_send_successes++;  // hibbes-Patch (Issue #4)
 		}
 		else
 		{
@@ -3294,10 +3309,16 @@ static unsigned long sendData(const LoggerEntry logger, const String &data, cons
 		debug_outln_info(F("Failed connecting to "), s_Host);
 	}
 
-	if (!send_success && result != 0)
+	// hibbes-Patch (Issue #4): error-counter auch bei http.begin()-Fehler hochzählen
+	// (vorher: nur bei HTTP-Fehlercode > 0). Connect-Failures sind vermutlich Symptom
+	// von WLAN-State-Issues und müssen sichtbar sein.
+	if (!send_success)
 	{
 		loggerConfigs[logger].errors++;
-		last_sendData_returncode = result;
+		if (result != 0)
+		{
+			last_sendData_returncode = result;
+		}
 	}
 
 	return millis() - start_send;
@@ -6497,6 +6518,35 @@ void loop(void)
 		if (sum_send_time > 0)
 		{
 			debug_outln_info(F("Time for Sending (ms): "), String(sending_time));
+		}
+
+		// hibbes-Patch (Issue #4): Silent-failure-Detection
+		// Wenn alle Push-Targets im Cycle scheitern (cycle_send_attempts > 0
+		// && cycle_send_successes == 0), ist der WLAN-Stack vermutlich kaputt
+		// trotz WL_CONNECTED. Nach SILENT_FAILURE_THRESHOLD Cycles in Folge
+		// erzwingen wir einen harten Disconnect+Reconnect.
+		if (cycle_send_attempts > 0 && cycle_send_successes == 0)
+		{
+			++consecutive_silent_failures;
+			debug_outln_info(F("All pushes failed; consecutive silent failures: "),
+							 String(consecutive_silent_failures));
+		}
+		else if (cycle_send_successes > 0)
+		{
+			consecutive_silent_failures = 0;
+		}
+		cycle_send_attempts = 0;
+		cycle_send_successes = 0;
+
+		if (consecutive_silent_failures >= SILENT_FAILURE_THRESHOLD)
+		{
+			debug_outln_info(F("Forcing WiFi reset due to silent failures"));
+			WiFi_error_count++;
+			WiFi.disconnect(true);
+			delay(500);
+			WiFi.begin(cfg::wlanssid, cfg::wlanpwd);
+			waitForWifiToConnect(20);
+			consecutive_silent_failures = 0;
 		}
 
 		// reconnect to WiFi if disconnected
