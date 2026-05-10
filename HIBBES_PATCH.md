@@ -48,11 +48,36 @@ Voraussetzung: `auto_update=0` UND `use_beta=0` müssen in der Sensor-Cfg aus se
 
 | Was | Warum |
 |---|---|
+| `platform_version = espressif8266@4.2.1` (war 2.6.2) | 3-Jahre-Sprung an Toolchain: Arduino-Core 2.7.3 → 3.1.2, lwIP 2.1.2 → 2.1.3, BearSSL-TLS-Updates. lwIP-2.2-Stabilität, WLAN-Reconnect-Fixes. |
+| `EspSoftwareSerial @ ^6.16.1` exakt gepinnt | v8 hat `perform_work()` umstrukturiert (airrohr ruft das aktiv im Loop für SDS/NPM-UART-Pump). Pin auf 6.x = Linker-symbol verfügbar. |
 | `board_build.ldscript = eagle.flash.4m1m.ld` (war 4m3m.ld) | OTA braucht ~1MB Reserve, sonst ESP8266 `Update.begin()` → `ERROR[4]: Not Enough Space`. SPIFFS schrumpft von 3MB auf 1MB, das reicht airrohr easy. |
 | `-D NO_GLOBAL_SERIAL=0` aus `build_flags` entfernt | ESP8266HTTPUpdateServer linkt gegen globalen `Serial`. Kostet ~5KB Flash. |
 | Adafruit AHTX0 als Lib-Dep | Treiber für AHT20 (~5KB Flash) |
 
-Build-Footprint nach Patch (nodemcuv2): **Flash 67.9% / RAM 42.1% / Binary 713 KB**.
+Build-Footprint nach allen Patches (nodemcuv2): **Flash 68.9% / RAM 43.6% / Binary 723 KB**.
+
+### 5. /config.json GET+POST (Cfg-Backup/Restore)
+
+Zwei neue HTTP-Endpoints für Cfg-Roundtrip ohne Web-UI-Form-Frickelei:
+
+```bash
+# Export aktuelle Cfg (Passwörter werden als leere Strings maskiert)
+curl http://<sensor-ip>/config.json > backup.json
+
+# Import (partial-Update möglich, leere Passwörter werden NICHT überschrieben)
+curl -X POST -H "Content-Type: application/json" -d @backup.json http://<sensor-ip>/config.json
+# Response: {"status":"saved, restarting","applied":N}
+```
+
+Iteriert die ConfigShape-Tabelle, gleiche Type-Logik wie HTML-Form-Handler. Praktisch für Backup vor SPIFFS-Wipe (z.B. ldscript-Wechsel) oder Roll-out auf mehrere Stationen ohne 60+ Form-Felder pro Sensor manuell auszufüllen.
+
+### 6. Konfigurierbarer Auto-Update-Server (`cfg::ota_host`)
+
+Neues Cfg-Feld erlaubt eigenen OTA-Server (statt hardcoded `firmware.sensor.community`). Im Web-UI Tab "Weitere Einstellungen" → Firmware unterhalb der Sprach-Auswahl als "Update-Host (leer = Default)" sichtbar. Wenn nicht-leer gesetzt, ersetzt es `FW_DOWNLOAD_HOST` in `fwDownloadStream()`.
+
+Pfad-Struktur (`OTA_BASENAME/update/latest_<lang>.bin`) muss am eigenen Server gespiegelt sein. Port + SSL unverändert (443 + CA-cert-verify).
+
+Anwendung: bei mehreren Custom-Build-Stationen (z.B. AHT20-Roll-out) eigener Hosting-Endpoint statt manueller curl-OTA pro Station.
 
 ## Quickstart (eigene Combo-Hardware in Betrieb)
 
@@ -82,18 +107,15 @@ Web-UI nach Boot: AHT20 + BME280-Sammeloption (`bmx280_read`) aktivieren, DHT22 
 
 ## Upstream-PR-Strategie
 
-Die Patches sind in zwei Klassen unterteilt:
+Die Patches sind in drei Klassen unterteilt:
 
 | Klasse | Commits | Upstream-tauglich? |
 |---|---|---|
-| **Sauberer AHT20-Support** | bis Commit `e5e9e65` (DBG_TXT_SEP-fix) | Ja — clean keys (`AHT20_temperature` etc.), kein Maskerade-Verbiegen, kein OTA-Server-Add |
-| **Hibbes-Deployment-spezifisch** | ab `ba42bd2` (Maskerade) und `2fa5c19` (OTA-Server) | Nein — verändert öffentliches Verhalten, würde Upstream-Reviewer rejecten |
+| **Sauberer AHT20-Support** | bis `e5e9e65` (DBG_TXT_SEP-fix) | Ja — clean keys (`AHT20_temperature` etc.), kein Verbiegen |
+| **Generische Verbesserungen** | `d8caccf` (/config.json), `5371def` (cfg::ota_host), `edda924` (platform-bump) | Ja — könnten als eigenständige PRs eingereicht werden, lösen häufige User-Pains |
+| **Hibbes-Deployment-spezifisch** | `ba42bd2` (Maskerade) und `2fa5c19` (OTA-Server) | Nein — verändert öffentliches Verhalten, würde Upstream-Reviewer rejecten |
 
-Wenn der Upstream-PR später angegangen wird:
-```bash
-git checkout -b feature/aht20-clean ba42bd2~1
-# Kommt aus dem state mit AHT20_-Keys + ohne OTA-Server. PR daraus.
-```
+Wenn Upstream-PRs später angegangen werden, jede Klasse einzeln branchen vom passenden Vorgänger-Commit.
 
 ## Referenzen
 
