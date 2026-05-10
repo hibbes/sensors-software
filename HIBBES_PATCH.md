@@ -130,6 +130,9 @@ Commit-Inventar zur Orientierung (alle 7 Patches landen kombiniert auf der Heim-
 | `5371def` | `cfg::ota_host` |
 | `edda924` | espressif8266-Platform 2.6.2 → 4.2.1 |
 | `502f8e0` | HIBBES_PATCH.md mit Issue-Updates |
+| `1222903` | README.md + HIBBES_PATCH.md mit Posture-Pivot |
+| `4ea45aa` | WiFi silent-failure-recovery (Issue #4) |
+| `bbd4d06` | Wunderground PWS-direct-Push (Issue #16) |
 
 ## Referenzen
 

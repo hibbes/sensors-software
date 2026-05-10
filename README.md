@@ -16,6 +16,8 @@ Tooling:
 - ✅ **Lokales OTA-Update** via `POST /update`-HTTP-Endpoint. Firmware-Update per `curl` aus dem eigenen Netz, ohne USB.
 - ✅ **Cfg-Backup/Restore** via `GET/POST /config.json`. Passwörter werden im Export maskiert, Roundtrip-fähig.
 - ✅ **Konfigurierbarer Auto-Update-Server** (`cfg::ota_host`). Wer eigenes Hosting hat, pullt von dort statt Upstream.
+- ✅ **Wunderground PWS direkter Push** (`send2wunderground`). Native Wunderground-API-Integration in der Firmware, kein PHP-Wrapper-Layer mehr.
+- ✅ **WiFi-Silent-Failure-Recovery**. Erkennt "online aber tot"-WLAN-Zustand (alle Pushes scheitern trotz `WL_CONNECTED`) und forciert Reconnect.
 
 Build:
 
@@ -131,7 +133,7 @@ Folgende Targets werden im Web-UI Tab "APIs" konfiguriert:
 | **OpenSenseMap** | `https://ingress.opensensemap.org/boxes/<id>/data?luftdaten=1` | senseBox-API mit Server-seitig hardgecodeter Mapping-Tabelle. AHT20-Maskerade als DHT22 ist nötig. |
 | **Custom HTTP** | beliebig (z.B. eigener PHP-Endpoint) | Volle JSON-Payload, kein Format-Constraint |
 | **InfluxDB** | beliebig | Native InfluxDB-Line-Protocol-Push |
-| **Wunderground PWS** | per `Custom HTTP` über Wrapper wie [fein2wunder](https://github.com/hibbes/fein2wunder) | WU akzeptiert Wetter-Daten, AqPM* werden zwar mitgesendet aber nicht öffentlich angezeigt (PurpleAir-Partnership-Lock) |
+| **Wunderground PWS** | direkt via `send2wunderground`-Toggle (built-in seit Issue #16) | Cfg-Felder `wu_station_id` + `wu_password` (= PWS-Upload-Pass). Code konvertiert °C→°F, hPa→inHg, MSL-Korrektur via `cfg::height_above_sealevel`, Taupunkt aus dew_point(). AqPM* werden zwar mitgesendet aber nicht öffentlich angezeigt (PurpleAir-Partnership-Lock). [fein2wunder](https://github.com/hibbes/fein2wunder) als alter PHP-Wrapper-Pfad ist seit 2026-05-10 archiviert. |
 
 ## Push-Format und Maskerade
 
