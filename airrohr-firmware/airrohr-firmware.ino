@@ -108,6 +108,8 @@ String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 #if defined(ESP8266)
 #include <ESP8266HTTPUpdateServer.h>
 #endif
+// Sensor-Treiber-Module (Issue #7 Phase 1 Refactor, hibbes-Fork)
+#include "sensors/aht20.h"
 #include <Adafruit_BMP085.h>
 #include <Adafruit_SHT31.h>
 #include <StreamString.h>
@@ -3531,35 +3533,8 @@ static void fetchSensorHTU21D(String &s)
 	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_HTU21D));
 }
 
-/*****************************************************************
- * read AHT20 sensor values                                      *
- *****************************************************************/
-static void fetchSensorAHT20(String &s)
-{
-	debug_outln_verbose(FPSTR(DBG_TXT_START_READING), FPSTR(SENSORS_AHT20));
-
-	sensors_event_t humidity_event;
-	sensors_event_t temp_event;
-	if (!aht20.getEvent(&humidity_event, &temp_event))
-	{
-		last_value_AHT20_T = -128.0;
-		last_value_AHT20_H = -1.0;
-		debug_outln_error(F("AHT20 read failed"));
-	}
-	else
-	{
-		last_value_AHT20_T = temp_event.temperature;
-		last_value_AHT20_H = humidity_event.relative_humidity;
-		// Maskerade: bare keys (DHT22-Format) statt AHT20_* — Sensor.Community + OpenSenseMap
-		// luftdaten-Parser kennen keine AHT20-Keys, akzeptieren aber bare temperature/humidity.
-		// fein2wunder routet weiter via t=4-Fallback auf 'temperature'/'humidity' korrekt.
-		add_Value2Json(s, F("temperature"), FPSTR(DBG_TXT_TEMPERATURE), last_value_AHT20_T);
-		add_Value2Json(s, F("humidity"), FPSTR(DBG_TXT_HUMIDITY), last_value_AHT20_H);
-	}
-	debug_outln_info(FPSTR(DBG_TXT_SEP));
-
-	debug_outln_verbose(FPSTR(DBG_TXT_END_READING), FPSTR(SENSORS_AHT20));
-}
+// fetchSensorAHT20 ist ausgelagert nach sensors/aht20.cpp
+// (Issue #7 Phase 1 Pilot, hibbes-Fork-Refactor)
 
 /*****************************************************************
  * read BMP180 sensor values                                     *
