@@ -1916,6 +1916,146 @@ static void webserver_config_send_body_post(String &page_content)
 	page_content = emptyString;
 }
 
+/*****************************************************************
+ * /config.json: GET = Cfg-Export, POST = Cfg-Import              *
+ * Symmetrisch zum HTML-Form-Handler (webserver_config) aber als  *
+ * JSON-Roundtrip nutzbar. Backup-/Restore-Workflow ohne externe  *
+ * Scripts, hilfreich nach SPIFFS-Wipe (z.B. ldscript-Wechsel).   *
+ *                                                                *
+ * GET-Output: alle Cfg-Felder per ConfigShape, Passwörter als    *
+ * leerer String maskiert. Roundtrip-tauglich.                    *
+ *                                                                *
+ * POST-Input: JSON-Doc, Felder aus ConfigShape übernommen falls  *
+ * vorhanden. Leer-Passwörter werden NICHT überschrieben (gleiche *
+ * Konvention wie HTML-Form). Nicht-vorhandene Keys bleiben       *
+ * unverändert. Triggert writeConfig() + sensor_restart().        *
+ *****************************************************************/
+static void webserver_config_json()
+{
+	if (!webserver_request_auth())
+	{
+		return;
+	}
+
+	if (server.method() == HTTP_GET)
+	{
+		debug_outln_info(F("ws: config.json GET ..."));
+		DynamicJsonDocument json(JSON_BUFFER_SIZE);
+		json[F("SOFTWARE_VERSION")] = SOFTWARE_VERSION;
+
+		for (unsigned e = 0; e < sizeof(configShape) / sizeof(configShape[0]); ++e)
+		{
+			ConfigShapeEntry c;
+			memcpy_P(&c, &configShape[e], sizeof(ConfigShapeEntry));
+			switch (c.cfg_type)
+			{
+			case Config_Type_Bool:
+				json[c.cfg_key()].set(*c.cfg_val.as_bool);
+				break;
+			case Config_Type_UInt:
+			case Config_Type_Time:
+				json[c.cfg_key()].set(*c.cfg_val.as_uint);
+				break;
+			case Config_Type_String:
+				json[c.cfg_key()].set(c.cfg_val.as_str);
+				break;
+			case Config_Type_Password:
+				// Passwörter aus Sicherheitsgründen nicht im Export ausliefern
+				json[c.cfg_key()].set("");
+				break;
+			}
+		}
+
+		String out;
+		out.reserve(measureJson(json) + 1);
+		serializeJson(json, out);
+		server.send(200, FPSTR(TXT_CONTENT_TYPE_JSON), out);
+		return;
+	}
+
+	if (server.method() == HTTP_POST)
+	{
+		debug_outln_info(F("ws: config.json POST ..."));
+		String body = server.arg(F("plain"));
+		if (body.length() == 0)
+		{
+			server.send(400, FPSTR(TXT_CONTENT_TYPE_JSON), F("{\"error\":\"empty body\"}"));
+			return;
+		}
+
+		DynamicJsonDocument json(JSON_BUFFER_SIZE);
+		DeserializationError err = deserializeJson(json, body);
+		if (err)
+		{
+			String resp;
+			resp.reserve(80);
+			resp = F("{\"error\":\"json parse: ");
+			resp += err.c_str();
+			resp += F("\"}");
+			server.send(400, FPSTR(TXT_CONTENT_TYPE_JSON), resp);
+			return;
+		}
+
+		unsigned applied = 0;
+		for (unsigned e = 0; e < sizeof(configShape) / sizeof(configShape[0]); ++e)
+		{
+			ConfigShapeEntry c;
+			memcpy_P(&c, &configShape[e], sizeof(ConfigShapeEntry));
+			JsonVariant v = json[c.cfg_key()];
+			if (v.isNull())
+			{
+				continue;
+			}
+
+			switch (c.cfg_type)
+			{
+			case Config_Type_UInt:
+			case Config_Type_Time:
+				*(c.cfg_val.as_uint) = v.as<unsigned int>();
+				++applied;
+				break;
+			case Config_Type_Bool:
+				*(c.cfg_val.as_bool) = v.as<bool>();
+				++applied;
+				break;
+			case Config_Type_String:
+				{
+					const char* s = v.as<const char*>();
+					if (s)
+					{
+						strncpy(c.cfg_val.as_str, s, c.cfg_len);
+						c.cfg_val.as_str[c.cfg_len] = '\0';
+						++applied;
+					}
+				}
+				break;
+			case Config_Type_Password:
+				{
+					const char* s = v.as<const char*>();
+					if (s && strlen(s))
+					{
+						strncpy(c.cfg_val.as_str, s, c.cfg_len);
+						c.cfg_val.as_str[c.cfg_len] = '\0';
+						++applied;
+					}
+					// leerer Password-String = bewahre vorhandenes (analog HTML-Form)
+				}
+				break;
+			}
+		}
+
+		writeConfig();
+		String resp;
+		resp.reserve(64);
+		resp = F("{\"status\":\"saved, restarting\",\"applied\":");
+		resp += applied;
+		resp += F("}");
+		server.send(200, FPSTR(TXT_CONTENT_TYPE_JSON), resp);
+		delay(500); // ensure response flushes before restart
+		sensor_restart();
+	}
+}
+
 static void webserver_config()
 {
 	if (!webserver_request_auth())
@@ -2739,6 +2879,7 @@ static void setup_webserver()
 {
 	server.on("/", webserver_root);
 	server.on(F("/config"), webserver_config);
+	server.on(F("/config.json"), webserver_config_json);
 	server.on(F("/wifi"), webserver_wifi);
 	server.on(F("/values"), webserver_values);
 	server.on(F("/status"), webserver_status);
