@@ -142,6 +142,7 @@ String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 #include "defines.h"
 #include "ext_def.h"
 #include "html-content.h"
+#include "./web/pages.h"
 
 /******************************************************************
  * The variables inside the cfg namespace are persistent          *
@@ -1437,7 +1438,7 @@ static float pressure_at_sealevel(const float temperature, const float pressure)
 /*****************************************************************
  * html helper functions                                         *
  *****************************************************************/
-static void start_html_page(String &page_content, const String &title)
+void start_html_page(String &page_content, const String &title)
 {
 	last_page_load = millis();
 
@@ -1465,7 +1466,7 @@ static void start_html_page(String &page_content, const String &title)
 	page_content += s;
 }
 
-static void end_html_page(String &page_content)
+void end_html_page(String &page_content)
 {
 	if (page_content.length())
 	{
@@ -1626,7 +1627,7 @@ static void add_age_last_values(String &s)
  *
  * -Provide BasicAuth for all page contexts except /values and images
  *****************************************************************/
-static bool webserver_request_auth()
+bool webserver_request_auth()
 {
 	if (cfg::www_basicauth_enabled && !wificonfig_loop)
 	{
@@ -1640,7 +1641,7 @@ static bool webserver_request_auth()
 	return true;
 }
 
-static void sendHttpRedirect() {
+void sendHttpRedirect() {
 	const IPAddress defaultIP(
 		default_ip_first_octet, 
 		default_ip_second_octet, 
@@ -2167,7 +2168,7 @@ static void webserver_config()
 	}
 }
 
-static void sensor_restart()
+void sensor_restart()
 {
 #if defined(ESP8266)
 	WiFi.disconnect();
@@ -2778,31 +2779,8 @@ static void webserver_removeConfig()
 }
 
 /*****************************************************************
- * Webserver reset NodeMCU                                       *
+ * Webserver reset: webserver_reset() moved to web/pages/reset.cpp (Issue #18)
  *****************************************************************/
-static void webserver_reset()
-{
-	if (!webserver_request_auth())
-	{
-		return;
-	}
-
-	String page_content;
-	page_content.reserve(512);
-
-	start_html_page(page_content, FPSTR(INTL_RESTART_SENSOR));
-	debug_outln_info(F("ws: reset ..."));
-
-	if (server.method() == HTTP_GET)
-	{
-		page_content += FPSTR(WEB_RESET_CONTENT);
-	}
-	else
-	{
-		sensor_restart();
-	}
-	end_html_page(page_content);
-}
 
 /*****************************************************************
  * Webserver data.json                                           *
