@@ -10,10 +10,13 @@
 
 #define INTL_LANG "LV"
 #define INTL_PM_SENSOR "Cieto daļiņu sensors"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfigurācija";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "Wi-Fi iestatījumi"
 #define INTL_WIFI_NETWORKS "Wifi tīklu ielāde ..."
 #define INTL_LANGUAGE "Valoda"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "Wi-Fi tīkls nav atrasts";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Atrastie tīkli:";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Uzlabotie iestatījumi (tikai tad, ja zināt, ko darāt)";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Autentifikācija";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Ziņot par problēmu"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi sensors konfigurācijas režīmā";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Tīkla nosaukums";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Vairāk iestatījumu";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Wifi informācijas rādīšana";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Parādīt informāciju par ierīci";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;līmenis";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Mērīšanas intervāls (s)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Ilgums maršrutētāja režīms";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Sensors tiek restartēts.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Ierīces restartēšana";
 const char INTL_DELETE_CONFIG[] PROGMEM = "dzēst saglabāto konfigurāciju";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Sensora restartēšana";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Sākums"
 #define INTL_BACK_TO_HOME "Atpakaļ uz sākumlapu"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Pašreizējie dati";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Ierīces statuss";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Aktīvo sensoru karte (ārējā saite)"
 #define INTL_CONFIGURATION_DELETE "Konfigurācijas dzēšana"
 #define INTL_CONFIGURATION_REALLY_DELETE "Vai esat pārliecināts, ka vēlaties izdzēst konfigurāciju?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Ierīces statuss";
 #define INTL_CANCEL "Atcelt"
 #define INTL_REALLY_RESTART_SENSOR "Vai esat pārliecināts, ka vēlaties restartēt sensoru?"
 #define INTL_RESTART "Restartējiet"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Konfigurācijas saglabāšana un restartēšana";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Programmatūras versija"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Iestatiet atkļūdošanas līmeni uz";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "izslēgts"
 #define INTL_ERROR "tikai kļūdas"
 #define INTL_WARNING "brīdinājumi"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Iestatiet atkļūdošanas līmeni 
 #define INTL_CONFIG_DELETED "Konfigurācija tika dzēsta"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfigurāciju nevar dzēst"
 #define INTL_CONFIG_NOT_FOUND "Konfigurācija nav atrasta"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Vēl {v} sekundes līdz pirmajam mērījumam.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekundes kopš pēdējā mērījuma.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "daļiņu litrs";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Augstums";
 const char INTL_TIME_UTC[] PROGMEM = "Laiks (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "signāla stiprums";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "signāla kvalitāte";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Mērījumu skaits"
 #define INTL_TIME_SENDING_MS "Laiks, kas pavadīts, augšupielādējot"
 #define INTL_SENSOR "Sensors"

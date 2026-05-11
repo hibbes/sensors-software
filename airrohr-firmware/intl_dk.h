@@ -10,10 +10,13 @@
 
 #define INTL_LANG "DK"
 #define INTL_PM_SENSOR "Partikelsensor"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Opsætning";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "Wi-Fi indstillinger"
 #define INTL_WIFI_NETWORKS "Leder efter Wi-Fi netværk..."
 #define INTL_LANGUAGE "Sprog"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "Ingen netværk fundet";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Netværker fundet: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Ændr følgende kun hvis du ved hvad du laver";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Aktiver BasicAuth";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Rapporter et problem"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "Wi-Fi sensor i opsætningsmode";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Sensorens Wi-Fi navn";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Avancerede indstillinger";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Vis WiFi-info";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Vis enhedsinfo";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Målinterval";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Permanent&nbsp;router-mode";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Sensor genstartes.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Genstart enhed";
 const char INTL_DELETE_CONFIG[] PROGMEM = "Slet Config.json";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Genstart sensor";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Oversigt"
 #define INTL_BACK_TO_HOME "Tilbage til oversigten"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktuelle målværdier";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Enhedsstatus";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Kort over aktive sensorer (ekstern link)"
 #define INTL_CONFIGURATION_DELETE "Slet opsætningen"
 #define INTL_CONFIGURATION_REALLY_DELETE "Skal opsætningen virkelig slettes?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Enhedsstatus";
 #define INTL_CANCEL "Afbryd"
 #define INTL_REALLY_RESTART_SENSOR "Config.json kunne ikke findes"
 #define INTL_RESTART "Genstart"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Gem og genstart";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug-indstillinger sat til";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "none"
 #define INTL_ERROR "error"
 #define INTL_WARNING "warning"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug-indstillinger sat til";
 #define INTL_CONFIG_DELETED "Config.json slettet"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Config.json kunne ikke slettes"
 #define INTL_CONFIG_NOT_FOUND "Config.json kunne ikke findes"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Der går {v} sekunder før den første måling.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekunder siden den seneste måling.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "Partikler/liter";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Højde";
 const char INTL_TIME_UTC[] PROGMEM = "Tid (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "Signal";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "Kvalitet";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Antal målinger"
 #define INTL_TIME_SENDING_MS "Tid brugt på afsendelse"
 #define INTL_SENSOR "Sensor"

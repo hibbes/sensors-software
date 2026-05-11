@@ -1,164 +1,106 @@
-extern const char TXT_CONTENT_TYPE_JSON[] PROGMEM = "application/json";
-extern const char TXT_CONTENT_TYPE_INFLUXDB[] PROGMEM = "application/x-www-form-urlencoded";
-extern const char TXT_CONTENT_TYPE_TEXT_HTML[] PROGMEM = "text/html; charset=utf-8";
-extern const char TXT_CONTENT_TYPE_TEXT_CSS[] PROGMEM = "text/css";
-extern const char TXT_CONTENT_TYPE_TEXT_PLAIN[] PROGMEM = "text/plain";
-extern const char TXT_CONTENT_TYPE_IMAGE_PNG[] PROGMEM = "image/png";
+/**
+ * PROGMEM declarations for static HTML/CSS/JS fragments and protocol strings.
+ *
+ * Issue #18 Phase B: split into header (decls) + cpp (defs) so any TU can include
+ * the header without causing multiple-definition errors at link time.
+ *
+ * Definitions live in html-content.cpp.
+ */
+#pragma once
 
-extern const char DBG_TXT_TEMPERATURE[] PROGMEM = "Temperature (°C): ";
-extern const char DBG_TXT_HUMIDITY[] PROGMEM = "Humidity (%): ";
-extern const char DBG_TXT_PRESSURE[] PROGMEM = "Pressure (hPa): ";
-extern const char DBG_TXT_CO2PPM[] PROGMEM = "CO₂ (ppm): ";
-extern const char DBG_TXT_START_READING[] PROGMEM = "R/ ";
-extern const char DBG_TXT_END_READING[] PROGMEM = "/R ";
-extern const char DBG_TXT_CHECKSUM_IS[] PROGMEM = "Checksum is: ";
-extern const char DBG_TXT_CHECKSUM_SHOULD[] PROGMEM = "Checksum should: ";
-extern const char DBG_TXT_DATA_READ_FAILED[] PROGMEM = "Data read failed";
-extern const char DBG_TXT_UPDATE[] PROGMEM = "[update] ";
-extern const char DBG_TXT_UPDATE_FAILED[] PROGMEM = "Update failed.";
-extern const char DBG_TXT_UPDATE_NO_UPDATE[] PROGMEM = "No update.";
-extern const char DBG_TXT_SENDING_TO[] PROGMEM = "## Sending to ";
-extern const char DBG_TXT_SDS011_VERSION_DATE[] PROGMEM = "SDS011 version date";
-extern const char DBG_TXT_NPM_VERSION_DATE[] PROGMEM = "Next PM version date";
-extern const char DBG_TXT_CONNECTING_TO[] PROGMEM = "Connecting to ";
-extern const char DBG_TXT_FOUND[] PROGMEM = " ... found";
-extern const char DBG_TXT_NOT_FOUND[] PROGMEM = " ... not found";
-extern const char DBG_TXT_SEP[] PROGMEM = "----";
-
-extern const char SENSORS_SDS011[] PROGMEM = "SDS011";
-extern const char SENSORS_PPD42NS[] PROGMEM = "PPD42NS";
-extern const char SENSORS_PMSx003[] PROGMEM = "PMSx003";
-extern const char SENSORS_HPM[] PROGMEM = "Honeywell PM";
-extern const char SENSORS_NPM[] PROGMEM = "Tera Sensor Next PM";
-extern const char SENSORS_IPS[] PROGMEM = "Piera Systems IPS-7100";
-extern const char SENSORS_SPS30[] PROGMEM = "Sensirion SPS30";
-extern const char SENSORS_DHT22[] PROGMEM = "DHT22";
-extern const char SENSORS_DS18B20[] PROGMEM = "DS18B20";
-extern const char SENSORS_HTU21D[] PROGMEM = "HTU21D";
-extern const char SENSORS_AHT20[] PROGMEM = "AHT20";
-extern const char SENSORS_SHT3X[] PROGMEM = "SHT3x";
-extern const char SENSORS_SCD30[] PROGMEM = "SCD30";
-extern const char SENSORS_BMP180[] PROGMEM = "BMP180";
-extern const char SENSORS_BME280[] PROGMEM = "BME280";
-extern const char SENSORS_BMP280[] PROGMEM = "BMP280";
-extern const char SENSORS_DNMS[] PROGMEM = "DNMS";
-
-extern const char WEB_PAGE_HEADER[] PROGMEM = "<!DOCTYPE html><html lang='" INTL_LANG "'>\
-<head>\
-<meta charset='utf-8'/>\
-<title>{t}</title>";
-
-extern const char WEB_PAGE_STATIC_CSS[] PROGMEM = "\
-body{font-family:Arial,sans-serif;margin:0}\
-.content{margin:10px}\
-.footer{height:48px;background:#f5f5f5;width:100%}\
-.r{text-align:right}\
-td{vertical-align:top}\
-.v>tbody>tr:nth-child(odd){background:#efefef}\
-.b{text-decoration:none;padding:10px;background:#2a9;color:#fff;display:block;width:auto;border-radius:5px;}\
-.wifi{background:0 0;color:#00f;padding:5px;display:inline;border:0;}\
-input[type=text]{width:100%}\
-input[type=password]{width:100%}\
-input[type=submit]{color:#fff;text-align:left;cursor:pointer;border-radius:5px;font-size:medium;background:#b33;padding:9px!important;width:100%;border-style:none}\
-input[type=submit]:hover{background:#d44}\
-.s_green{padding:9px !important;width:100%;border-style:none;background:#3ba;color:#fff;text-align:left}\
-.tabs{display:flex;flex-direction:row;align-items:stretch;align-content:flex-end;justify-content:flex-start}\
-.tab{padding:10px 20px;display:inline-block;color:#333}\
-.panels{min-height:200px;overflow:hidden;padding:20px;border:2px solid #3ba;margin-bottom:1em;}\
-.radio{display:none}.panel{display:none}\
-.canvas{min-height:118px;background:#3ba;margin-bottom:20px;}\
-#r4:checked~.panels>#panel4,#r1:checked~.panels>#panel1,#r3:checked~.panels>#panel3,#r2:checked~.panels>#panel2{display:block}\
-#r4:checked~.tabs>#tab4,#r1:checked~.tabs>#tab1,#r3:checked~.tabs>#tab3,#r2:checked~.tabs>#tab2{background:#3ba;color:#fff}";
+#include "./intl-decls.h"
 
 #define STATIC_PREFIX "/" INTL_LANG "_s1"
 
-extern const char WEB_PAGE_HEADER_HEAD[] PROGMEM = "<meta name='viewport' content='width=device-width'/>\
-<meta name='theme-color' content='#3ba'>\
-<link rel='stylesheet' href='" STATIC_PREFIX "?r=css'>\
-</style>\
-</head><body>\
-<div class='canvas'>\
-<a class='b' href='/' style='background:none;display:inline'>\
-<img src='" STATIC_PREFIX "?r=logo' alt='" INTL_BACK_TO_HOME "' style='float:left;margin:16px' width='100' height='89'/></a>";
-
-extern const char WEB_PAGE_HEADER_BODY[] PROGMEM = "<h3 style='margin:0 10px; color:#fff;'>" INTL_PM_SENSOR "</h3>\
-<br/><small style='color:#fff;font-weight:700'>ID: {id} ({macid})<br/>" INTL_FIRMWARE ": " SOFTWARE_VERSION_STR "/" INTL_LANG "&nbsp;(" __DATE__ ")<br/>\
-</small></div><div class='content'><h4>" INTL_HOME " {n} {t}</h4>";
-
-extern const char BR_TAG[] PROGMEM = "<br/>";
-extern const char WEB_DIV_PANEL[] PROGMEM = "</div><div class='panel' id='panel{v}'>";
-extern const char TABLE_TAG_OPEN[] PROGMEM = "<table>";
-extern const char TABLE_TAG_CLOSE_BR[] PROGMEM = "</table>";
-extern const char EMPTY_ROW[] PROGMEM = "<tr><td colspan='3'>&nbsp;</td></tr>";
-
-extern const char WEB_PAGE_FOOTER[] PROGMEM = "<br/><br/>"
-                "<a class='b' href='/' style='display:inline;'>" INTL_BACK_TO_HOME "</a><br/><br/><br/>"
-		"</div><footer class='footer'><div style='padding:16px'>"
-		"<a href='https://codefor.de/stuttgart/' target='_blank' rel='noreferrer' style='color:#3ba;'>"
-		"&copy; Open Knowledge Lab Stuttgart a.o. (Code for Germany)</a>&nbsp;&nbsp("
-                "<a href='https://github.com/opendata-stuttgart/sensors-software/labels/bug' target='_blank' rel='noreferrer'>" INTL_REPORT_ISSUE "</a>"
-		")<br/><small style='color:#888;'>Refactor: Makerspace Schiller-Gymnasium Offenburg</small></div></footer></body></html>\r\n";
-
-extern const char WEB_ROOT_PAGE_CONTENT[] PROGMEM = "<a class='b' href='/values'>{t}</a><br/>\
-<a class='b' href='/status'>{s}</a><br/>\
-<a class='b' href='https://maps.sensor.community/' target='_blank' rel='noreferrer'>" INTL_ACTIVE_SENSORS_MAP "</a><br/>\
-<a class='b' href='/config'>{conf}</a><br/>\
-<a class='b' href='/removeConfig'>" INTL_CONFIGURATION_DELETE "</a><br/>\
-<a class='b' href='/reset'>{restart}</a><br/>\
-<a class='b' href='/debug'>{debug}</a><br/>";
-
-extern const char WEB_CONFIG_SCRIPT[] PROGMEM = "<script>\
-function setSSID(ssid){document.getElementById('wlanssid').value=ssid.innerText||ssid.textContent;document.getElementById('wlanpwd').focus();}\
-function load_wifi_list(){var x=new XMLHttpRequest();x.open('GET','/wifi');x.onload = function(){if (x.status === 200) {document.getElementById('wifilist').innerHTML = x.responseText;}};x.send();}\
-</script>";
-
-extern const char WEB_REMOVE_CONFIG_CONTENT[] PROGMEM = "<h3>" INTL_CONFIGURATION_REALLY_DELETE "</h3>\
-<table><tr><td><form method='POST' action='/removeConfig'>\
-<input type='submit' class='s_red' name='submit' value='" INTL_DELETE "'/></form></td>\
-<td><a class='b' href='/'>" INTL_CANCEL "</a></td></tr></table>";
-
-extern const char WEB_RESET_CONTENT[] PROGMEM = "<h3>" INTL_REALLY_RESTART_SENSOR "</h3>" \
-"<table><tr><td><form method='POST' action'/reset'>" \
-"<input type='submit' class='s_red' name='submit' value='" INTL_RESTART "'/>"\
-"</form></td><td><a class='b' href='/'>" INTL_CANCEL "</a></td></tr></table>";
-
-extern const char WEB_IOS_REDIRECT[] PROGMEM = "<html><body>Redirecting...\
-<script type=\"text/javascript\">\
-window.location = \"http://192.168.4.1/config\";\
-</script>\
-</body></html>";
-
-extern const char WEB_B_BR_BR[] PROGMEM = "</b><br/><br/>";
-extern const char WEB_BRACE_BR[] PROGMEM = ")<br/>";
-extern const char WEB_B_BR[] PROGMEM = "</b><br/>";
-extern const char WEB_BR_BR[] PROGMEM = "<br/><br/>";
-extern const char WEB_BR_FORM[] PROGMEM = "<br/></form>";
-extern const char WEB_BR_LF_B[] PROGMEM = "<br/>\n<b>";
-extern const char WEB_LF_B[] PROGMEM = "\n<b>";
-extern const char WEB_CSV[] PROGMEM = "CSV";
-extern const char WEB_FEINSTAUB_APP[] PROGMEM = "<a target='_blank' href='https://chillibits.com/pmapp'>Feinstaub-App</a>";
-extern const char WEB_OPENSENSEMAP[] PROGMEM = "<a target='_blank' href='https://opensensemap.org/about'>OpenSenseMap.org</a>";
-extern const char WEB_AIRCMS[] PROGMEM = "<a target='_blank' href='https://aircms.online/#/mission'>aircms.online</a>";
-extern const char WEB_MADAVI[] PROGMEM = "<a target='_blank' href='https://www.madavi.de/ok-lab-stuttgart/'>Madavi.de</a>";
-extern const char WEB_SENSORCOMMUNITY[] PROGMEM = "<a target='_blank' href='https://archive.sensor.community/00disclamer.md'>Sensor.Community</a>";
-extern const char WEB_HTTPS[] PROGMEM = "HTTPS";
-extern const char WEB_NBSP_NBSP_BRACE[] PROGMEM = "&nbsp;&nbsp;(";
-extern const char WEB_REPLN_REPLV[] PROGMEM = "\"{n}\":\"{v}\",";
-extern const char WEB_PM1[] PROGMEM = "PM1";
-extern const char WEB_PM25[] PROGMEM = "PM2.5";
-extern const char WEB_PM10[] PROGMEM = "PM10";
-extern const char WEB_PM4[] PROGMEM = "PM4";
-extern const char WEB_PM01[] PROGMEM = "PM0.1";
-extern const char WEB_PM03[] PROGMEM = "PM0.3";
-extern const char WEB_PM05[] PROGMEM = "PM0.5";
-extern const char WEB_PM5[] PROGMEM = "PM5";
-extern const char WEB_NC0k1[] PROGMEM = "NC0.1";
-extern const char WEB_NC0k3[] PROGMEM = "NC0.3";
-extern const char WEB_NC0k5[] PROGMEM = "NC0.5";
-extern const char WEB_NC1k0[] PROGMEM = "NC1.0";
-extern const char WEB_NC2k5[] PROGMEM = "NC2.5";
-extern const char WEB_NC4k0[] PROGMEM = "NC4.0";
-extern const char WEB_NC5k0[] PROGMEM = "NC5.0";
-extern const char WEB_NC10[] PROGMEM = "NC10";
-extern const char WEB_TPS[] PROGMEM = "TPS";
-extern const char WEB_GPS[] PROGMEM = "GPS";
+extern const char TXT_CONTENT_TYPE_JSON[] PROGMEM;
+extern const char TXT_CONTENT_TYPE_INFLUXDB[] PROGMEM;
+extern const char TXT_CONTENT_TYPE_TEXT_HTML[] PROGMEM;
+extern const char TXT_CONTENT_TYPE_TEXT_CSS[] PROGMEM;
+extern const char TXT_CONTENT_TYPE_TEXT_PLAIN[] PROGMEM;
+extern const char TXT_CONTENT_TYPE_IMAGE_PNG[] PROGMEM;
+extern const char DBG_TXT_TEMPERATURE[] PROGMEM;
+extern const char DBG_TXT_HUMIDITY[] PROGMEM;
+extern const char DBG_TXT_PRESSURE[] PROGMEM;
+extern const char DBG_TXT_CO2PPM[] PROGMEM;
+extern const char DBG_TXT_START_READING[] PROGMEM;
+extern const char DBG_TXT_END_READING[] PROGMEM;
+extern const char DBG_TXT_CHECKSUM_IS[] PROGMEM;
+extern const char DBG_TXT_CHECKSUM_SHOULD[] PROGMEM;
+extern const char DBG_TXT_DATA_READ_FAILED[] PROGMEM;
+extern const char DBG_TXT_UPDATE[] PROGMEM;
+extern const char DBG_TXT_UPDATE_FAILED[] PROGMEM;
+extern const char DBG_TXT_UPDATE_NO_UPDATE[] PROGMEM;
+extern const char DBG_TXT_SENDING_TO[] PROGMEM;
+extern const char DBG_TXT_SDS011_VERSION_DATE[] PROGMEM;
+extern const char DBG_TXT_NPM_VERSION_DATE[] PROGMEM;
+extern const char DBG_TXT_CONNECTING_TO[] PROGMEM;
+extern const char DBG_TXT_FOUND[] PROGMEM;
+extern const char DBG_TXT_NOT_FOUND[] PROGMEM;
+extern const char DBG_TXT_SEP[] PROGMEM;
+extern const char SENSORS_SDS011[] PROGMEM;
+extern const char SENSORS_PPD42NS[] PROGMEM;
+extern const char SENSORS_PMSx003[] PROGMEM;
+extern const char SENSORS_HPM[] PROGMEM;
+extern const char SENSORS_NPM[] PROGMEM;
+extern const char SENSORS_IPS[] PROGMEM;
+extern const char SENSORS_SPS30[] PROGMEM;
+extern const char SENSORS_DHT22[] PROGMEM;
+extern const char SENSORS_DS18B20[] PROGMEM;
+extern const char SENSORS_HTU21D[] PROGMEM;
+extern const char SENSORS_AHT20[] PROGMEM;
+extern const char SENSORS_SHT3X[] PROGMEM;
+extern const char SENSORS_SCD30[] PROGMEM;
+extern const char SENSORS_BMP180[] PROGMEM;
+extern const char SENSORS_BME280[] PROGMEM;
+extern const char SENSORS_BMP280[] PROGMEM;
+extern const char SENSORS_DNMS[] PROGMEM;
+extern const char WEB_PAGE_HEADER[] PROGMEM;
+extern const char WEB_PAGE_STATIC_CSS[] PROGMEM;
+extern const size_t WEB_PAGE_STATIC_CSS_LEN;
+extern const char WEB_PAGE_HEADER_HEAD[] PROGMEM;
+extern const char WEB_PAGE_HEADER_BODY[] PROGMEM;
+extern const char BR_TAG[] PROGMEM;
+extern const char WEB_DIV_PANEL[] PROGMEM;
+extern const char TABLE_TAG_OPEN[] PROGMEM;
+extern const char TABLE_TAG_CLOSE_BR[] PROGMEM;
+extern const char EMPTY_ROW[] PROGMEM;
+extern const char WEB_PAGE_FOOTER[] PROGMEM;
+extern const char WEB_ROOT_PAGE_CONTENT[] PROGMEM;
+extern const char WEB_CONFIG_SCRIPT[] PROGMEM;
+extern const char WEB_REMOVE_CONFIG_CONTENT[] PROGMEM;
+extern const char WEB_RESET_CONTENT[] PROGMEM;
+extern const char WEB_IOS_REDIRECT[] PROGMEM;
+extern const char WEB_B_BR_BR[] PROGMEM;
+extern const char WEB_BRACE_BR[] PROGMEM;
+extern const char WEB_B_BR[] PROGMEM;
+extern const char WEB_BR_BR[] PROGMEM;
+extern const char WEB_BR_FORM[] PROGMEM;
+extern const char WEB_BR_LF_B[] PROGMEM;
+extern const char WEB_LF_B[] PROGMEM;
+extern const char WEB_CSV[] PROGMEM;
+extern const char WEB_FEINSTAUB_APP[] PROGMEM;
+extern const char WEB_OPENSENSEMAP[] PROGMEM;
+extern const char WEB_AIRCMS[] PROGMEM;
+extern const char WEB_MADAVI[] PROGMEM;
+extern const char WEB_SENSORCOMMUNITY[] PROGMEM;
+extern const char WEB_HTTPS[] PROGMEM;
+extern const char WEB_NBSP_NBSP_BRACE[] PROGMEM;
+extern const char WEB_REPLN_REPLV[] PROGMEM;
+extern const char WEB_PM1[] PROGMEM;
+extern const char WEB_PM25[] PROGMEM;
+extern const char WEB_PM10[] PROGMEM;
+extern const char WEB_PM4[] PROGMEM;
+extern const char WEB_PM01[] PROGMEM;
+extern const char WEB_PM03[] PROGMEM;
+extern const char WEB_PM05[] PROGMEM;
+extern const char WEB_PM5[] PROGMEM;
+extern const char WEB_NC0k1[] PROGMEM;
+extern const char WEB_NC0k3[] PROGMEM;
+extern const char WEB_NC0k5[] PROGMEM;
+extern const char WEB_NC1k0[] PROGMEM;
+extern const char WEB_NC2k5[] PROGMEM;
+extern const char WEB_NC4k0[] PROGMEM;
+extern const char WEB_NC5k0[] PROGMEM;
+extern const char WEB_NC10[] PROGMEM;
+extern const char WEB_TPS[] PROGMEM;
+extern const char WEB_GPS[] PROGMEM;

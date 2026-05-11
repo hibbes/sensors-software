@@ -1,5 +1,11 @@
+#pragma once
 #ifndef intl_h
 #define intl_h
+
+// All const-char INTL_* symbols visible as extern to every TU.
+// Variable definitions only emit in the TU that defines INTL_DEFINE_VARIABLES
+// (currently only airrohr-firmware.ino) — see intl-decls.h.
+#include "intl-decls.h"
 
 #if defined(INTL_BG)
 #include "intl_bg.h"

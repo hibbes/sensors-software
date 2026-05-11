@@ -10,10 +10,13 @@
 
 #define INTL_LANG "SK"
 #define INTL_PM_SENSOR "Senzor prachových častíc"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfigurácia";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "Nastavenie WiFi"
 #define INTL_WIFI_NETWORKS "Vyhľadávanie WiFi sieti..."
 #define INTL_LANGUAGE "Jazyk"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM = "Žiadne WiFi siete v dosahu.";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Dostupné siete: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Pokročilé nastavenia (iba ak viete, čo robíte)";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Prihlásenie (heslom)";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Report an issue"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi modul v konfiguračnom móde";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Názov siete";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Ďalšie nastavenia";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Zobraziť info o WiFi";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Zobraziť info o zariadení";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Ladenie&nbsp;úroveň";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Interval meraní (sec)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Trvanie router mod";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Senzor sa reštartuje";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Reštartovať zariadenie";
 const char INTL_DELETE_CONFIG[] PROGMEM = "Zmazať uloženú konfiguráciu";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Reštart senzoru";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Úvod"
 #define INTL_BACK_TO_HOME "Späť na úvodnú stránku"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktuálne hodnoty";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Stav zariadenia";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Mapa aktívnych senzorov (externý odkaz)"
 #define INTL_CONFIGURATION_DELETE "Zmazať konfiguráciu?"
 #define INTL_CONFIGURATION_REALLY_DELETE "Naozaj zmazať konfiguráciu?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Stav zariadenia";
 #define INTL_CANCEL "Zrušiť"
 #define INTL_REALLY_RESTART_SENSOR "Naozaj reštartovať senzor?"
 #define INTL_RESTART "Reštartovať"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Uložiť a reštartovať";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware verzia"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Ladenie nastavené na";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "žiadny"
 #define INTL_ERROR "chyba"
 #define INTL_WARNING "varovanie"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Ladenie nastavené na";
 #define INTL_CONFIG_DELETED "Konfigurácia zmazaná"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfigurácia nemohla byť zmazaná"
 #define INTL_CONFIG_NOT_FOUND "Konfigurácia nenájdená"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Zostáva {v} sekúnd do prvého merania.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekúnd od posledného merania.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "častíc/liter";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Nadm. výška";
 const char INTL_TIME_UTC[] PROGMEM = "Čas (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "sila signálu";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "kvalita signálu";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Počet meraní"
 #define INTL_TIME_SENDING_MS "Trvanie odosielania dát"
 #define INTL_SENSOR "Senzor"

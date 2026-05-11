@@ -10,10 +10,13 @@
 
 #define INTL_LANG "RO"
 #define INTL_PM_SENSOR "Senzor de particule în suspensie"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Configurație";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "Setări WiFi"
 #define INTL_WIFI_NETWORKS "Încărcare rețele wifi ..."
 #define INTL_LANGUAGE "Limba"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "Nu s-a găsit nicio rețea WiFi";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Rețele găsite:";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Setări avansate (numai dacă știți ce faceți)";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Autentificare";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Raportați o problemă"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "Senzorul WiFi în modul de configurare";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Numele rețelei";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Mai multe setări";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Afișarea informațiilor Wifi";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Afișarea informațiilor despre dispozitiv";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Interval de măsurare (sec)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Durata modului router";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Senzorul se repornește.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Reporniți dispozitivul";
 const char INTL_DELETE_CONFIG[] PROGMEM = "ștergerea configurației salvate";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Reporniți senzorul";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Acasă"
 #define INTL_BACK_TO_HOME "Înapoi la pagina principală"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Date curente";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Starea dispozitivului";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Harta senzorilor activi (link extern)"
 #define INTL_CONFIGURATION_DELETE "Ștergeți configurația"
 #define INTL_CONFIGURATION_REALLY_DELETE "Sunteți sigur că doriți să ștergeți configurația?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Starea dispozitivului";
 #define INTL_CANCEL "Anulează"
 #define INTL_REALLY_RESTART_SENSOR "Sunteți sigur că doriți să reporniți senzorul?"
 #define INTL_RESTART "Reporniți"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Salvați configurația și reporniți";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Versiunea Firmware"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Setați nivelul de depanare la";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "off"
 #define INTL_ERROR "numai erori"
 #define INTL_WARNING "avertismente"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Setați nivelul de depanare la";
 #define INTL_CONFIG_DELETED "Configurația a fost ștearsă"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Configurația nu poate fi ștearsă"
 #define INTL_CONFIG_NOT_FOUND "Configurația nu a fost găsită"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Încă {v} secunde până la prima măsurătoare.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " secunde de la ultima măsurare.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "particuleliter";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Altitudine";
 const char INTL_TIME_UTC[] PROGMEM = "Ora (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "puterea semnalului";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "calitatea semnalului";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Număr de măsurători"
 #define INTL_TIME_SENDING_MS "Timp petrecut la încărcare"
 #define INTL_SENSOR "Senzor"

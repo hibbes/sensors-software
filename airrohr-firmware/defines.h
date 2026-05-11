@@ -1,3 +1,7 @@
+#pragma once
+
+#define SOFTWARE_VERSION_STR "NRZ-2024-135"
+
 #if defined(ESP8266)
 #define SENSOR_BASENAME "esp8266-"
 #define OTA_BASENAME "/airrohr"
