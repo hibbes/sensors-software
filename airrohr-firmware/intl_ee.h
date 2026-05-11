@@ -10,10 +10,13 @@
 
 #define INTL_LANG "EE"
 #define INTL_PM_SENSOR "Tahkete osakeste sensor"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfiguratsioon";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi seaded"
 #define INTL_WIFI_NETWORKS "Wifi võrkude laadimine ..."
 #define INTL_LANGUAGE "Keel"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "WiFi võrku ei leitud";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Leitud võrgustikud:";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Täiustatud seaded (ainult siis, kui teate, mida teete)";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Autentimine";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Teatage probleemist"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi andur konfigureerimisrežiimis";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Võrgu nimi";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Rohkem seadistusi";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Wifi info kuvamine";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Seadme info kuvamine";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;tase";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Mõõtmisintervall (sek)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Kestus marsruuteri režiim";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Andur taaskäivitub.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Seadme taaskäivitamine";
 const char INTL_DELETE_CONFIG[] PROGMEM = "salvestatud konfiguratsiooni kustutamine";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Anduri taaskäivitamine";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Kodu"
 #define INTL_BACK_TO_HOME "Tagasi avalehele"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Praegused andmed";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Seadme olek";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Aktiivsete andurite kaart (väline link)"
 #define INTL_CONFIGURATION_DELETE "Konfiguratsiooni kustutamine"
 #define INTL_CONFIGURATION_REALLY_DELETE "Kas olete kindel, et soovite konfiguratsiooni kustutada?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Seadme olek";
 #define INTL_CANCEL "Tühista"
 #define INTL_REALLY_RESTART_SENSOR "Kas olete kindel, et soovite anduri uuesti käivitada?"
 #define INTL_RESTART "Restart"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Konfigureerimise salvestamine ja taaskäivitamine";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Püsivara versioon"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Seadistage silumise tase";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "välja"
 #define INTL_ERROR "ainult vead"
 #define INTL_WARNING "hoiatused"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Seadistage silumise tase";
 #define INTL_CONFIG_DELETED "Konfiguratsioon kustutati"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfiguratsiooni ei saa kustutada"
 #define INTL_CONFIG_NOT_FOUND "Konfiguratsiooni ei leitud"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Ikka {v} sekundit kuni esimese mõõtmiseni.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekundit alates viimasest mõõtmisest.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "particlesliter";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Kõrgus";
 const char INTL_TIME_UTC[] PROGMEM = "Kellaaeg (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "signaali tugevus";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "signaali kvaliteet";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Mõõtmiste arv"
 #define INTL_TIME_SENDING_MS "Üleslaadimisele kuluv aeg"
 #define INTL_SENSOR "Andur"

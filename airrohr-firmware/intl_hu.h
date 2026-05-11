@@ -10,10 +10,13 @@
 
 #define INTL_LANG "HU"
 #define INTL_PM_SENSOR "Szálló por szenzor"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfiguráció";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi beállítások"
 #define INTL_WIFI_NETWORKS "WiFi hálózatok keresése..."
 #define INTL_LANGUAGE "Nyelv"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "Nem találtam WiFi hálózatot";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Talált WiFi hálózatok:";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Haladó beállítások (csak, ha tudod mit csinálsz)";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Azonosítás";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Jelents egy hibát"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi Szenzor konfigurációs módban";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Név";
 const char INTL_MORE_SETTINGS[] PROGMEM ="További beállítások";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Wifi adatok megjelenítése";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Eszközadatok megjelenítése";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;Level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Mérési intervallum";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Hotspot mód időtartama";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "A Szenzor újraindul...";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Eszköz újraindítása";
 const char INTL_DELETE_CONFIG[] PROGMEM = "A mentett beállítások törlése";
 const char INTL_RESTART_SENSOR[] PROGMEM = "A szenzor újraindítása";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Főoldal"
 #define INTL_BACK_TO_HOME "Vissza a főoldalra"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktuális adatok";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Eszköz státusz";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Aktív szenzorok térképe (külső link)"
 #define INTL_CONFIGURATION_DELETE "Beállítások törlése"
 #define INTL_CONFIGURATION_REALLY_DELETE "Biztosan törölni akarod a beállításokat?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Eszköz státusz";
 #define INTL_CANCEL "Mégse"
 #define INTL_REALLY_RESTART_SENSOR "Biztosan újraindítod a szenzort?"
 #define INTL_RESTART "Újraindítás"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Mentés és újraindítás";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware verzió"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug beállítás ";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "kikapcsolva"
 #define INTL_ERROR "csak hibajelzések"
 #define INTL_WARNING "minden figyelmeztetés"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug beállítás ";
 #define INTL_CONFIG_DELETED "Beállítások törölve"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "A beállítások törlése sikertelen."
 #define INTL_CONFIG_NOT_FOUND "Beállítások nem találhatóak"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Még {v} másodperc van hátra az első mérésig.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " másodperc telt el az utolsó mérés óta.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "részecske/liter";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Tengerszint feletti magasság";
 const char INTL_TIME_UTC[] PROGMEM = "Idő";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "Jelerősség";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "Jelminőség";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Mérések száma:"
 #define INTL_TIME_SENDING_MS "Feltöltéssel töltött idő:"
 #define INTL_SENSOR "Szenzor"

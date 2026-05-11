@@ -10,10 +10,13 @@
 
 #define INTL_LANG "SE"
 #define INTL_PM_SENSOR "Partikelsensor"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Inställningar";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WLAN konfiguration"
 #define INTL_WIFI_NETWORKS "Laddar trådlösa nätverk..."
 #define INTL_LANGUAGE "Språk"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "Inga nätverk hittades";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Nätverk hittades: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Ändra nedanför enbart om du verkligen vet vad du gör";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "Höjd över havet";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "Lufttryck vid havsytan";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Aktivera BasicAuth";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Rapportera ett problem"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi-sensor i konfigurationsläge";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Sensorns WLAN namn";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Avancerade inställningar";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Visa WiFi-information";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Visa enhetsinfo";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "Konfiguration av statisk IP -adress (alla fält måste fyllas i)"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "Statisk ip";
 const char INTL_STATIC_SUBNET[] PROGMEM = "Statisk delnät";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "Statisk gateway";
 const char INTL_STATIC_DNS[] PROGMEM = "Statisk DNS";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Mätintervall";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Permanent&nbsp;router-modus";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Sensor startas om.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Starta om enhet";
 const char INTL_DELETE_CONFIG[] PROGMEM = "Ta bort Config.json";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Starta om sensor";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Översikt"
 #define INTL_BACK_TO_HOME "Tillbaka till översikten"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktuella mätvärden";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Enhetsstatus";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Karta över aktiva sensorer (extern länk)"
 #define INTL_CONFIGURATION_DELETE "Ta bort konfiguration"
 #define INTL_CONFIGURATION_REALLY_DELETE "Ska konfigurationen tas bort?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Enhetsstatus";
 #define INTL_CANCEL "Avbryt"
 #define INTL_REALLY_RESTART_SENSOR "Config.json kunde inte hittas"
 #define INTL_RESTART "Starta om"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Spara och starta om";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Ställa in debug-läge";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "none"
 #define INTL_ERROR "error"
 #define INTL_WARNING "warning"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Ställa in debug-läge";
 #define INTL_CONFIG_DELETED "Config.json borttagen"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Config.json kunde inte tas bort"
 #define INTL_CONFIG_NOT_FOUND "Config.json kunde inte hittas"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Det är {v} sekunder kvar till första mätningen.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekunder sedan den senaste mätningen.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "Partiklar/liter";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Altitud";
 const char INTL_TIME_UTC[] PROGMEM = "Tid (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "Signal";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "Kvalitet";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Antal mätningar"
 #define INTL_TIME_SENDING_MS "Tid som skickas i att skicka"
 #define INTL_SENSOR "Sensor"

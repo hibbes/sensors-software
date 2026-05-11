@@ -1,10 +1,10 @@
 /**
  * Shared declarations for web page modules (Issue #18 Phase B).
  *
- * Page-Module (web/pages/*.cpp) ziehen aus diesem Header die Forward-Decls für
- * die Helper-Funktionen + extern-Decls für Globals, die alle Pages brauchen.
- * Die Definitionen leben weiterhin in airrohr-firmware.ino — der Header
- * deklariert nur, was über Translation-Unit-Grenzen sichtbar sein muss.
+ * Page-Module (web/pages/*.cpp) ziehen aus diesem Header die Forward-Decls
+ * für Helpers + extern-Decls für Globals, die alle Pages brauchen.
+ * Definitionen leben weiterhin in airrohr-firmware.ino. Auch von der .ino
+ * inkludiert, damit struct_wifiInfo nur an einer Stelle definiert ist.
  */
 #pragma once
 
@@ -14,6 +14,11 @@
 #elif defined(ESP32)
 #include <WebServer.h>
 #endif
+
+#include "../defines.h"
+#include "../utils.h"
+#include "../html-content.h"
+#include "../intl.h"
 
 #if defined(ESP8266)
 extern ESP8266WebServer server;
@@ -26,17 +31,28 @@ extern String esp_chipid;
 extern String esp_mac_id;
 extern unsigned long last_page_load;
 
-extern bool webserver_request_auth();
-extern void sendHttpRedirect();
-extern void start_html_page(String &page_content, const String &title);
-extern void end_html_page(String &page_content);
-extern void sensor_restart();
+namespace cfg
+{
+	extern unsigned debug;
+}
 
-extern const char WEB_PAGE_HEADER[] PROGMEM;
-extern const char WEB_PAGE_HEADER_HEAD[] PROGMEM;
-extern const char WEB_PAGE_HEADER_BODY[] PROGMEM;
-extern const char WEB_PAGE_FOOTER[] PROGMEM;
-extern const char WEB_RESET_CONTENT[] PROGMEM;
-extern const char WEB_REMOVE_CONFIG_CONTENT[] PROGMEM;
-extern const char WEB_ROOT_PAGE_CONTENT[] PROGMEM;
-extern const char TXT_CONTENT_TYPE_TEXT_HTML[] PROGMEM;
+struct struct_wifiInfo
+{
+	char ssid[LEN_WLANSSID];
+	uint8_t encryptionType;
+	int32_t RSSI;
+	int32_t channel;
+#if defined(ESP8266)
+	bool isHidden;
+	uint8_t unused[3];
+#endif
+};
+
+extern struct struct_wifiInfo *wifiInfo;
+extern uint8_t count_wifiInfo;
+
+bool webserver_request_auth();
+void sendHttpRedirect();
+void start_html_page(String &page_content, const String &title);
+void end_html_page(String &page_content);
+void sensor_restart();

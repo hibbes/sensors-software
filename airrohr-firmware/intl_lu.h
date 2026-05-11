@@ -10,10 +10,13 @@
 
 #define INTL_LANG "LU"
 #define INTL_PM_SENSOR "Reng Stëbspartikelensensor"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfiguratioun";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi Daten"
 #define INTL_WIFI_NETWORKS "WiFi Netzwierker lueden ..."
 #define INTL_LANGUAGE "Sprooch"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "Keng Netzwierker fonnt";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Netzwierker fonnt: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Ab hei nëmmen änneren, wann der wësst wat dir maacht";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "BasicAuth aktivéieren";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "E Feeler melden"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi Sensor Numm am Konfiguratiounsmodus";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Numm";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Méi Astellungen";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "WiFi Info uweisen";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Apparat Info uweisen";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;Niveau";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Mooss-intervall";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Zait&nbsp;Routermodus";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "De Sensor gëtt neigestart.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Apparat nei starten";
 const char INTL_DELETE_CONFIG[] PROGMEM = "Config.json läschen";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Sensor nei starten";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Iwwersiicht"
 #define INTL_BACK_TO_HOME "Zréck op d'Haaptsäit"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktuell Wäerter";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Apparat Status";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Kaart vun den aktive Sensoren (externen Link)"
 #define INTL_CONFIGURATION_DELETE "Konfiguratioun läschen"
 #define INTL_CONFIGURATION_REALLY_DELETE "Konfiguratioun wierklech läschen?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Apparat Status";
 #define INTL_CANCEL "Ofbriechen"
 #define INTL_REALLY_RESTART_SENSOR "Sensor wierklech nei starten?"
 #define INTL_RESTART "Nei starten"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Späicheren a nei starten";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug setzen op";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "keng"
 #define INTL_ERROR "fehler"
 #define INTL_WARNING "warnung"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug setzen op";
 #define INTL_CONFIG_DELETED "Config.json geläscht"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Config.json konnt net geläscht ginn"
 #define INTL_CONFIG_NOT_FOUND "Config.json net fonnt"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Nach {v} Sekonnen bis zur éischter Miessung.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " Sekonnen zanter der leschter Miessung.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "Partikel/Liter";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Héicht";
 const char INTL_TIME_UTC[] PROGMEM = "Zäit (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "Signal";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "Qualitéit";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Zuel vu Mesuren"
 #define INTL_TIME_SENDING_MS "Dauer vu Mesureniwerdroung"
 #define INTL_SENSOR "Sensor"

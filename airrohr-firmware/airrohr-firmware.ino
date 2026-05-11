@@ -57,9 +57,8 @@
 #include <WString.h>
 #include <pgmspace.h>
 
-// increment on change
-#define SOFTWARE_VERSION_STR "NRZ-2024-135"
-String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
+// SOFTWARE_VERSION_STR moved to defines.h so html-content.cpp can see it (Issue #18)
+// String SOFTWARE_VERSION moved below includes
 
 /*****************************************************************
  * Includes                                                      *
@@ -136,13 +135,17 @@ String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 #include "./sps30_i2c.h"
 #include "./dnms_i2c.h"
 
+#define INTL_DEFINE_VARIABLES
 #include "./intl.h"
 
 #include "./utils.h"
 #include "defines.h"
 #include "ext_def.h"
 #include "html-content.h"
+#include "./web/page_helpers.h"
 #include "./web/pages.h"
+
+String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 
 /******************************************************************
  * The variables inside the cfg namespace are persistent          *
@@ -700,18 +703,7 @@ unsigned long count_sends = 0;
 unsigned long last_display_millis = 0;
 uint8_t next_display_count = 0;
 
-struct struct_wifiInfo
-{
-	char ssid[LEN_WLANSSID];
-	uint8_t encryptionType;
-	int32_t RSSI;
-	int32_t channel;
-#if defined(ESP8266)
-	bool isHidden;
-	uint8_t unused[3];
-#endif
-};
-
+// struct struct_wifiInfo moved to web/page_helpers.h (Issue #18)
 struct struct_wifiInfo *wifiInfo;
 uint8_t count_wifiInfo;
 
@@ -1654,36 +1646,6 @@ void sendHttpRedirect() {
 	server.send(302, FPSTR(TXT_CONTENT_TYPE_TEXT_HTML), emptyString);
 }
 
-/*****************************************************************
- * Webserver root: show all options                              *
- *****************************************************************/
-static void webserver_root()
-{
-	if (WiFi.status() != WL_CONNECTED)
-	{
-		sendHttpRedirect();
-	}
-	else
-	{
-		if (!webserver_request_auth())
-		{
-			return;
-		}
-
-		RESERVE_STRING(page_content, XLARGE_STR);
-		start_html_page(page_content, emptyString);
-		debug_outln_info(F("ws: root ..."));
-
-		// Enable Pagination
-		page_content += FPSTR(WEB_ROOT_PAGE_CONTENT);
-		page_content.replace(F("{t}"), FPSTR(INTL_CURRENT_DATA));
-		page_content.replace(F("{s}"), FPSTR(INTL_DEVICE_STATUS));
-		page_content.replace(F("{conf}"), FPSTR(INTL_CONFIGURATION));
-		page_content.replace(F("{restart}"), FPSTR(INTL_RESTART_SENSOR));
-		page_content.replace(F("{debug}"), FPSTR(INTL_DEBUG_LEVEL));
-		end_html_page(page_content);
-	}
-}
 
 /*****************************************************************
  * Webserver config: show config page                            *
@@ -2201,84 +2163,6 @@ void sensor_restart()
 	}
 }
 
-/*****************************************************************
- * Webserver wifi: show available wifi networks                  *
- *****************************************************************/
-static void webserver_wifi()
-{
-	String page_content;
-
-	debug_outln_info(F("wifi networks found: "), String(count_wifiInfo));
-	if (count_wifiInfo == 0)
-	{
-		page_content += FPSTR(BR_TAG);
-		page_content += FPSTR(INTL_NO_NETWORKS);
-		page_content += FPSTR(BR_TAG);
-	}
-	else
-	{
-		std::unique_ptr<int[]> indices(new int[count_wifiInfo]);
-		debug_outln_info(F("ws: wifi ..."));
-		for (unsigned i = 0; i < count_wifiInfo; ++i)
-		{
-			indices[i] = i;
-		}
-		for (unsigned i = 0; i < count_wifiInfo; i++)
-		{
-			for (unsigned j = i + 1; j < count_wifiInfo; j++)
-			{
-				if (wifiInfo[indices[j]].RSSI > wifiInfo[indices[i]].RSSI)
-				{
-					std::swap(indices[i], indices[j]);
-				}
-			}
-		}
-		int duplicateSsids = 0;
-		for (int i = 0; i < count_wifiInfo; i++)
-		{
-			if (indices[i] == -1)
-			{
-				continue;
-			}
-			for (int j = i + 1; j < count_wifiInfo; j++)
-			{
-				if (strncmp(wifiInfo[indices[i]].ssid, wifiInfo[indices[j]].ssid, sizeof(wifiInfo[0].ssid)) == 0)
-				{
-					indices[j] = -1; // set dup aps to index -1
-					++duplicateSsids;
-				}
-			}
-		}
-
-		page_content += FPSTR(INTL_NETWORKS_FOUND);
-		page_content += String(count_wifiInfo - duplicateSsids);
-		page_content += FPSTR(BR_TAG);
-		page_content += FPSTR(BR_TAG);
-		page_content += FPSTR(TABLE_TAG_OPEN);
-		//if (n > 30) n=30;
-		for (int i = 0; i < count_wifiInfo; ++i)
-		{
-			if (indices[i] == -1
-#if defined(ESP8266)
-				|| wifiInfo[indices[i]].isHidden
-#endif
-			)
-			{
-				continue;
-			}
-			// Print SSID and RSSI for each network found
-#if defined(ESP8266)
-			page_content += wlan_ssid_to_table_row(wifiInfo[indices[i]].ssid, ((wifiInfo[indices[i]].encryptionType == ENC_TYPE_NONE) ? " " : u8"🔒"), wifiInfo[indices[i]].RSSI);
-#endif
-#if defined(ESP32)
-			page_content += wlan_ssid_to_table_row(wifiInfo[indices[i]].ssid, ((wifiInfo[indices[i]].encryptionType == WIFI_AUTH_OPEN) ? " " : u8"🔒"), wifiInfo[indices[i]].RSSI);
-#endif
-		}
-		page_content += FPSTR(TABLE_TAG_CLOSE_BR);
-		page_content += FPSTR(BR_TAG);
-	}
-	server.send(200, FPSTR(TXT_CONTENT_TYPE_TEXT_HTML), page_content);
-}
 
 /*****************************************************************
  * Webserver root: show latest values                            *
@@ -2657,126 +2541,7 @@ static void webserver_serial()
 	server.send(s.length() ? 200 : 204, FPSTR(TXT_CONTENT_TYPE_TEXT_PLAIN), s);
 }
 
-/*****************************************************************
- * Webserver set debug level                                     *
- *****************************************************************/
-static void webserver_debug_level()
-{
-	if (!webserver_request_auth())
-	{
-		return;
-	}
 
-	RESERVE_STRING(page_content, LARGE_STR);
-	start_html_page(page_content, FPSTR(INTL_DEBUG_LEVEL));
-
-	if (server.hasArg("lvl"))
-	{
-		debug_outln_info(F("ws: debug level ..."));
-
-		const int lvl = server.arg("lvl").toInt();
-		if (lvl >= 0 && lvl <= 5)
-		{
-			cfg::debug = lvl;
-			page_content += F("<h3>");
-			page_content += FPSTR(INTL_DEBUG_SETTING_TO);
-			page_content += ' ';
-
-			const __FlashStringHelper *lvlText;
-			switch (lvl)
-			{
-			case DEBUG_ERROR:
-				lvlText = F(INTL_ERROR);
-				break;
-			case DEBUG_WARNING:
-				lvlText = F(INTL_WARNING);
-				break;
-			case DEBUG_MIN_INFO:
-				lvlText = F(INTL_MIN_INFO);
-				break;
-			case DEBUG_MED_INFO:
-				lvlText = F(INTL_MED_INFO);
-				break;
-			case DEBUG_MAX_INFO:
-				lvlText = F(INTL_MAX_INFO);
-				break;
-			default:
-				lvlText = F(INTL_NONE);
-			}
-
-			page_content += lvlText;
-			page_content += F(".</h3>");
-		}
-	}
-
-	page_content += F("<br/><pre id='slog' class='panels'>");
-	page_content += Debug.popLines();
-	page_content += F("</pre>");
-	page_content += F("<script>"
-					  "function slog_update() {"
-					  "fetch('/serial').then(r => r.text()).then((r) => {"
-					  "document.getElementById('slog').innerText += r;}).catch(err => console.log(err));};"
-					  "setInterval(slog_update, 3000);"
-					  "</script>");
-	page_content += F("<h4>");
-	page_content += FPSTR(INTL_DEBUG_SETTING_TO);
-	page_content += F("</h4>"
-					  "<table style='width:100%;'>"
-					  "<tr><td style='width:25%;'><a class='b' href='/debug?lvl=0'>" INTL_NONE "</a></td>"
-					  "<td style='width:25%;'><a class='b' href='/debug?lvl=1'>" INTL_ERROR "</a></td>"
-					  "<td style='width:25%;'><a class='b' href='/debug?lvl=3'>" INTL_MIN_INFO "</a></td>"
-					  "<td style='width:25%;'><a class='b' href='/debug?lvl=5'>" INTL_MAX_INFO "</a></td>"
-					  "</tr><tr>"
-					  "</tr>"
-					  "</table>");
-
-	end_html_page(page_content);
-}
-
-/*****************************************************************
- * Webserver remove config                                       *
- *****************************************************************/
-static void webserver_removeConfig()
-{
-	if (!webserver_request_auth())
-	{
-		return;
-	}
-
-	RESERVE_STRING(page_content, LARGE_STR);
-	start_html_page(page_content, FPSTR(INTL_DELETE_CONFIG));
-	debug_outln_info(F("ws: removeConfig ..."));
-
-	if (server.method() == HTTP_GET)
-	{
-		page_content += FPSTR(WEB_REMOVE_CONFIG_CONTENT);
-	}
-	else
-	{
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-		// Silently remove the desaster backup
-		SPIFFS.remove(F("/config.json.old"));
-		if (SPIFFS.exists(F("/config.json")))
-		{ //file exists
-			debug_outln_info(F("removing config.json..."));
-			if (SPIFFS.remove(F("/config.json")))
-			{
-				page_content += F("<h3>" INTL_CONFIG_DELETED ".</h3>");
-			}
-			else
-			{
-				page_content += F("<h3>" INTL_CONFIG_CAN_NOT_BE_DELETED ".</h3>");
-			}
-		}
-		else
-		{
-			page_content += F("<h3>" INTL_CONFIG_NOT_FOUND ".</h3>");
-		}
-#pragma GCC diagnostic pop
-	}
-	end_html_page(page_content);
-}
 
 /*****************************************************************
  * Webserver reset: webserver_reset() moved to web/pages/reset.cpp (Issue #18)
@@ -2885,7 +2650,7 @@ static void webserver_static()
 	else if (server.arg(String('r')) == F("css"))
 	{
 		server.send_P(200, TXT_CONTENT_TYPE_TEXT_CSS,
-					  WEB_PAGE_STATIC_CSS, sizeof(WEB_PAGE_STATIC_CSS) - 1);
+					  WEB_PAGE_STATIC_CSS, WEB_PAGE_STATIC_CSS_LEN);
 	}
 	else
 	{

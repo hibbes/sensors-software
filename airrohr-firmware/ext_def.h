@@ -1,3 +1,4 @@
+#pragma once
 // Language config
 #define CURRENT_LANG INTL_LANG
 

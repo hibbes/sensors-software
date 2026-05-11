@@ -10,10 +10,13 @@
 
 #define INTL_LANG "HR"
 #define INTL_PM_SENSOR "Senzor čestica"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfiguracija";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi postavke"
 #define INTL_WIFI_NETWORKS "Učitavanje wifi mreža ..."
 #define INTL_LANGUAGE "Jezik"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "WiFi mreža nije pronađena";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Pronađene mreže: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Napredne postavke";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "Iznad razine mora (m)";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "tlak na razini mora";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Pristupni podaci";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Prijavite problem"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi mreža kod instalacije";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Naziv mreže";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Dodatne postavke";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Prikaz WiFi informacija";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Prikaz informacija o uređaju";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "Konfiguracija statičke IP adrese (sva polja moraju biti ispunjena)"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "IP adresa";
 const char INTL_STATIC_SUBNET[] PROGMEM = "Subnet";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "Gateway";
 const char INTL_STATIC_DNS[] PROGMEM = "DNS server";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Interval mjerenja (s)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Trajanje router načina rada";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Senzor se ponovno pokreće.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Ponovno pokretanje uređaja";
 const char INTL_DELETE_CONFIG[] PROGMEM = "Izbriši konfiguraciju";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Ponovno pokretanje senzora";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Početna"
 #define INTL_BACK_TO_HOME "Povratak na početnu stranicu"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktualni podaci";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Status uređaja";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Karta aktivnih senzora (vanjska poveznica)"
 #define INTL_CONFIGURATION_DELETE "Izbriši konfiguraciju"
 #define INTL_CONFIGURATION_REALLY_DELETE "Jeste li sigurni da želite izbrisati konfiguraciju?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Status uređaja";
 #define INTL_CANCEL "Odustani"
 #define INTL_REALLY_RESTART_SENSOR "Jeste li sigurni da želite ponovno pokrenuti senzor?"
 #define INTL_RESTART "Ponovno pokretanje"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Spremi izmjene i ponovno pokreni";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmver"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Postavite razinu analize grešaka na";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "isključeno"
 #define INTL_ERROR "greške"
 #define INTL_WARNING "upozorenja"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Postavite razinu analize grešaka 
 #define INTL_CONFIG_DELETED "Konfiguracija je izbrisana"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfiguracija se ne može izbrisati"
 #define INTL_CONFIG_NOT_FOUND "Konfiguracija nije pronađena"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Još {v} sekundi do prvog mjerenja.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekundi od zadnjeg mjerenja.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "čestica po litri";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Nadmorska visina";
 const char INTL_TIME_UTC[] PROGMEM = "Vrijeme (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "jačina signala";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "kvaliteta signala";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Broj mjerenja"
 #define INTL_TIME_SENDING_MS "Vrijeme utrošeno na slanje podataka"
 #define INTL_SENSOR "Senzor"

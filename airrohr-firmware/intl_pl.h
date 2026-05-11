@@ -10,10 +10,13 @@
 
 #define INTL_LANG "PL"
 #define INTL_PM_SENSOR "Czujnik pyłu zawieszonego"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfiguracja";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "Ustawienia WiFi"
 #define INTL_WIFI_NETWORKS "Ładowanie sieci WiFi..."
 #define INTL_LANGUAGE "Język"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "Nie znaleziono sieci WiFi";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Znalezione sieci: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Ustawienia zaawansowane (tylko gdy wiesz co robisz)";
@@ -43,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "Wysokość m n.p.m.";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "Ciśnienie zredukowane";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Autoryzacja";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Zgłoś problem"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "Parametry WiFi w trybie konfiguracji czujnika";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Nazwa sieci";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Więcej ustawień";
@@ -59,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Wyświetl info o WiFi";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Wyświetl info o urządzeniu";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT "Ustawienie statycznego adresu IP (wszystkie pola wypełnić)"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "Adres IP";
 const char INTL_STATIC_SUBNET[] PROGMEM = "Maska";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "Brama";
 const char INTL_STATIC_DNS[] PROGMEM = "Statyczny DNS";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Poziom&nbsp;debugowania";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Czas między pomiarami (sek.)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Czas trwania w trybie routera (sek.)";
@@ -84,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Ponowne uruchamianie czujnika."
 const char INTL_RESTART_DEVICE[] PROGMEM = "Uruchom ponownie urządzenie";
 const char INTL_DELETE_CONFIG[] PROGMEM = "Usuń zapisaną konfigurację";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Uruchom ponownie czujnik";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Strona startowa"
 #define INTL_BACK_TO_HOME "Powrót do strony startowej"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Obecne wskazania";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Stan urządzenia";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Mapa aktywnych czujników (link zewnętrzny)"
 #define INTL_CONFIGURATION_DELETE "Usunięcie konfiguracji"
 #define INTL_CONFIGURATION_REALLY_DELETE "Czy na pewno chcesz usunąć konfigurację?"
@@ -95,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Stan urządzenia";
 #define INTL_CANCEL "Anuluj"
 #define INTL_REALLY_RESTART_SENSOR "Czy na pewno chcesz uruchomić czujnik ponownie?"
 #define INTL_RESTART "Uruchom ponownie"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Zapisz i zrestartuj";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Wersja firmware"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Ustawiono poziom debugowania na ";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "Brak"
 #define INTL_ERROR "Błędy"
 #define INTL_WARNING "Ostrzeżenia"
@@ -107,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Ustawiono poziom debugowania na ";
 #define INTL_CONFIG_DELETED "Usunięto konfigurację"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfiguracja nie może zostać usunięta"
 #define INTL_CONFIG_NOT_FOUND "Nie znaleziono konfiguracji"
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Pozostało {v} sekund do pierwszego pomiaru.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekund od ostatniego pomiaru.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "cząsteczek/litr";
@@ -125,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Wysokość";
 const char INTL_TIME_UTC[] PROGMEM = "Czas (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "Siła sygnału";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "Jakość sygnału";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Liczba pomiarów"
 #define INTL_TIME_SENDING_MS "Czas spędzony na wysyłce"
 #define INTL_SENSOR "Czujnik"
