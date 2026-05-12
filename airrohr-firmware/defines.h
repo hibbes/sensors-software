@@ -1,6 +1,7 @@
 #pragma once
 
 #define SOFTWARE_VERSION_STR "NRZ-2024-135"
+#define JSON_BUFFER_SIZE 2800
 
 #if defined(ESP8266)
 #define SENSOR_BASENAME "esp8266-"
