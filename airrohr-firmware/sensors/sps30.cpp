@@ -105,3 +105,8 @@ void render_sps30_values(String &page_content)
 							 check_display_value(last_value_SPS30_TS, -1, 1, 0), "µm");
 	page_content += FPSTR(EMPTY_ROW);
 }
+
+void render_sps30_status_error(String &page_content)
+{
+	add_table_row_from_value(page_content, FPSTR(SENSORS_SPS30), String(SPS30_read_error_counter));
+}

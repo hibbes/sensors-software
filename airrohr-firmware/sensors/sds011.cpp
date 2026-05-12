@@ -158,3 +158,14 @@ void render_sds011_values(String &page_content)
 	add_table_pm_value(page_content, FPSTR(SENSORS_SDS011), FPSTR(WEB_PM10), last_value_SDS_P1);
 	page_content += FPSTR(EMPTY_ROW);
 }
+
+void render_sds011_status_info(String &page_content)
+{
+	page_content += FPSTR(EMPTY_ROW);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_SDS011), last_value_SDS_version);
+}
+
+void render_sds011_status_error(String &page_content)
+{
+	add_table_row_from_value(page_content, FPSTR(SENSORS_SDS011), String(SDS_error_count));
+}

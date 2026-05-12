@@ -305,3 +305,14 @@ void render_npm_values(String &page_content)
 	add_table_nc_value(page_content, FPSTR(SENSORS_NPM), FPSTR(WEB_NC10), last_value_NPM_N10);
 	page_content += FPSTR(EMPTY_ROW);
 }
+
+void render_npm_status_info(String &page_content)
+{
+	page_content += FPSTR(EMPTY_ROW);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_NPM), last_value_NPM_version);
+}
+
+void render_npm_status_error(String &page_content)
+{
+	add_table_row_from_value(page_content, FPSTR(SENSORS_NPM), String(NPM_error_count));
+}

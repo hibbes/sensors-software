@@ -23,4 +23,8 @@ void fetchSensorNPM(String &s);
  * Issue #18 Phase E. */
 void render_npm_values(String &page_content);
 
+/* /status-Sektion. Issue #18 Phase E-2. */
+void render_npm_status_info(String &page_content);
+void render_npm_status_error(String &page_content);
+
 #endif
