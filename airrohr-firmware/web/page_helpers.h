@@ -40,6 +40,14 @@ extern unsigned long last_update_attempt;
 extern unsigned long time_point_device_start_ms;
 extern unsigned long sending_time;
 extern unsigned long starttime;
+extern unsigned long act_milli;
+extern const uint8_t default_ip_first_octet;
+extern const uint8_t default_ip_second_octet;
+extern const uint8_t default_ip_third_octet;
+extern const uint8_t default_ip_fourth_octet;
+#ifndef msSince
+#define msSince(timestamp_before) (act_milli - (timestamp_before))
+#endif
 extern int last_update_returncode;
 extern int last_sendData_returncode;
 extern int last_signal_strength;
