@@ -1,3 +1,4 @@
+#pragma once
 
 
 // This file is generated, please do not edit.
@@ -35,6 +36,7 @@ enum ConfigShapeId {
 	Config_www_basicauth_enabled,
 	Config_dht_read,
 	Config_htu21d_read,
+	Config_aht20_read,
 	Config_ppd_read,
 	Config_sds_read,
 	Config_pms_read,
@@ -63,6 +65,7 @@ enum ConfigShapeId {
 	Config_send2csv,
 	Config_auto_update,
 	Config_use_beta,
+	Config_ota_host,
 	Config_has_display,
 	Config_has_sh1106,
 	Config_has_flipped_display,
@@ -96,6 +99,9 @@ enum ConfigShapeId {
 	Config_pwd_influx,
 	Config_measurement_name_influx,
 	Config_ssl_influx,
+	Config_send2wunderground,
+	Config_wu_station_id,
+	Config_wu_password,
 };
 static constexpr char CFG_KEY_CURRENT_LANG[] PROGMEM = "current_lang";
 static constexpr char CFG_KEY_WLANSSID[] PROGMEM = "wlanssid";
@@ -107,6 +113,7 @@ static constexpr char CFG_KEY_FS_PWD[] PROGMEM = "fs_pwd";
 static constexpr char CFG_KEY_WWW_BASICAUTH_ENABLED[] PROGMEM = "www_basicauth_enabled";
 static constexpr char CFG_KEY_DHT_READ[] PROGMEM = "dht_read";
 static constexpr char CFG_KEY_HTU21D_READ[] PROGMEM = "htu21d_read";
+static constexpr char CFG_KEY_AHT20_READ[] PROGMEM = "aht20_read";
 static constexpr char CFG_KEY_PPD_READ[] PROGMEM = "ppd_read";
 static constexpr char CFG_KEY_SDS_READ[] PROGMEM = "sds_read";
 static constexpr char CFG_KEY_PMS_READ[] PROGMEM = "pms_read";
@@ -135,6 +142,7 @@ static constexpr char CFG_KEY_SEND2AIRCMS[] PROGMEM = "send2aircms";
 static constexpr char CFG_KEY_SEND2CSV[] PROGMEM = "send2csv";
 static constexpr char CFG_KEY_AUTO_UPDATE[] PROGMEM = "auto_update";
 static constexpr char CFG_KEY_USE_BETA[] PROGMEM = "use_beta";
+static constexpr char CFG_KEY_OTA_HOST[] PROGMEM = "ota_host";
 static constexpr char CFG_KEY_HAS_DISPLAY[] PROGMEM = "has_display";
 static constexpr char CFG_KEY_HAS_SH1106[] PROGMEM = "has_sh1106";
 static constexpr char CFG_KEY_HAS_FLIPPED_DISPLAY[] PROGMEM = "has_flipped_display";
@@ -168,6 +176,9 @@ static constexpr char CFG_KEY_USER_INFLUX[] PROGMEM = "user_influx";
 static constexpr char CFG_KEY_PWD_INFLUX[] PROGMEM = "pwd_influx";
 static constexpr char CFG_KEY_MEASUREMENT_NAME_INFLUX[] PROGMEM = "measurement_name_influx";
 static constexpr char CFG_KEY_SSL_INFLUX[] PROGMEM = "ssl_influx";
+static constexpr char CFG_KEY_SEND2WUNDERGROUND[] PROGMEM = "send2wunderground";
+static constexpr char CFG_KEY_WU_STATION_ID[] PROGMEM = "wu_station_id";
+static constexpr char CFG_KEY_WU_PASSWORD[] PROGMEM = "wu_password";
 static constexpr ConfigShapeEntry configShape[] PROGMEM = {
 	{ Config_Type_String, sizeof(cfg::current_lang)-1, CFG_KEY_CURRENT_LANG, cfg::current_lang },
 	{ Config_Type_String, sizeof(cfg::wlanssid)-1, CFG_KEY_WLANSSID, cfg::wlanssid },
@@ -179,6 +190,7 @@ static constexpr ConfigShapeEntry configShape[] PROGMEM = {
 	{ Config_Type_Bool, 0, CFG_KEY_WWW_BASICAUTH_ENABLED, &cfg::www_basicauth_enabled },
 	{ Config_Type_Bool, 0, CFG_KEY_DHT_READ, &cfg::dht_read },
 	{ Config_Type_Bool, 0, CFG_KEY_HTU21D_READ, &cfg::htu21d_read },
+	{ Config_Type_Bool, 0, CFG_KEY_AHT20_READ, &cfg::aht20_read },
 	{ Config_Type_Bool, 0, CFG_KEY_PPD_READ, &cfg::ppd_read },
 	{ Config_Type_Bool, 0, CFG_KEY_SDS_READ, &cfg::sds_read },
 	{ Config_Type_Bool, 0, CFG_KEY_PMS_READ, &cfg::pms_read },
@@ -207,6 +219,7 @@ static constexpr ConfigShapeEntry configShape[] PROGMEM = {
 	{ Config_Type_Bool, 0, CFG_KEY_SEND2CSV, &cfg::send2csv },
 	{ Config_Type_Bool, 0, CFG_KEY_AUTO_UPDATE, &cfg::auto_update },
 	{ Config_Type_Bool, 0, CFG_KEY_USE_BETA, &cfg::use_beta },
+	{ Config_Type_String, sizeof(cfg::ota_host)-1, CFG_KEY_OTA_HOST, cfg::ota_host },
 	{ Config_Type_Bool, 0, CFG_KEY_HAS_DISPLAY, &cfg::has_display },
 	{ Config_Type_Bool, 0, CFG_KEY_HAS_SH1106, &cfg::has_sh1106 },
 	{ Config_Type_Bool, 0, CFG_KEY_HAS_FLIPPED_DISPLAY, &cfg::has_flipped_display },
@@ -240,4 +253,7 @@ static constexpr ConfigShapeEntry configShape[] PROGMEM = {
 	{ Config_Type_Password, sizeof(cfg::pwd_influx)-1, CFG_KEY_PWD_INFLUX, cfg::pwd_influx },
 	{ Config_Type_String, sizeof(cfg::measurement_name_influx)-1, CFG_KEY_MEASUREMENT_NAME_INFLUX, cfg::measurement_name_influx },
 	{ Config_Type_Bool, 0, CFG_KEY_SSL_INFLUX, &cfg::ssl_influx },
+	{ Config_Type_Bool, 0, CFG_KEY_SEND2WUNDERGROUND, &cfg::send2wunderground },
+	{ Config_Type_String, sizeof(cfg::wu_station_id)-1, CFG_KEY_WU_STATION_ID, cfg::wu_station_id },
+	{ Config_Type_Password, sizeof(cfg::wu_password)-1, CFG_KEY_WU_PASSWORD, cfg::wu_password },
 };

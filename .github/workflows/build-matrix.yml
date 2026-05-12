@@ -1,0 +1,104 @@
+name: Build matrix (per-language)
+
+# Parallel build of all 30 nodemcuv2_<lang> environments.
+# Companion to the existing airohr-firmware.yml smoke build.
+#
+# Issue #18 Phase G / Issue #15 (closes when merged + first green run).
+
+on:
+  push:
+    branches: [master, "refactor/**", "feature/**"]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  intl-audit:
+    name: i18n drift check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit intl_<lang>.h vs intl_en.h
+        run: python3 airrohr-firmware/tools/intl/audit.py
+      - name: Check intl_<lang>.h matches master.csv
+        run: python3 airrohr-firmware/tools/intl/generate.py --check
+
+  build:
+    name: ${{ matrix.env }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - nodemcuv2
+          - nodemcuv2_bg
+          - nodemcuv2_br
+          - nodemcuv2_cn
+          - nodemcuv2_cz
+          - nodemcuv2_dk
+          - nodemcuv2_ee
+          - nodemcuv2_en
+          - nodemcuv2_es
+          - nodemcuv2_fi
+          - nodemcuv2_fr
+          - nodemcuv2_gr
+          - nodemcuv2_hr
+          - nodemcuv2_hu
+          - nodemcuv2_it
+          - nodemcuv2_jp
+          - nodemcuv2_lt
+          - nodemcuv2_lu
+          - nodemcuv2_lv
+          - nodemcuv2_nl
+          - nodemcuv2_pl
+          - nodemcuv2_pt
+          - nodemcuv2_ro
+          - nodemcuv2_rs
+          - nodemcuv2_ru
+          - nodemcuv2_se
+          - nodemcuv2_si
+          - nodemcuv2_sk
+          - nodemcuv2_tr
+          - nodemcuv2_ua
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache PlatformIO toolchain + packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+            ~/.platformio/packages
+            ~/.platformio/platforms
+          key: ${{ runner.os }}-pio-${{ hashFiles('airrohr-firmware/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-pio-
+
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install platformio
+          platformio --version
+
+      - name: Build ${{ matrix.env }}
+        run: pio run -d airrohr-firmware -e ${{ matrix.env }}
+
+      - name: Upload firmware (de+en only)
+        if: matrix.env == 'nodemcuv2' || matrix.env == 'nodemcuv2_en'
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.env }}
+          path: airrohr-firmware/.pio/build/${{ matrix.env }}/firmware.bin
+          if-no-files-found: error
+          retention-days: 14

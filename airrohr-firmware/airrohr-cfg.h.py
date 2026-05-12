@@ -11,6 +11,7 @@ Password		fs_pwd
 Bool		www_basicauth_enabled
 Bool		dht_read
 Bool		htu21d_read
+Bool		aht20_read
 Bool		ppd_read
 Bool		sds_read
 Bool		pms_read
@@ -39,6 +40,7 @@ Bool		send2aircms
 Bool		send2csv
 Bool		auto_update
 Bool		use_beta
+String		ota_host
 Bool		has_display
 Bool		has_sh1106
 Bool		has_flipped_display
@@ -72,6 +74,9 @@ String		user_influx
 Password		pwd_influx
 String		measurement_name_influx
 Bool		ssl_influx
+Bool		send2wunderground
+String		wu_station_id
+Password		wu_password
 """
 
 with open("airrohr-cfg.h", "w") as h:

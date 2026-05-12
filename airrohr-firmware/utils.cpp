@@ -723,6 +723,9 @@ const __FlashStringHelper* loggerDescription(unsigned i) {
         case LoggerCustom:
             logger = F("Custom");
             break;
+        case LoggerWunderground:
+            logger = F("Wunderground");
+            break;
     }
     return logger;
 }

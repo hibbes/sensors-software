@@ -8,13 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "FI"
 #define INTL_PM_SENSOR "Hiukkasanturi"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfigurointi";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi-asetukset"
 #define INTL_WIFI_NETWORKS "Wlan-verkkojen lataaminen ..."
 #define INTL_LANGUAGE "Kieli"
-const char INTL_NO_NETWORKS[] PROGMEM =  "WiFi-verkkoa ei löydy";
+
+#ifdef INTL_DEFINE_VARIABLES
+const char INTL_NO_NETWORKS[] PROGMEM = "WiFi-verkkoa ei löydy";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Löydetyt verkostot:";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Lisäasetukset (vain jos tiedät, mitä teet)";
 const char INTL_SAVE[] PROGMEM = "Tallenna";
@@ -30,6 +42,7 @@ const char INTL_SPS30[] PROGMEM = "Sensirion SPS30 ({pm})";
 const char INTL_PPD42NS[] PROGMEM = "PPD42NS ({pm})";
 const char INTL_DHT22[] PROGMEM = "DHT22 ({t}, {h})";
 const char INTL_HTU21D[] PROGMEM = "HTU21D ({t}, {h})";
+const char INTL_AHT20[] PROGMEM = "AHT20 ({t}, {h})";
 const char INTL_BMP180[] PROGMEM = "BMP180 ({t}, {p})";
 const char INTL_BMX280[] PROGMEM = "BME280 ({t}, {h}, {p}), BMP280 ({t}, {p}).";
 const char INTL_SHT3X[] PROGMEM = "SHT3X ({t}, {h})";
@@ -42,8 +55,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "Tunnistus";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "Ilmoita asiasta"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi Sensor konfigurointitilassa";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Verkon nimi";
 const char INTL_MORE_SETTINGS[] PROGMEM = "Lisää asetuksia";
@@ -58,13 +73,14 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Näytä Wifi tiedot";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Näytä laitteen tiedot";
-
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
-
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;taso";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Mittausväli (sek)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Reititintilan kesto";
@@ -83,10 +99,14 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "Anturi käynnistyy uudelleen.";
 const char INTL_RESTART_DEVICE[] PROGMEM = "Käynnistä laite uudelleen";
 const char INTL_DELETE_CONFIG[] PROGMEM = "poista tallennettu konfiguraatio";
 const char INTL_RESTART_SENSOR[] PROGMEM = "Käynnistä anturi uudelleen";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Etusivu"
 #define INTL_BACK_TO_HOME "Takaisin etusivulle"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Nykyiset tiedot";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Laitteen tila";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "Aktiivisten antureiden kartta (ulkoinen linkki)"
 #define INTL_CONFIGURATION_DELETE "Poista kokoonpano"
 #define INTL_CONFIGURATION_REALLY_DELETE "Oletko varma, että haluat poistaa kokoonpanon?"
@@ -94,9 +114,15 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Laitteen tila";
 #define INTL_CANCEL "Peruuta"
 #define INTL_REALLY_RESTART_SENSOR "Oletko varma, että haluat käynnistää anturin uudelleen?"
 #define INTL_RESTART "Käynnistä uudelleen"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Tallenna kokoonpano ja käynnistä uudelleen";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware-versio"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Aseta debug-tasoksi";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "off"
 #define INTL_ERROR "vain virheet"
 #define INTL_WARNING "varoitukset"
@@ -106,6 +132,8 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Aseta debug-tasoksi";
 #define INTL_CONFIG_DELETED "Konfiguraatio poistettiin"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfiguraatiota ei voi poistaa"
 #define INTL_CONFIG_NOT_FOUND "Konfiguraatiota ei löydy"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Vielä {v} sekuntia ensimmäiseen mittaukseen.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekuntia edellisestä mittauksesta.";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "hiukkaslitra";
@@ -124,6 +152,7 @@ const char INTL_ALTITUDE[] PROGMEM = "Korkeus";
 const char INTL_TIME_UTC[] PROGMEM = "Aika (UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "signaalin voimakkuus";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "signaalin laatu";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "Mittausten lukumäärä"
 #define INTL_TIME_SENDING_MS "Lataamiseen käytetty aika"
 #define INTL_SENSOR "Anturi"
