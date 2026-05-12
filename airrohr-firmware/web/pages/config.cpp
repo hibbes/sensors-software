@@ -8,24 +8,29 @@
  *
  * Plus /config.json (Cfg-Backup/Restore über JSON) als sauberer Roundtrip-Endpoint.
  *
- * Issue #18 Phase B — ausgelagert aus airrohr-firmware.ino.
+ * Phase B (B): ausgelagert aus airrohr-firmware.ino.
+ * Phase C-2: Tab-Bodies in 4 static Helpers gesplittet — render_config_tab_*.
+ *
+ * Issue #18.
  */
 #include "../page_helpers.h"
 #include <ArduinoJson.h>
 
-static void webserver_config_send_body_get(String &page_content)
+namespace
 {
-	auto add_form_checkbox = [&page_content](const ConfigShapeId cfgid, const String &info)
-	{
-		page_content += form_checkbox(cfgid, info, true);
-	};
 
-	auto add_form_checkbox_sensor = [&add_form_checkbox](const ConfigShapeId cfgid, const __FlashStringHelper *info)
-	{
-		add_form_checkbox(cfgid, add_sensor_type(info));
-	};
+inline void add_form_checkbox(String &p, const ConfigShapeId cfgid, const String &info)
+{
+	p += form_checkbox(cfgid, info, true);
+}
 
-	debug_outln_info(F("begin webserver_config_body_get ..."));
+inline void add_form_checkbox_sensor(String &p, const ConfigShapeId cfgid, const __FlashStringHelper *info)
+{
+	add_form_checkbox(p, cfgid, add_sensor_type(info));
+}
+
+void render_config_tabs_header(String &page_content)
+{
 	page_content += F("<form method='POST' action='/config' style='width:100%;'>\n"
 					  "<input class='radio' id='r1' name='group' type='radio' checked>"
 					  "<input class='radio' id='r2' name='group' type='radio'>"
@@ -42,7 +47,11 @@ static void webserver_config_send_body_get(String &page_content)
 					  "<label class='tab' id='tab4' for='r4'>APIs"
 					  "</label></div><div class='panels'>"
 					  "<div class='panel' id='panel1'>");
+}
 
+// Tab 1: WLAN-Settings + BasicAuth + AP-Mode-Settings
+void render_config_tab_wifi(String &page_content)
+{
 	if (wificonfig_loop)
 	{
 		page_content += F("<div id='wifilist'>" INTL_WIFI_NETWORKS "</div><br/>");
@@ -61,7 +70,7 @@ static void webserver_config_send_body_get(String &page_content)
 	server.sendContent(page_content);
 	page_content = emptyString;
 
-	add_form_checkbox(Config_www_basicauth_enabled, FPSTR(INTL_BASICAUTH));
+	add_form_checkbox(page_content, Config_www_basicauth_enabled, FPSTR(INTL_BASICAUTH));
 	page_content += FPSTR(TABLE_TAG_OPEN);
 	add_form_input(page_content, Config_www_username, FPSTR(INTL_USER), LEN_WWW_USERNAME - 1);
 	add_form_input(page_content, Config_www_password, FPSTR(INTL_PASSWORD), LEN_CFG_PASSWORD - 1);
@@ -82,22 +91,26 @@ static void webserver_config_send_body_get(String &page_content)
 
 		server.sendContent(page_content);
 	}
+}
 
+// Tab 2: Display + Static-IP + Firmware/OTA + Powersave + Debug-Level
+void render_config_tab_more(String &page_content)
+{
 	page_content = tmpl(FPSTR(WEB_DIV_PANEL), String(2));
 
-	add_form_checkbox(Config_has_display, FPSTR(INTL_DISPLAY));
-	add_form_checkbox(Config_has_sh1106, FPSTR(INTL_SH1106));
-	add_form_checkbox(Config_has_flipped_display, FPSTR(INTL_FLIP_DISPLAY));
-	add_form_checkbox(Config_has_lcd1602_27, FPSTR(INTL_LCD1602_27));
-	add_form_checkbox(Config_has_lcd1602, FPSTR(INTL_LCD1602_3F));
+	add_form_checkbox(page_content, Config_has_display, FPSTR(INTL_DISPLAY));
+	add_form_checkbox(page_content, Config_has_sh1106, FPSTR(INTL_SH1106));
+	add_form_checkbox(page_content, Config_has_flipped_display, FPSTR(INTL_FLIP_DISPLAY));
+	add_form_checkbox(page_content, Config_has_lcd1602_27, FPSTR(INTL_LCD1602_27));
+	add_form_checkbox(page_content, Config_has_lcd1602, FPSTR(INTL_LCD1602_3F));
 
 	server.sendContent(page_content);
 	page_content = emptyString;
 
-	add_form_checkbox(Config_has_lcd2004_27, FPSTR(INTL_LCD2004_27));
-	add_form_checkbox(Config_has_lcd2004, FPSTR(INTL_LCD2004_3F));
-	add_form_checkbox(Config_display_wifi_info, FPSTR(INTL_DISPLAY_WIFI_INFO));
-	add_form_checkbox(Config_display_device_info, FPSTR(INTL_DISPLAY_DEVICE_INFO));
+	add_form_checkbox(page_content, Config_has_lcd2004_27, FPSTR(INTL_LCD2004_27));
+	add_form_checkbox(page_content, Config_has_lcd2004, FPSTR(INTL_LCD2004_3F));
+	add_form_checkbox(page_content, Config_display_wifi_info, FPSTR(INTL_DISPLAY_WIFI_INFO));
+	add_form_checkbox(page_content, Config_display_device_info, FPSTR(INTL_DISPLAY_DEVICE_INFO));
 
 	page_content += FPSTR(WEB_BR_LF_B);
 	page_content += F(INTL_STATIC_IP_TEXT);
@@ -113,8 +126,8 @@ static void webserver_config_send_body_get(String &page_content)
 	page_content = FPSTR(WEB_BR_LF_B);
 	page_content += F(INTL_FIRMWARE);
 	page_content += FPSTR(WEB_B_BR);
-	add_form_checkbox(Config_auto_update, FPSTR(INTL_AUTO_UPDATE));
-	add_form_checkbox(Config_use_beta, FPSTR(INTL_USE_BETA));
+	add_form_checkbox(page_content, Config_auto_update, FPSTR(INTL_AUTO_UPDATE));
+	add_form_checkbox(page_content, Config_use_beta, FPSTR(INTL_USE_BETA));
 
 	page_content += FPSTR(TABLE_TAG_OPEN);
 	page_content += form_select_lang();
@@ -134,7 +147,7 @@ static void webserver_config_send_body_get(String &page_content)
 	page_content += FPSTR(WEB_B_BR);
 	page_content += FPSTR(BR_TAG);
 
-	add_form_checkbox(Config_powersave, FPSTR(INTL_POWERSAVE));
+	add_form_checkbox(page_content, Config_powersave, FPSTR(INTL_POWERSAVE));
 	page_content += FPSTR(TABLE_TAG_OPEN);
 	add_form_input(page_content, Config_debug, FPSTR(INTL_DEBUG_LEVEL), 1);
 	add_form_input(page_content, Config_sending_intervall_ms, FPSTR(INTL_MEASUREMENT_INTERVAL), 5);
@@ -142,26 +155,30 @@ static void webserver_config_send_body_get(String &page_content)
 	page_content += FPSTR(TABLE_TAG_CLOSE_BR);
 
 	server.sendContent(page_content);
+}
 
+// Tab 3: Sensor-Toggle-Checkboxes + Korrekturwerte
+void render_config_tab_sensors(String &page_content)
+{
 	page_content = tmpl(FPSTR(WEB_DIV_PANEL), String(3));
-	add_form_checkbox_sensor(Config_sds_read, FPSTR(INTL_SDS011));
-	add_form_checkbox_sensor(Config_hpm_read, FPSTR(INTL_HPM));
-	add_form_checkbox_sensor(Config_sps30_read, FPSTR(INTL_SPS30));
+	add_form_checkbox_sensor(page_content, Config_sds_read, FPSTR(INTL_SDS011));
+	add_form_checkbox_sensor(page_content, Config_hpm_read, FPSTR(INTL_HPM));
+	add_form_checkbox_sensor(page_content, Config_sps30_read, FPSTR(INTL_SPS30));
 
 	server.sendContent(page_content);
 	page_content = emptyString;
 
-	add_form_checkbox_sensor(Config_dht_read, FPSTR(INTL_DHT22));
-	add_form_checkbox_sensor(Config_htu21d_read, FPSTR(INTL_HTU21D));
-	add_form_checkbox_sensor(Config_aht20_read, FPSTR(INTL_AHT20));
-	add_form_checkbox_sensor(Config_bmx280_read, FPSTR(INTL_BMX280));
-	add_form_checkbox_sensor(Config_sht3x_read, FPSTR(INTL_SHT3X));
-	add_form_checkbox_sensor(Config_scd30_read, FPSTR(INTL_SCD30));
+	add_form_checkbox_sensor(page_content, Config_dht_read, FPSTR(INTL_DHT22));
+	add_form_checkbox_sensor(page_content, Config_htu21d_read, FPSTR(INTL_HTU21D));
+	add_form_checkbox_sensor(page_content, Config_aht20_read, FPSTR(INTL_AHT20));
+	add_form_checkbox_sensor(page_content, Config_bmx280_read, FPSTR(INTL_BMX280));
+	add_form_checkbox_sensor(page_content, Config_sht3x_read, FPSTR(INTL_SHT3X));
+	add_form_checkbox_sensor(page_content, Config_scd30_read, FPSTR(INTL_SCD30));
 
 	server.sendContent(page_content);
 	page_content = emptyString;
 
-	add_form_checkbox_sensor(Config_dnms_read, FPSTR(INTL_DNMS));
+	add_form_checkbox_sensor(page_content, Config_dnms_read, FPSTR(INTL_DNMS));
 	page_content += FPSTR(TABLE_TAG_OPEN);
 	add_form_input(page_content, Config_dnms_correction, FPSTR(INTL_DNMS_CORRECTION), LEN_DNMS_CORRECTION - 1);
 	add_form_input(page_content, Config_temp_correction, FPSTR(INTL_TEMP_CORRECTION), LEN_TEMP_CORRECTION - 1);
@@ -172,15 +189,21 @@ static void webserver_config_send_body_get(String &page_content)
 	page_content += FPSTR(INTL_MORE_SENSORS);
 	page_content += FPSTR(WEB_B_BR);
 
-	add_form_checkbox_sensor(Config_ds18b20_read, FPSTR(INTL_DS18B20));
-	add_form_checkbox_sensor(Config_pms_read, FPSTR(INTL_PMS));
-	add_form_checkbox_sensor(Config_npm_read, FPSTR(INTL_NPM));
-	add_form_checkbox_sensor(Config_npm_fulltime, FPSTR(INTL_NPM_FULLTIME));
-	add_form_checkbox_sensor(Config_ips_read, FPSTR(INTL_IPS));
-	add_form_checkbox_sensor(Config_bmp_read, FPSTR(INTL_BMP180));
-	add_form_checkbox(Config_gps_read, FPSTR(INTL_NEO6M));
+	add_form_checkbox_sensor(page_content, Config_ds18b20_read, FPSTR(INTL_DS18B20));
+	add_form_checkbox_sensor(page_content, Config_pms_read, FPSTR(INTL_PMS));
+	add_form_checkbox_sensor(page_content, Config_npm_read, FPSTR(INTL_NPM));
+	add_form_checkbox_sensor(page_content, Config_npm_fulltime, FPSTR(INTL_NPM_FULLTIME));
+	add_form_checkbox_sensor(page_content, Config_ips_read, FPSTR(INTL_IPS));
+	add_form_checkbox_sensor(page_content, Config_bmp_read, FPSTR(INTL_BMP180));
+	add_form_checkbox(page_content, Config_gps_read, FPSTR(INTL_NEO6M));
 
 	server.sendContent(page_content);
+}
+
+// Tab 4: Public APIs (SC/Madavi/Sensemap/AirCMS/CSV/FSapp), Custom-Endpoint,
+// Wunderground PWS, InfluxDB
+void render_config_tab_apis(String &page_content)
+{
 	page_content = tmpl(FPSTR(WEB_DIV_PANEL), String(4));
 
 	page_content += tmpl(FPSTR(INTL_SEND_TO), F("APIs"));
@@ -193,10 +216,10 @@ static void webserver_config_send_body_get(String &page_content)
 	page_content += FPSTR(WEB_NBSP_NBSP_BRACE);
 	page_content += form_checkbox(Config_ssl_madavi, FPSTR(WEB_HTTPS), false);
 	page_content += FPSTR(WEB_BRACE_BR);
-	add_form_checkbox(Config_send2csv, FPSTR(WEB_CSV));
-	add_form_checkbox(Config_send2fsapp, FPSTR(WEB_FEINSTAUB_APP));
-	add_form_checkbox(Config_send2aircms, FPSTR(WEB_AIRCMS));
-	add_form_checkbox(Config_send2sensemap, FPSTR(WEB_OPENSENSEMAP));
+	add_form_checkbox(page_content, Config_send2csv, FPSTR(WEB_CSV));
+	add_form_checkbox(page_content, Config_send2fsapp, FPSTR(WEB_FEINSTAUB_APP));
+	add_form_checkbox(page_content, Config_send2aircms, FPSTR(WEB_AIRCMS));
+	add_form_checkbox(page_content, Config_send2sensemap, FPSTR(WEB_OPENSENSEMAP));
 	page_content += FPSTR(TABLE_TAG_OPEN);
 	add_form_input(page_content, Config_senseboxid, F("senseBox&nbsp;ID"), LEN_SENSEBOXID - 1);
 
@@ -244,6 +267,10 @@ static void webserver_config_send_body_get(String &page_content)
 	add_form_input(page_content, Config_pwd_influx, FPSTR(INTL_PASSWORD), LEN_PASS_INFLUX - 1);
 	add_form_input(page_content, Config_measurement_name_influx, FPSTR(INTL_MEASUREMENT), LEN_MEASUREMENT_NAME_INFLUX - 1);
 	page_content += FPSTR(TABLE_TAG_CLOSE_BR);
+}
+
+void render_config_form_footer(String &page_content)
+{
 	page_content += F("</div></div>");
 	page_content += form_submit(FPSTR(INTL_SAVE_AND_RESTART));
 	page_content += FPSTR(BR_TAG);
@@ -255,6 +282,19 @@ static void webserver_config_send_body_get(String &page_content)
 
 	server.sendContent(page_content);
 	page_content = emptyString;
+}
+
+} // namespace
+
+static void webserver_config_send_body_get(String &page_content)
+{
+	debug_outln_info(F("begin webserver_config_body_get ..."));
+	render_config_tabs_header(page_content);
+	render_config_tab_wifi(page_content);
+	render_config_tab_more(page_content);
+	render_config_tab_sensors(page_content);
+	render_config_tab_apis(page_content);
+	render_config_form_footer(page_content);
 }
 
 static void webserver_config_send_body_post(String &page_content)
