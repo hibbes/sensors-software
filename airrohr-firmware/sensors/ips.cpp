@@ -392,3 +392,28 @@ void fetchSensorIPS(String &s)
 	debug_outln_verbose(F("/R "), F("Piera Systems IPS-7100"));
 
 }
+
+/*****************************************************************
+ * /values render: IPS-7100 — 14 Werte (Issue #18 Phase E Pilot). *
+ *****************************************************************/
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_ips_values(String &page_content)
+{
+	add_table_pm_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_PM01), last_value_IPS_P01);
+	add_table_pm_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_PM03), last_value_IPS_P03);
+	add_table_pm_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_PM05), last_value_IPS_P05);
+	add_table_pm_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_PM1), last_value_IPS_P0);
+	add_table_pm_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_PM25), last_value_IPS_P2);
+	add_table_pm_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_PM5), last_value_IPS_P5);
+	add_table_pm_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_PM10), last_value_IPS_P1);
+	add_table_nc_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_NC0k1), last_value_IPS_N01);
+	add_table_nc_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_NC0k3), last_value_IPS_N03);
+	add_table_nc_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_NC0k5), last_value_IPS_N05);
+	add_table_nc_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_NC1k0), last_value_IPS_N1);
+	add_table_nc_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_NC2k5), last_value_IPS_N25);
+	add_table_nc_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_NC5k0), last_value_IPS_N5);
+	add_table_nc_value(page_content, FPSTR(SENSORS_IPS), FPSTR(WEB_NC10), last_value_IPS_N10);
+	page_content += FPSTR(EMPTY_ROW);
+}

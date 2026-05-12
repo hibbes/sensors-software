@@ -19,4 +19,8 @@
 
 void fetchSensorNPM(String &s);
 
+/* Render /values-Tabelle (6 Werte: PM1/PM2.5/PM10 + NC1.0/2.5/10).
+ * Issue #18 Phase E. */
+void render_npm_values(String &page_content);
+
 #endif

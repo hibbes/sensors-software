@@ -14,4 +14,7 @@
 
 void fetchSensorBMX280(String &s);
 
+/* Render /values-Tabelle (T + P + optional H+Dew bei BME280). Issue #18 Phase E. */
+void render_bmx280_values(String &page_content);
+
 #endif

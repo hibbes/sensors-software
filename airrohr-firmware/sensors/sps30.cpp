@@ -83,3 +83,25 @@ void fetchSensorSPS30(String &s)
 	debug_outln_info(F("----"));
 	debug_outln_verbose(F("/R "), F("Sensirion SPS30"));
 }
+
+/*****************************************************************
+ * /values render: Sensirion SPS30 — 10 Werte. Issue #18 Phase E.  *
+ *****************************************************************/
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_sps30_values(String &page_content)
+{
+	add_table_pm_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_PM1), last_value_SPS30_P0);
+	add_table_pm_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_PM25), last_value_SPS30_P2);
+	add_table_pm_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_PM4), last_value_SPS30_P4);
+	add_table_pm_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_PM10), last_value_SPS30_P1);
+	add_table_nc_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_NC0k5), last_value_SPS30_N05);
+	add_table_nc_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_NC1k0), last_value_SPS30_N1);
+	add_table_nc_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_NC2k5), last_value_SPS30_N25);
+	add_table_nc_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_NC4k0), last_value_SPS30_N4);
+	add_table_nc_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_NC10), last_value_SPS30_N10);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_SPS30), FPSTR(WEB_TPS),
+							 check_display_value(last_value_SPS30_TS, -1, 1, 0), "µm");
+	page_content += FPSTR(EMPTY_ROW);
+}

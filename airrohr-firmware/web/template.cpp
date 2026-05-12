@@ -212,6 +212,34 @@ String form_select_lang()
 	return s;
 }
 
+void add_table_pm_value(String &page_content, const __FlashStringHelper *sensor,
+						const __FlashStringHelper *param, const float value)
+{
+	add_table_row_from_value(page_content, sensor, param,
+							 check_display_value(value, -1, 1, 0), F("µg/m³"));
+}
+
+void add_table_nc_value(String &page_content, const __FlashStringHelper *sensor,
+						const __FlashStringHelper *param, const float value)
+{
+	add_table_row_from_value(page_content, sensor, param,
+							 check_display_value(value, -1, 1, 0), F("#/cm³"));
+}
+
+void add_table_t_value(String &page_content, const __FlashStringHelper *sensor,
+					   const __FlashStringHelper *param, const float value)
+{
+	add_table_row_from_value(page_content, sensor, param,
+							 check_display_value(value, -128, 1, 0), "°C");
+}
+
+void add_table_h_value(String &page_content, const __FlashStringHelper *sensor,
+					   const __FlashStringHelper *param, const float value)
+{
+	add_table_row_from_value(page_content, sensor, param,
+							 check_display_value(value, -1, 1, 0), "%");
+}
+
 void add_warning_first_cycle(String &page_content)
 {
 	String s = FPSTR(INTL_TIME_TO_FIRST_MEASUREMENT);

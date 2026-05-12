@@ -20,4 +20,8 @@
 
 void fetchSensorIPS(String &s);
 
+/* Render-Funktion für /values-Tabelle: alle 14 IPS-Werte (Massen- und
+ * Anzahlkonzentrationen, PM01-PM10 + NC0.1-NC10). Issue #18 Phase E.  */
+void render_ips_values(String &page_content);
+
 #endif
