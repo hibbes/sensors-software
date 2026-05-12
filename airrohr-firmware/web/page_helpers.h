@@ -189,6 +189,7 @@ bool writeConfig();
 // in utils.h deklariert (utils.cpp-Definitionen).
 void add_warning_first_cycle(String &page_content);
 void add_age_last_values(String &s);
+void display_debug(const String &text1, const String &text2);
 float dew_point(const float temperature, const float humidity);
 float pressure_at_sealevel(const float temperature, const float pressure);
 

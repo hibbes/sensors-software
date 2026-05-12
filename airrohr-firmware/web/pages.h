@@ -15,3 +15,5 @@ void webserver_reset();
 void webserver_debug_level();
 void webserver_status();
 void webserver_values();
+void webserver_config();
+void webserver_config_json();
