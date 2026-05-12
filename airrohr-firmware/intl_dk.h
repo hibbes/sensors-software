@@ -8,16 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "DK"
 #define INTL_PM_SENSOR "Partikelsensor"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Opsætning";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "Wi-Fi indstillinger"
 #define INTL_WIFI_NETWORKS "Leder efter Wi-Fi netværk..."
 #define INTL_LANGUAGE "Sprog"
+
 #ifdef INTL_DEFINE_VARIABLES
-const char INTL_NO_NETWORKS[] PROGMEM =  "Ingen netværk fundet";
+const char INTL_NO_NETWORKS[] PROGMEM = "Ingen netværk fundet";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Netværker fundet: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Ændr følgende kun hvis du ved hvad du laver";
 const char INTL_SAVE[] PROGMEM = "Gem";
@@ -65,16 +74,13 @@ const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Vis WiFi-info";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Vis enhedsinfo";
 #endif // INTL_DEFINE_VARIABLES
-
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
-#endif // INTL_DEFINE_VARIABLES
-
-#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Målinterval";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Permanent&nbsp;router-mode";
@@ -96,6 +102,7 @@ const char INTL_RESTART_SENSOR[] PROGMEM = "Genstart sensor";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Oversigt"
 #define INTL_BACK_TO_HOME "Tilbage til oversigten"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktuelle målværdier";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Enhedsstatus";
@@ -107,10 +114,12 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Enhedsstatus";
 #define INTL_CANCEL "Afbryd"
 #define INTL_REALLY_RESTART_SENSOR "Config.json kunne ikke findes"
 #define INTL_RESTART "Genstart"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Gem og genstart";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug-indstillinger sat til";
 #endif // INTL_DEFINE_VARIABLES
@@ -123,6 +132,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug-indstillinger sat til";
 #define INTL_CONFIG_DELETED "Config.json slettet"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Config.json kunne ikke slettes"
 #define INTL_CONFIG_NOT_FOUND "Config.json kunne ikke findes"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Der går {v} sekunder før den første måling.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekunder siden den seneste måling.";

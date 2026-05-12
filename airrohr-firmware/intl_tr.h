@@ -8,16 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "TR"
 #define INTL_PM_SENSOR "Hava Kirliliği (Ince Toz) Ölçüm sensörü"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Yapılandırma";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi bağlantı ayarları"
 #define INTL_WIFI_NETWORKS " wifi ağlar yükleniyor ..."
 #define INTL_LANGUAGE "Lisan"
+
 #ifdef INTL_DEFINE_VARIABLES
-const char INTL_NO_NETWORKS[] PROGMEM =  "No WiFi-Ağ Bulunamadı";
+const char INTL_NO_NETWORKS[] PROGMEM = "No WiFi-Ağ Bulunamadı";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Bulunan Ağlar: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Ileri ayarlar: (Uzmanlar için)";
 const char INTL_SAVE[] PROGMEM = "Sakla";
@@ -65,16 +74,13 @@ const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "WiFi Bilgilerini Görüntüle";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Cihaz Bilgilerini Görüntüle";
 #endif // INTL_DEFINE_VARIABLES
-
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
-#endif // INTL_DEFINE_VARIABLES
-
-#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;seviye";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = " Ölçüm aralığı";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Süre yönlendirici(Router) modu";
@@ -96,6 +102,7 @@ const char INTL_RESTART_SENSOR[] PROGMEM = "sensörü yeniden bağlat ";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "genel bakış"
 #define INTL_BACK_TO_HOME "Ana sayfaya geri dön"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktüel veriler";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Cihaz durumu";
@@ -107,10 +114,12 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Cihaz durumu";
 #define INTL_CANCEL "vazgeç"
 #define INTL_REALLY_RESTART_SENSOR "Sensörü tekrar bağlatmak istediğinizden emin misiniz?"
 #define INTL_RESTART "yeniden bağlat"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Kaydet ve yeniden bağlat";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware sürümü"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug ayarı ";
 #endif // INTL_DEFINE_VARIABLES
@@ -123,6 +132,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug ayarı ";
 #define INTL_CONFIG_DELETED "Konfigürasyon silindi"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfigürasyon silinemiyor"
 #define INTL_CONFIG_NOT_FOUND "Konfigürasyon bulunamadı"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Still {v} ilk ölçüme kadar geçen saniye.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " Son ölçümden bu yana geçen saniye.";

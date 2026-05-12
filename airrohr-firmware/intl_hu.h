@@ -8,16 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "HU"
 #define INTL_PM_SENSOR "Szálló por szenzor"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfiguráció";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi beállítások"
 #define INTL_WIFI_NETWORKS "WiFi hálózatok keresése..."
 #define INTL_LANGUAGE "Nyelv"
+
 #ifdef INTL_DEFINE_VARIABLES
-const char INTL_NO_NETWORKS[] PROGMEM =  "Nem találtam WiFi hálózatot";
+const char INTL_NO_NETWORKS[] PROGMEM = "Nem találtam WiFi hálózatot";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Talált WiFi hálózatok:";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Haladó beállítások (csak, ha tudod mit csinálsz)";
 const char INTL_SAVE[] PROGMEM = "Mentés";
@@ -40,7 +49,7 @@ const char INTL_SHT3X[] PROGMEM = "SHT3X ({t}, {h})";
 const char INTL_SCD30[] PROGMEM = "SCD30 ({t}, {h}, CO₂)";
 const char INTL_DS18B20[] PROGMEM = "DS18B20 ({t})";
 const char INTL_DNMS[] PROGMEM = "DNMS ({l_a})";
-const char INTL_DNMS_CORRECTION[] PROGMEM ="korrekció dB(A)-ben";
+const char INTL_DNMS_CORRECTION[] PROGMEM = "korrekció dB(A)-ben";
 const char INTL_TEMP_CORRECTION[] PROGMEM = "Korrekció °C";
 const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
@@ -52,7 +61,7 @@ const char INTL_BASICAUTH[] PROGMEM = "Azonosítás";
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi Szenzor konfigurációs módban";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "Név";
-const char INTL_MORE_SETTINGS[] PROGMEM ="További beállítások";
+const char INTL_MORE_SETTINGS[] PROGMEM = "További beállítások";
 const char INTL_AUTO_UPDATE[] PROGMEM = "Firmware automatikus frissítése";
 const char INTL_USE_BETA[] PROGMEM = "Béta firmware letöltése";
 const char INTL_DISPLAY[] PROGMEM = "OLED SSD1306";
@@ -65,16 +74,13 @@ const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Wifi adatok megjelenítése";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Eszközadatok megjelenítése";
 #endif // INTL_DEFINE_VARIABLES
-
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
-#endif // INTL_DEFINE_VARIABLES
-
-#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;Level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Mérési intervallum";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Hotspot mód időtartama";
@@ -96,6 +102,7 @@ const char INTL_RESTART_SENSOR[] PROGMEM = "A szenzor újraindítása";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Főoldal"
 #define INTL_BACK_TO_HOME "Vissza a főoldalra"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktuális adatok";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Eszköz státusz";
@@ -107,10 +114,12 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Eszköz státusz";
 #define INTL_CANCEL "Mégse"
 #define INTL_REALLY_RESTART_SENSOR "Biztosan újraindítod a szenzort?"
 #define INTL_RESTART "Újraindítás"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Mentés és újraindítás";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware verzió"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug beállítás ";
 #endif // INTL_DEFINE_VARIABLES
@@ -123,6 +132,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debug beállítás ";
 #define INTL_CONFIG_DELETED "Beállítások törölve"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "A beállítások törlése sikertelen."
 #define INTL_CONFIG_NOT_FOUND "Beállítások nem találhatóak"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Még {v} másodperc van hátra az első mérésig.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " másodperc telt el az utolsó mérés óta.";

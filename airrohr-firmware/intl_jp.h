@@ -8,16 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "JP"
 #define INTL_PM_SENSOR "粒子状物質センサー"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "構成";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi設定"
 #define INTL_WIFI_NETWORKS "wifiネットワークをロード中 ..."
 #define INTL_LANGUAGE "言語"
+
 #ifdef INTL_DEFINE_VARIABLES
-const char INTL_NO_NETWORKS[] PROGMEM =  "WiFiネットワークが見つからない";
+const char INTL_NO_NETWORKS[] PROGMEM = "WiFiネットワークが見つからない";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "ネットワークを発見。";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "高度な設定（何をしているか分かっている場合のみ";
 const char INTL_SAVE[] PROGMEM = "保存";
@@ -65,16 +74,13 @@ const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Wifi情報の表示";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "デバイス情報の表示";
 #endif // INTL_DEFINE_VARIABLES
-
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
-#endif // INTL_DEFINE_VARIABLES
-
-#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "デバッグ&nbsp;レベル";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "測定間隔（秒";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "持続時間ルータモード";
@@ -96,6 +102,7 @@ const char INTL_RESTART_SENSOR[] PROGMEM = "センサーの再起動";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "ホーム"
 #define INTL_BACK_TO_HOME "ホームページに戻る"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "現在のデータ";
 const char INTL_DEVICE_STATUS[] PROGMEM = "デバイスの状態";
@@ -107,10 +114,12 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "デバイスの状態";
 #define INTL_CANCEL "キャンセル"
 #define INTL_REALLY_RESTART_SENSOR "本当にセンサーを再起動するのか？"
 #define INTL_RESTART "再起動"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "設定の保存と再起動";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "ファームウェアバージョン"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "デバッグレベルを";
 #endif // INTL_DEFINE_VARIABLES
@@ -123,6 +132,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "デバッグレベルを";
 #define INTL_CONFIG_DELETED "設定が削除された"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "コンフィグレーションの削除ができない"
 #define INTL_CONFIG_NOT_FOUND "コンフィグレーションが見つからない"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "最初の測定までまだ{v}秒。";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " 最後の測定からの秒数";

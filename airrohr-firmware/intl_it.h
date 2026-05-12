@@ -8,16 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "IT"
 #define INTL_PM_SENSOR "Sensore polveri sottili"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Configurazione";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "Impostazioni Wifi"
 #define INTL_WIFI_NETWORKS "Ricarica reti wifi ..."
 #define INTL_LANGUAGE "Lingua"
+
 #ifdef INTL_DEFINE_VARIABLES
-const char INTL_NO_NETWORKS[] PROGMEM =  "Nessuna rete WiFi trovata";
+const char INTL_NO_NETWORKS[] PROGMEM = "Nessuna rete WiFi trovata";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Reti trovate: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Impostazioni avanzate (solo se sai quello che stai facendo)";
 const char INTL_SAVE[] PROGMEM = "Salvare";
@@ -65,16 +74,13 @@ const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Visualizza informazioni del wi-fi";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Visualizza informazioni del dispositivo";
 #endif // INTL_DEFINE_VARIABLES
-
 #define INTL_STATIC_IP_TEXT "Testo IP statico"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "IP statico";
 const char INTL_STATIC_SUBNET[] PROGMEM = "Subnet statico";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "Gateway statico";
 const char INTL_STATIC_DNS[] PROGMEM = "DNS statico";
-#endif // INTL_DEFINE_VARIABLES
-
-#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;Level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "intervallo di misura";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Durata della modalità router";
@@ -96,6 +102,7 @@ const char INTL_RESTART_SENSOR[] PROGMEM = "Riavvio sensore";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Home"
 #define INTL_BACK_TO_HOME "Torna alla home page"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Dati attuali";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Stato del dispositivo";
@@ -107,10 +114,12 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Stato del dispositivo";
 #define INTL_CANCEL "Annulla"
 #define INTL_REALLY_RESTART_SENSOR "Sei sicuro di voler riavviare il sensore?"
 #define INTL_RESTART "Riavvio"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Salva e riavvia";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Versione firmware"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Imposta debug su";
 #endif // INTL_DEFINE_VARIABLES
@@ -123,6 +132,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Imposta debug su";
 #define INTL_CONFIG_DELETED "Configurazione cancellata"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Impossibile cancellare la configurazione"
 #define INTL_CONFIG_NOT_FOUND "Configurazione non trovata"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Altri {v} secondi per la prima misurazione.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " secondi dall'ultima misurazione";

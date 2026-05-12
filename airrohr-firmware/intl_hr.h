@@ -8,16 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "HR"
 #define INTL_PM_SENSOR "Senzor čestica"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Konfiguracija";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi postavke"
 #define INTL_WIFI_NETWORKS "Učitavanje wifi mreža ..."
 #define INTL_LANGUAGE "Jezik"
+
 #ifdef INTL_DEFINE_VARIABLES
-const char INTL_NO_NETWORKS[] PROGMEM =  "WiFi mreža nije pronađena";
+const char INTL_NO_NETWORKS[] PROGMEM = "WiFi mreža nije pronađena";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Pronađene mreže: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Napredne postavke";
 const char INTL_SAVE[] PROGMEM = "Spremi";
@@ -65,16 +74,13 @@ const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Prikaz WiFi informacija";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Prikaz informacija o uređaju";
 #endif // INTL_DEFINE_VARIABLES
-
 #define INTL_STATIC_IP_TEXT "Konfiguracija statičke IP adrese (sva polja moraju biti ispunjena)"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "IP adresa";
 const char INTL_STATIC_SUBNET[] PROGMEM = "Subnet";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "Gateway";
 const char INTL_STATIC_DNS[] PROGMEM = "DNS server";
-#endif // INTL_DEFINE_VARIABLES
-
-#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;level";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Interval mjerenja (s)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Trajanje router načina rada";
@@ -96,6 +102,7 @@ const char INTL_RESTART_SENSOR[] PROGMEM = "Ponovno pokretanje senzora";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Početna"
 #define INTL_BACK_TO_HOME "Povratak na početnu stranicu"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Aktualni podaci";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Status uređaja";
@@ -107,10 +114,12 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Status uređaja";
 #define INTL_CANCEL "Odustani"
 #define INTL_REALLY_RESTART_SENSOR "Jeste li sigurni da želite ponovno pokrenuti senzor?"
 #define INTL_RESTART "Ponovno pokretanje"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Spremi izmjene i ponovno pokreni";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmver"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Postavite razinu analize grešaka na";
 #endif // INTL_DEFINE_VARIABLES
@@ -123,6 +132,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Postavite razinu analize grešaka 
 #define INTL_CONFIG_DELETED "Konfiguracija je izbrisana"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Konfiguracija se ne može izbrisati"
 #define INTL_CONFIG_NOT_FOUND "Konfiguracija nije pronađena"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Još {v} sekundi do prvog mjerenja.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " sekundi od zadnjeg mjerenja.";

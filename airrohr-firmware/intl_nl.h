@@ -8,16 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "NL"
 #define INTL_PM_SENSOR "Fijnstofsensor"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "Configuratie";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi-instellingen"
 #define INTL_WIFI_NETWORKS "Zoeken naar WiFi-netwerken ..."
 #define INTL_LANGUAGE "Taal"
+
 #ifdef INTL_DEFINE_VARIABLES
-const char INTL_NO_NETWORKS[] PROGMEM =  "Geen WiFi-netwerk gevonden";
+const char INTL_NO_NETWORKS[] PROGMEM = "Geen WiFi-netwerk gevonden";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "Netwerk gevonden: ";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "Geavanceerde instellingen (enkel als je weet wat je doet)";
 const char INTL_SAVE[] PROGMEM = "Opslaan";
@@ -65,16 +74,13 @@ const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "Toon WiFi info";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "Toon apparaatinfo";
 #endif // INTL_DEFINE_VARIABLES
-
 #define INTL_STATIC_IP_TEXT "Configuratie statisch IP-adres (alle velden moeten ingevuld zijn)"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "IP-adres";
 const char INTL_STATIC_SUBNET[] PROGMEM = "Subnet";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "Gateway";
 const char INTL_STATIC_DNS[] PROGMEM = "DNS-server";
-#endif // INTL_DEFINE_VARIABLES
-
-#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debugniveau";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "Meetinterval";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "Tijdsduur routermodus";
@@ -96,6 +102,7 @@ const char INTL_RESTART_SENSOR[] PROGMEM = "Herstart sensor";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "Home"
 #define INTL_BACK_TO_HOME "Terug naar homepagina"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "Huidige data";
 const char INTL_DEVICE_STATUS[] PROGMEM = "Apparaatstatus";
@@ -107,10 +114,12 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "Apparaatstatus";
 #define INTL_CANCEL "Annuleren"
 #define INTL_REALLY_RESTART_SENSOR "Bent u zeker dat u de sensor wilt herstarten?"
 #define INTL_RESTART "Herstart"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "Opslaan en herstarten";
 #endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "Firmware-versie"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debugniveau naar ";
 #endif // INTL_DEFINE_VARIABLES
@@ -123,6 +132,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "Debugniveau naar ";
 #define INTL_CONFIG_DELETED "Configuratie is verwijderd"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "Configuratie kan niet worden verwijderd"
 #define INTL_CONFIG_NOT_FOUND "Configuratie is niet gevonden"
+
 #ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "Nog {v} seconden voor de eerste meting.";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " seconden sinds laatste meting.";
