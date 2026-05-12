@@ -64,3 +64,13 @@ void fetchSensorDHT(String &s)
 
 	debug_outln_verbose(F("Sensor end "), F("DHT22"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_dht_values(String &page_content)
+{
+	add_table_t_value(page_content, FPSTR(SENSORS_DHT22), FPSTR(INTL_TEMPERATURE), last_value_DHT_T);
+	add_table_h_value(page_content, FPSTR(SENSORS_DHT22), FPSTR(INTL_HUMIDITY), last_value_DHT_H);
+	page_content += FPSTR(EMPTY_ROW);
+}

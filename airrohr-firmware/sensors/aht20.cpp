@@ -45,3 +45,17 @@ void fetchSensorAHT20(String &s)
 
 	debug_outln_verbose(F("Sensor end "), F("AHT20"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+#include <cmath>
+
+void render_aht20_values(String &page_content)
+{
+	add_table_t_value(page_content, FPSTR(SENSORS_AHT20), FPSTR(INTL_TEMPERATURE), last_value_AHT20_T);
+	add_table_h_value(page_content, FPSTR(SENSORS_AHT20), FPSTR(INTL_HUMIDITY), last_value_AHT20_H);
+	float dew = dew_point(last_value_AHT20_T, last_value_AHT20_H);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_AHT20), FPSTR(INTL_DEW_POINT),
+							 isnan(dew) ? "-" : String(dew, 1), "°C");
+	page_content += FPSTR(EMPTY_ROW);
+}

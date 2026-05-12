@@ -12,4 +12,8 @@
 
 void fetchSensorHTU21D(String &s);
 
+
+/* Render /values-Tabelle. Issue #18 Phase E. */
+void render_htu21d_values(String &page_content);
+
 #endif

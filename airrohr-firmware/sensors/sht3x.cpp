@@ -42,3 +42,17 @@ void fetchSensorSHT3x(String &s)
 	debug_outln_info(F("----"));
 	debug_outln_verbose(F("/R "), F("SHT3x"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+#include <cmath>
+
+void render_sht3x_values(String &page_content)
+{
+	add_table_t_value(page_content, FPSTR(SENSORS_SHT3X), FPSTR(INTL_TEMPERATURE), last_value_SHT3X_T);
+	add_table_h_value(page_content, FPSTR(SENSORS_SHT3X), FPSTR(INTL_HUMIDITY), last_value_SHT3X_H);
+	float dew = dew_point(last_value_SHT3X_T, last_value_SHT3X_H);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_SHT3X), FPSTR(INTL_DEW_POINT),
+							 isnan(dew) ? "-" : String(dew, 1), "°C");
+	page_content += FPSTR(EMPTY_ROW);
+}

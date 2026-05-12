@@ -17,4 +17,8 @@
 
 void fetchSensorPPD(String &s);
 
+
+/* Render /values-Tabelle. Issue #18 Phase E. */
+void render_ppd_values(String &page_content);
+
 #endif

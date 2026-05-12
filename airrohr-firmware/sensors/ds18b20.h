@@ -12,4 +12,8 @@
 
 void fetchSensorDS18B20(String &s);
 
+
+/* Render /values-Tabelle. Issue #18 Phase E. */
+void render_ds18b20_values(String &page_content);
+
 #endif

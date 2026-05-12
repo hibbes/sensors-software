@@ -12,4 +12,8 @@
 
 void fetchSensorSHT3x(String &s);
 
+
+/* Render /values-Tabelle. Issue #18 Phase E. */
+void render_sht3x_values(String &page_content);
+
 #endif

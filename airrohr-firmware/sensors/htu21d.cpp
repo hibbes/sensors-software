@@ -43,3 +43,17 @@ void fetchSensorHTU21D(String &s)
 
 	debug_outln_verbose(F("/R "), F("HTU21D"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+#include <cmath>
+
+void render_htu21d_values(String &page_content)
+{
+	add_table_t_value(page_content, FPSTR(SENSORS_HTU21D), FPSTR(INTL_TEMPERATURE), last_value_HTU21D_T);
+	add_table_h_value(page_content, FPSTR(SENSORS_HTU21D), FPSTR(INTL_HUMIDITY), last_value_HTU21D_H);
+	float dew = dew_point(last_value_HTU21D_T, last_value_HTU21D_H);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_HTU21D), FPSTR(INTL_DEW_POINT),
+							 isnan(dew) ? "-" : String(dew, 1), "°C");
+	page_content += FPSTR(EMPTY_ROW);
+}

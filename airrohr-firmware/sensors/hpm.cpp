@@ -183,3 +183,13 @@ void fetchSensorHPM(String &s)
 
 	debug_outln_verbose(F("/R "), F("Honeywell PM"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_hpm_values(String &page_content)
+{
+	add_table_pm_value(page_content, FPSTR(SENSORS_HPM), FPSTR(WEB_PM25), last_value_HPM_P2);
+	add_table_pm_value(page_content, FPSTR(SENSORS_HPM), FPSTR(WEB_PM10), last_value_HPM_P1);
+	page_content += FPSTR(EMPTY_ROW);
+}

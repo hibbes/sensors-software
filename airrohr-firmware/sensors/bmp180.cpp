@@ -43,3 +43,20 @@ void fetchSensorBMP(String &s)
 	debug_outln_info(F("----"));
 	debug_outln_verbose(F("/R "), F("BMP180"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_bmp180_values(String &page_content)
+{
+	const String unit_P("hPa");
+	add_table_t_value(page_content, FPSTR(SENSORS_BMP180), FPSTR(INTL_TEMPERATURE), last_value_BMP_T);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_BMP180), FPSTR(INTL_PRESSURE),
+							 check_display_value(last_value_BMP_P / 100.0f, (-1 / 100.0f), 2, 0), unit_P);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_BMP180), FPSTR(INTL_PRESSURE_AT_SEALEVEL),
+							 last_value_BMP_P != -1.0f
+								 ? String(pressure_at_sealevel(last_value_BMP_T, last_value_BMP_P / 100.0f), 2)
+								 : "-",
+							 unit_P);
+	page_content += FPSTR(EMPTY_ROW);
+}

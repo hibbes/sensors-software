@@ -99,3 +99,20 @@ void fetchSensorGPS(String &s)
 
 	debug_outln_verbose(F("/R "), "GPS");
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_gps_values(String &page_content)
+{
+	const String unit_Deg("°");
+	add_table_row_from_value(page_content, FPSTR(WEB_GPS), FPSTR(INTL_LATITUDE),
+							 check_display_value(last_value_GPS_lat, -200.0, 6, 0), unit_Deg);
+	add_table_row_from_value(page_content, FPSTR(WEB_GPS), FPSTR(INTL_LONGITUDE),
+							 check_display_value(last_value_GPS_lon, -200.0, 6, 0), unit_Deg);
+	add_table_row_from_value(page_content, FPSTR(WEB_GPS), FPSTR(INTL_ALTITUDE),
+							 check_display_value(last_value_GPS_alt, -1000.0, 2, 0), "m");
+	add_table_row_from_value(page_content, FPSTR(WEB_GPS), FPSTR(INTL_TIME_UTC),
+							 last_value_GPS_timestamp, emptyString);
+	page_content += FPSTR(EMPTY_ROW);
+}

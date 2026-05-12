@@ -121,3 +121,17 @@ void fetchSensorPPD(String &s)
 
 	debug_outln_verbose(F("/R "), F("PPD42NS"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_ppd_values(String &page_content)
+{
+	add_table_row_from_value(page_content, FPSTR(SENSORS_PPD42NS), FPSTR(WEB_PM1),
+							 check_display_value(last_value_PPD_P1, -1, 1, 0),
+							 FPSTR(INTL_PARTICLES_PER_LITER));
+	add_table_row_from_value(page_content, FPSTR(SENSORS_PPD42NS), FPSTR(WEB_PM25),
+							 check_display_value(last_value_PPD_P2, -1, 1, 0),
+							 FPSTR(INTL_PARTICLES_PER_LITER));
+	page_content += FPSTR(EMPTY_ROW);
+}
