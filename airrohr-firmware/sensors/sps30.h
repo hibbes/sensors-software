@@ -22,4 +22,7 @@ void fetchSensorSPS30(String &s);
  * Issue #18 Phase E. */
 void render_sps30_values(String &page_content);
 
+/* /status-Sektion. Issue #18 Phase E-2. */
+void render_sps30_status_error(String &page_content);
+
 #endif

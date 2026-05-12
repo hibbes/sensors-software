@@ -21,4 +21,8 @@ void fetchSensorSDS(String &s);
 /* Render /values-Tabelle. Issue #18 Phase E. */
 void render_sds011_values(String &page_content);
 
+/* /status-Sektion. Issue #18 Phase E-2. */
+void render_sds011_status_info(String &page_content);
+void render_sds011_status_error(String &page_content);
+
 #endif

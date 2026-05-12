@@ -65,3 +65,16 @@ void render_scd30_values(String &page_content)
 							 isnan(dew) ? "-" : String(dew, 1), "°C");
 	page_content += FPSTR(EMPTY_ROW);
 }
+
+void render_scd30_status_info(String &page_content)
+{
+	if (scd30.getAutoSelfCalibration() == true)
+		add_table_row_from_value(page_content, F("SCD30 Auto Calibration"), "enabled");
+	else
+		add_table_row_from_value(page_content, F("SCD30 Auto Calibration"), "disabled");
+	uint16_t settingVal;
+	scd30.getMeasurementInterval(&settingVal);
+	add_table_row_from_value(page_content, F("SCD30 measurement interval"), String(settingVal));
+	scd30.getTemperatureOffset(&settingVal);
+	add_table_row_from_value(page_content, F("SCD30 temperature offset"), String(settingVal));
+}

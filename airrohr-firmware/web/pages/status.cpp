@@ -4,6 +4,10 @@
  * Issue #18 Phase B — ausgelagert aus airrohr-firmware.ino.
  */
 #include "../page_helpers.h"
+#include "../../sensors/sds011.h"
+#include "../../sensors/npm.h"
+#include "../../sensors/scd30.h"
+#include "../../sensors/sps30.h"
 
 #if defined(ESP8266)
 #include <ESP8266HTTPClient.h>
@@ -75,28 +79,9 @@ void webserver_status()
 #if defined(ESP8266)
 	add_table_row_from_value(page_content, F("Reset Reason"), ESP.getResetReason());
 #endif
-	if (cfg::sds_read)
-	{
-		page_content += FPSTR(EMPTY_ROW);
-		add_table_row_from_value(page_content, FPSTR(SENSORS_SDS011), last_value_SDS_version);
-	}
-	if (cfg::npm_read)
-	{
-		page_content += FPSTR(EMPTY_ROW);
-		add_table_row_from_value(page_content, FPSTR(SENSORS_NPM), last_value_NPM_version);
-	}
-	if (cfg::scd30_read)
-	{
-		if (scd30.getAutoSelfCalibration() == true)
-			add_table_row_from_value(page_content, F("SCD30 Auto Calibration"), "enabled");
-		else
-			add_table_row_from_value(page_content, F("SCD30 Auto Calibration"), "disabled");
-		uint16_t settingVal;
-		scd30.getMeasurementInterval(&settingVal);
-		add_table_row_from_value(page_content, F("SCD30 measurement interval"), String(settingVal));
-		scd30.getTemperatureOffset(&settingVal);
-		add_table_row_from_value(page_content, F("SCD30 temperature offset"), String(settingVal));
-	}
+	if (cfg::sds_read)   render_sds011_status_info(page_content);
+	if (cfg::npm_read)   render_npm_status_info(page_content);
+	if (cfg::scd30_read) render_scd30_status_info(page_content);
 
 	page_content += FPSTR(EMPTY_ROW);
 	page_content += F("<tr><td colspan='2'><b>" INTL_ERROR "</b></td></tr>");
@@ -129,18 +114,9 @@ void webserver_status()
 		add_table_row_from_value(page_content, F("Data Send Return"),
 								 last_sendData_returncode > 0 ? String(last_sendData_returncode) : HTTPClient::errorToString(last_sendData_returncode));
 	}
-	if (cfg::sds_read)
-	{
-		add_table_row_from_value(page_content, FPSTR(SENSORS_SDS011), String(SDS_error_count));
-	}
-	if (cfg::npm_read)
-	{
-		add_table_row_from_value(page_content, FPSTR(SENSORS_NPM), String(NPM_error_count));
-	}
-	if (cfg::sps30_read)
-	{
-		add_table_row_from_value(page_content, FPSTR(SENSORS_SPS30), String(SPS30_read_error_counter));
-	}
+	if (cfg::sds_read)   render_sds011_status_error(page_content);
+	if (cfg::npm_read)   render_npm_status_error(page_content);
+	if (cfg::sps30_read) render_sps30_status_error(page_content);
 
 	server.sendContent(page_content);
 	page_content = emptyString;
