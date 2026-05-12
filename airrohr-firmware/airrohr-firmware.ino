@@ -144,6 +144,7 @@
 #include "html-content.h"
 #include "./web/page_helpers.h"
 #include "./web/pages.h"
+#include "./web/assets_generated.h"
 
 String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 
@@ -1802,7 +1803,7 @@ static void webserver_static()
 	else if (server.arg(String('r')) == F("css"))
 	{
 		server.send_P(200, TXT_CONTENT_TYPE_TEXT_CSS,
-					  WEB_PAGE_STATIC_CSS, WEB_PAGE_STATIC_CSS_LEN);
+					  ASSET_STYLE_CSS, ASSET_STYLE_CSS_LEN);
 	}
 	else
 	{

@@ -55,8 +55,8 @@ extern const char SENSORS_BME280[] PROGMEM;
 extern const char SENSORS_BMP280[] PROGMEM;
 extern const char SENSORS_DNMS[] PROGMEM;
 extern const char WEB_PAGE_HEADER[] PROGMEM;
-extern const char WEB_PAGE_STATIC_CSS[] PROGMEM;
-extern const size_t WEB_PAGE_STATIC_CSS_LEN;
+// WEB_PAGE_STATIC_CSS moved to web/assets/style.css (Issue #18 Phase D)
+// → use ASSET_STYLE_CSS from web/assets_generated.h
 extern const char WEB_PAGE_HEADER_HEAD[] PROGMEM;
 extern const char WEB_PAGE_HEADER_BODY[] PROGMEM;
 extern const char BR_TAG[] PROGMEM;
