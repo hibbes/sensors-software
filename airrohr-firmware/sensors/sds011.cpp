@@ -30,6 +30,13 @@ extern bool is_SDS_running;
 // SDS_waiting_for ist im .ino als anonyme-enum-Variable deklariert; wir
 // greifen über int-kompatible extern-Decl darauf zu.
 extern int SDS_waiting_for;
+extern unsigned long count_sends;
+
+// Issue #6: SDS011 braucht ~15 s Lüfter+Laser-Warmup, plus 1-2 Cycles bis
+// stabil. SDS_WARMUP_CYCLES viele Cycles am Boot werden Frame-Defizite NICHT
+// als Errors gezählt — sonst zeigt /status nach Reboot fälschlicherweise
+// Errors obwohl Hardware OK ist.
+static constexpr unsigned long SDS_WARMUP_CYCLES = 2;
 
 extern uint32_t sds_pm10_sum;
 extern uint32_t sds_pm25_sum;
@@ -122,12 +129,12 @@ void fetchSensorSDS(String &s)
 			add_Value2Json(s, F("SDS_P1"), F("PM10:  "), last_value_SDS_P1);
 			add_Value2Json(s, F("SDS_P2"), F("PM2.5: "), last_value_SDS_P2);
 			debug_outln_info(F("----"));
-			if (sds_val_count < 3)
+			if (sds_val_count < 3 && count_sends >= SDS_WARMUP_CYCLES)
 			{
 				SDS_error_count++;
 			}
 		}
-		else
+		else if (count_sends >= SDS_WARMUP_CYCLES)
 		{
 			SDS_error_count++;
 		}

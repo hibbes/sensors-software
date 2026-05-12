@@ -2046,7 +2046,14 @@ static unsigned long sendSensorCommunity(const String &data, const int pin, cons
 		debug_outln_info(F("## Sending to sensor.community - "), sensorname);
 		data_sensorcommunity += data;
 		data_sensorcommunity.remove(data_sensorcommunity.length() - 1);
-		data_sensorcommunity.replace(replace_str, emptyString);
+		// Issue #8: prefix-strip anchored an "value_type":"<prefix>... statt
+		// String-weit, damit ein zufälliger Substring im "value"-Feld nicht
+		// mit gestrippt wird. Volles ArduinoJson-Roundtrip ist Folge-Issue.
+		String anchored;
+		anchored.reserve(strlen(replace_str) + 15);
+		anchored = F("\"value_type\":\"");
+		anchored += replace_str;
+		data_sensorcommunity.replace(anchored, F("\"value_type\":\""));
 		data_sensorcommunity += "]}";
 		sum_send_time = sendData(LoggerSensorCommunity, data_sensorcommunity, pin, HOST_SENSORCOMMUNITY, URL_SENSORCOMMUNITY);
 	}
@@ -2994,6 +3001,22 @@ static bool initBMX280(char addr)
 
 	if (bmx280.begin(addr))
 	{
+		// Issue #5: sensorID() kann direkt nach begin() Garbage liefern,
+		// wenn der I²C-Bus noch nicht stabil ist. 50ms Wait + Retry-Loop
+		// (3 Versuche, Mehrheit gewinnt) macht die BMP/BME-Erkennung robust.
+		delay(50);
+		uint8_t ids[3];
+		for (uint8_t i = 0; i < 3; ++i)
+		{
+			ids[i] = bmx280.sensorID();
+			delay(5);
+		}
+		uint8_t majority_id = (ids[0] == ids[1] || ids[0] == ids[2]) ? ids[0] : ids[1];
+		if (ids[0] != ids[1] || ids[1] != ids[2])
+		{
+			debug_outln_info(F("BMx280 sensorID unstable, using majority: 0x"), String(majority_id, HEX));
+		}
+
 		debug_outln_info(FPSTR(DBG_TXT_FOUND));
 		bmx280.setSampling(
 			BMX280::MODE_FORCED,
