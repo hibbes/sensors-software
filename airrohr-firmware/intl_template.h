@@ -10,10 +10,13 @@
 
 #define INTL_LANG "";
 #define INTL_PM_SENSOR ""
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS ""
 #define INTL_WIFI_NETWORKS ""
 #define INTL_LANGUAGE ""
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_NO_NETWORKS[] PROGMEM =  "";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "";
@@ -30,6 +33,7 @@ const char INTL_SPS30[] PROGMEM = "Sensirion SPS30 ({pm})";
 const char INTL_PPD42NS[] PROGMEM = "PPD42NS ({pm})";
 const char INTL_DHT22[] PROGMEM = "DHT22 ({t}, {h})";
 const char INTL_HTU21D[] PROGMEM = "HTU21D ({t}, {h})";
+const char INTL_AHT20[] PROGMEM = "AHT20 ({t}, {h})";
 const char INTL_BMP180[] PROGMEM = "BMP180 ({t}, {p})";
 const char INTL_BMX280[] PROGMEM = "BME280 ({t}, {h}, {p}), BMP280 ({t}, {p})";
 const char INTL_SHT3X[] PROGMEM = "SHT3X ({t}, {h})";
@@ -42,8 +46,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "";
 const char INTL_NEO6M[] PROGMEM = "GPS (NEO 6M)";
 const char INTL_BASICAUTH[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE ""
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "";
 const char INTL_MORE_SETTINGS[] PROGMEM = "";
@@ -58,13 +64,17 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 
 #define INTL_STATIC_IP_TEXT ""
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "";
 const char INTL_STATIC_SUBNET[] PROGMEM = "";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "";
 const char INTL_STATIC_DNS[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_LEVEL[] PROGMEM = "";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "";
@@ -83,10 +93,13 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "";
 const char INTL_RESTART_DEVICE[] PROGMEM = "";
 const char INTL_DELETE_CONFIG[] PROGMEM = "";
 const char INTL_RESTART_SENSOR[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME ""
 #define INTL_BACK_TO_HOME ""
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "";
 const char INTL_DEVICE_STATUS[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP ""
 #define INTL_CONFIGURATION_DELETE ""
 #define INTL_CONFIGURATION_REALLY_DELETE ""
@@ -94,9 +107,13 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "";
 #define INTL_CANCEL ""
 #define INTL_REALLY_RESTART_SENSOR ""
 #define INTL_RESTART ""
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE ""
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE ""
 #define INTL_ERROR ""
 #define INTL_WARNING ""
@@ -106,6 +123,7 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "";
 #define INTL_CONFIG_DELETED ""
 #define INTL_CONFIG_CAN_NOT_BE_DELETED ""
 #define INTL_CONFIG_NOT_FOUND ""
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = "";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "";
@@ -124,6 +142,7 @@ const char INTL_ALTITUDE[] PROGMEM = "";
 const char INTL_TIME_UTC[] PROGMEM = "";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS ""
 #define INTL_TIME_SENDING_MS ""
 #define INTL_SENSOR ""

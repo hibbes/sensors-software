@@ -8,13 +8,25 @@
  *	Texts should be as short as possible
  */
 
+#pragma once
+
+// Übersetzungen aus tools/intl/master.csv generiert (Issue #18 Phase F-2).
+// Generator: tools/intl/generate.py
+// const-typed strings sind im #ifdef INTL_DEFINE_VARIABLES-Block; nur die
+// .ino emittiert Definitionen, andere TUs sehen extern-Decls aus intl-decls.h.
+
 #define INTL_LANG "CN"
 #define INTL_PM_SENSOR "颗粒物传感器"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CONFIGURATION[] PROGMEM = "配置";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_WIFI_SETTINGS "WiFi设置"
 #define INTL_WIFI_NETWORKS "加载wifi网络..."
 #define INTL_LANGUAGE "语种"
-const char INTL_NO_NETWORKS[] PROGMEM =  "没有找到WiFi网络";
+
+#ifdef INTL_DEFINE_VARIABLES
+const char INTL_NO_NETWORKS[] PROGMEM = "没有找到WiFi网络";
 const char INTL_NETWORKS_FOUND[] PROGMEM = "发现网络。";
 const char INTL_AB_HIER_NUR_ANDERN[] PROGMEM = "高级设置（仅在您知道自己在做什么的情况下）。";
 const char INTL_SAVE[] PROGMEM = "保存";
@@ -30,6 +42,7 @@ const char INTL_SPS30[] PROGMEM = "Sensirion SPS30 ({pm})";
 const char INTL_PPD42NS[] PROGMEM = "PPD42NS({pm})";
 const char INTL_DHT22[] PROGMEM = "DHT22 ({t}, {h})";
 const char INTL_HTU21D[] PROGMEM = "HTU21D ({t}, {h})";
+const char INTL_AHT20[] PROGMEM = "AHT20 ({t}, {h})";
 const char INTL_BMP180[] PROGMEM = "BMP180 ({t}, {p})";
 const char INTL_BMX280[] PROGMEM = "BME280 ({t}, {h}, {p}), BMP280 ({t}, {p})";
 const char INTL_SHT3X[] PROGMEM = "SHT3X ({t}, {h})";
@@ -42,8 +55,10 @@ const char INTL_HEIGHT_ABOVE_SEALEVEL[] PROGMEM = "[[height_above_sealevel]]";
 const char INTL_PRESSURE_AT_SEALEVEL[] PROGMEM = "[[pressure_at_sealevel]]";
 const char INTL_NEO6M[] PROGMEM = "GPS（NEO 6M）";
 const char INTL_BASICAUTH[] PROGMEM = "认证";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_REPORT_ISSUE "报告问题"
 
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_FS_WIFI_DESCRIPTION[] PROGMEM = "WiFi传感器在配置模式下";
 const char INTL_FS_WIFI_NAME[] PROGMEM = "网络名称";
 const char INTL_MORE_SETTINGS[] PROGMEM = "更多设置";
@@ -58,13 +73,14 @@ const char INTL_LCD2004_27[] PROGMEM = "LCD 2004 (I2C: 0x27)";
 const char INTL_LCD2004_3F[] PROGMEM = "LCD 2004 (I2C: 0x3F)";
 const char INTL_DISPLAY_WIFI_INFO[] PROGMEM = "显示Wifi信息";
 const char INTL_DISPLAY_DEVICE_INFO[] PROGMEM = "显示设备信息";
-
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_STATIC_IP_TEXT "[[static_ip_text]]"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_STATIC_IP[] PROGMEM = "[[static_ip]]";
 const char INTL_STATIC_SUBNET[] PROGMEM = "[[static_subnet]]";
 const char INTL_STATIC_GATEWAY[] PROGMEM = "[[static_gateway]]";
 const char INTL_STATIC_DNS[] PROGMEM = "[[static_dns]]";
-
 const char INTL_DEBUG_LEVEL[] PROGMEM = "Debug&nbsp;级别";
 const char INTL_MEASUREMENT_INTERVAL[] PROGMEM = "测量间隔(秒)";
 const char INTL_DURATION_ROUTER_MODE[] PROGMEM = "持续时间路由器模式";
@@ -83,10 +99,14 @@ const char INTL_SENSOR_IS_REBOOTING[] PROGMEM = "传感器正在重新启动。"
 const char INTL_RESTART_DEVICE[] PROGMEM = "重新启动设备";
 const char INTL_DELETE_CONFIG[] PROGMEM = "删除保存的配置";
 const char INTL_RESTART_SENSOR[] PROGMEM = "重新启动传感器";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_HOME "首页"
 #define INTL_BACK_TO_HOME "返回首页"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_CURRENT_DATA[] PROGMEM = "当前数据";
 const char INTL_DEVICE_STATUS[] PROGMEM = "设备状态";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_ACTIVE_SENSORS_MAP "有源传感器地图(外部链接)"
 #define INTL_CONFIGURATION_DELETE "删除配置"
 #define INTL_CONFIGURATION_REALLY_DELETE "你确定要删除配置？"
@@ -94,9 +114,15 @@ const char INTL_DEVICE_STATUS[] PROGMEM = "设备状态";
 #define INTL_CANCEL "取消"
 #define INTL_REALLY_RESTART_SENSOR "你确定要重新启动传感器吗？"
 #define INTL_RESTART "重新启动"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_SAVE_AND_RESTART[] PROGMEM = "保存配置并重新启动";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_FIRMWARE "固件版本"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_DEBUG_SETTING_TO[] PROGMEM = "设置调试级别为";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NONE "关闭"
 #define INTL_ERROR "唯恐有误"
 #define INTL_WARNING "警示"
@@ -106,6 +132,8 @@ const char INTL_DEBUG_SETTING_TO[] PROGMEM = "设置调试级别为";
 #define INTL_CONFIG_DELETED "配置被删除"
 #define INTL_CONFIG_CAN_NOT_BE_DELETED "不能删除配置"
 #define INTL_CONFIG_NOT_FOUND "未找到配置"
+
+#ifdef INTL_DEFINE_VARIABLES
 const char INTL_TIME_TO_FIRST_MEASUREMENT[] PROGMEM = "距离第一次测量还有{v}秒。";
 const char INTL_TIME_SINCE_LAST_MEASUREMENT[] PROGMEM = " 自上次测量以来的秒数。";
 const char INTL_PARTICLES_PER_LITER[] PROGMEM = "粒子升";
@@ -124,6 +152,7 @@ const char INTL_ALTITUDE[] PROGMEM = "海拔";
 const char INTL_TIME_UTC[] PROGMEM = "时间(UTC)";
 const char INTL_SIGNAL_STRENGTH[] PROGMEM = "信号强度";
 const char INTL_SIGNAL_QUALITY[] PROGMEM = "信号质量";
+#endif // INTL_DEFINE_VARIABLES
 #define INTL_NUMBER_OF_MEASUREMENTS "测量数量"
 #define INTL_TIME_SENDING_MS "上传时间"
 #define INTL_SENSOR "传感器"

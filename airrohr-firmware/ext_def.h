@@ -1,3 +1,4 @@
+#pragma once
 // Language config
 #define CURRENT_LANG INTL_LANG
 
@@ -40,6 +41,7 @@ enum LoggerEntry {
     Loggeraircms,
     LoggerInflux,
     LoggerCustom,
+    LoggerWunderground,  // hibbes-Patch: direkt zu Wunderground PWS-API
     LoggerCount
 };
 
@@ -78,6 +80,18 @@ static const char URL_AIRCMS[] PROGMEM = "/php/sensors.php?h=";
 
 static const char FW_DOWNLOAD_HOST[] PROGMEM = "firmware.sensor.community";
 #define FW_DOWNLOAD_PORT 443
+
+// hibbes-Patch: Wunderground PWS-Upload-API (Issue #16)
+#define LEN_WU_STATION_ID 16
+static const char HOST_WUNDERGROUND[] PROGMEM = "weatherstation.wunderground.com";
+#define PORT_WUNDERGROUND 443
+static const char URL_WUNDERGROUND_BASE[] PROGMEM = "/weatherstation/updateweatherstation.php";
+
+// hibbes-Patch: konfigurierbarer Auto-Update-Server.
+// cfg::ota_host kann via Web-UI/JSON-Cfg gesetzt werden; leer = Default oben.
+// Pfad-Struktur (OTA_BASENAME/update/latest_<lang>.bin) muss am eigenen Server gespiegelt sein.
+#define LEN_OTA_HOST 100
+static const char OTA_HOST[] PROGMEM = "";
 
 static const char FW_2ND_LOADER_URL[] PROGMEM = OTA_BASENAME "/loader-002.bin";
 
@@ -231,6 +245,10 @@ static const char MEASUREMENT_NAME_INFLUX[] PROGMEM = "feinstaub";
 // HTU21D, temperature, humidity
 #define HTU21D_READ 0
 #define HTU21D_API_PIN 7
+
+// AHT20, temperature, humidity (DHT22 replacement, often in combo with BMP280)
+#define AHT20_READ 0
+#define AHT20_API_PIN 7
 
 // PPD42NS, the cheaper version of the particle sensor
 #define PPD_READ 0
