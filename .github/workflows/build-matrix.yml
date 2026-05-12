@@ -23,6 +23,8 @@ jobs:
           python-version: '3.11'
       - name: Audit intl_<lang>.h vs intl_en.h
         run: python3 airrohr-firmware/tools/intl/audit.py
+      - name: Check intl_<lang>.h matches master.csv
+        run: python3 airrohr-firmware/tools/intl/generate.py --check
 
   build:
     name: ${{ matrix.env }}
