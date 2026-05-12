@@ -2046,7 +2046,14 @@ static unsigned long sendSensorCommunity(const String &data, const int pin, cons
 		debug_outln_info(F("## Sending to sensor.community - "), sensorname);
 		data_sensorcommunity += data;
 		data_sensorcommunity.remove(data_sensorcommunity.length() - 1);
-		data_sensorcommunity.replace(replace_str, emptyString);
+		// Issue #8: prefix-strip anchored an "value_type":"<prefix>... statt
+		// String-weit, damit ein zufälliger Substring im "value"-Feld nicht
+		// mit gestrippt wird. Volles ArduinoJson-Roundtrip ist Folge-Issue.
+		String anchored;
+		anchored.reserve(strlen(replace_str) + 15);
+		anchored = F("\"value_type\":\"");
+		anchored += replace_str;
+		data_sensorcommunity.replace(anchored, F("\"value_type\":\""));
 		data_sensorcommunity += "]}";
 		sum_send_time = sendData(LoggerSensorCommunity, data_sensorcommunity, pin, HOST_SENSORCOMMUNITY, URL_SENSORCOMMUNITY);
 	}
