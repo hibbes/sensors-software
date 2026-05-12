@@ -18,4 +18,8 @@
 
 void fetchSensorSPS30(String &s);
 
+/* Render /values-Tabelle (10 Werte: PM0-P4 + NC0.5-N10 + Typical Particle Size).
+ * Issue #18 Phase E. */
+void render_sps30_values(String &page_content);
+
 #endif

@@ -198,6 +198,10 @@ bool writeConfig();
 void add_warning_first_cycle(String &page_content);
 void add_age_last_values(String &s);
 void display_debug(const String &text1, const String &text2);
+void add_table_pm_value(String &page_content, const __FlashStringHelper *sensor, const __FlashStringHelper *param, const float value);
+void add_table_nc_value(String &page_content, const __FlashStringHelper *sensor, const __FlashStringHelper *param, const float value);
+void add_table_t_value(String &page_content, const __FlashStringHelper *sensor, const __FlashStringHelper *param, const float value);
+void add_table_h_value(String &page_content, const __FlashStringHelper *sensor, const __FlashStringHelper *param, const float value);
 float dew_point(const float temperature, const float humidity);
 float pressure_at_sealevel(const float temperature, const float pressure);
 

@@ -74,3 +74,35 @@ void fetchSensorBMX280(String &s)
 	debug_outln_info(F("----"));
 	debug_outln_verbose(F("Sensor end "), sensor_label);
 }
+
+/*****************************************************************
+ * /values render: BMP280 / BME280 — Hardware-Auto-Detect.        *
+ * Issue #18 Phase E.                                              *
+ *****************************************************************/
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+#include <cmath>
+
+void render_bmx280_values(String &page_content)
+{
+	const char *const sensor_name = (bmx280.sensorID() == BME280_SENSOR_ID) ? SENSORS_BME280 : SENSORS_BMP280;
+	const String unit_P("hPa");
+	const String unit_T("°C");
+
+	add_table_t_value(page_content, FPSTR(sensor_name), FPSTR(INTL_TEMPERATURE), last_value_BMX280_T);
+	add_table_row_from_value(page_content, FPSTR(sensor_name), FPSTR(INTL_PRESSURE),
+							 check_display_value(last_value_BMX280_P / 100.0f, (-1 / 100.0f), 2, 0), unit_P);
+	add_table_row_from_value(page_content, FPSTR(sensor_name), FPSTR(INTL_PRESSURE_AT_SEALEVEL),
+							 last_value_BMX280_P != -1.0f
+								 ? String(pressure_at_sealevel(last_value_BMX280_T, last_value_BMX280_P / 100.0f), 2)
+								 : "-",
+							 unit_P);
+	if (bmx280.sensorID() == BME280_SENSOR_ID)
+	{
+		add_table_h_value(page_content, FPSTR(sensor_name), FPSTR(INTL_HUMIDITY), last_value_BME280_H);
+		float dew = dew_point(last_value_BMX280_T, last_value_BME280_H);
+		add_table_row_from_value(page_content, FPSTR(sensor_name), FPSTR(INTL_DEW_POINT),
+								 isnan(dew) ? "-" : String(dew, 1), unit_T);
+	}
+	page_content += FPSTR(EMPTY_ROW);
+}

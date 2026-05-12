@@ -288,3 +288,20 @@ void fetchSensorNPM(String &s)
 
 	debug_outln_verbose(F("/R "), F("Tera Sensor Next PM"));
 }
+
+/*****************************************************************
+ * /values render: Tera Sensor Next PM — 6 Werte. Issue #18 Phase E.
+ *****************************************************************/
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_npm_values(String &page_content)
+{
+	add_table_pm_value(page_content, FPSTR(SENSORS_NPM), FPSTR(WEB_PM1), last_value_NPM_P0);
+	add_table_pm_value(page_content, FPSTR(SENSORS_NPM), FPSTR(WEB_PM25), last_value_NPM_P2);
+	add_table_pm_value(page_content, FPSTR(SENSORS_NPM), FPSTR(WEB_PM10), last_value_NPM_P1);
+	add_table_nc_value(page_content, FPSTR(SENSORS_NPM), FPSTR(WEB_NC1k0), last_value_NPM_N1);
+	add_table_nc_value(page_content, FPSTR(SENSORS_NPM), FPSTR(WEB_NC2k5), last_value_NPM_N25);
+	add_table_nc_value(page_content, FPSTR(SENSORS_NPM), FPSTR(WEB_NC10), last_value_NPM_N10);
+	page_content += FPSTR(EMPTY_ROW);
+}
