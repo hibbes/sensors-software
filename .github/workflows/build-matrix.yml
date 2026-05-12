@@ -13,6 +13,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  intl-audit:
+    name: i18n drift check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Audit intl_<lang>.h vs intl_en.h
+        run: python3 airrohr-firmware/tools/intl/audit.py
+
   build:
     name: ${{ matrix.env }}
     runs-on: ubuntu-latest
