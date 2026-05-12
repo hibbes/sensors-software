@@ -13,3 +13,4 @@ void webserver_wifi();
 void webserver_removeConfig();
 void webserver_reset();
 void webserver_debug_level();
+void webserver_status();
