@@ -13,4 +13,8 @@
 
 void fetchSensorSCD30(String &s);
 
+
+/* Render /values-Tabelle. Issue #18 Phase E. */
+void render_scd30_values(String &page_content);
+
 #endif

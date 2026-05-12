@@ -58,3 +58,12 @@ void fetchSensorDS18B20(String &s)
 	debug_outln_info(F("----"));
 	debug_outln_verbose(F("/R "), F("DS18B20"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_ds18b20_values(String &page_content)
+{
+	add_table_t_value(page_content, FPSTR(SENSORS_DS18B20), FPSTR(INTL_TEMPERATURE), last_value_DS18B20_T);
+	page_content += FPSTR(EMPTY_ROW);
+}

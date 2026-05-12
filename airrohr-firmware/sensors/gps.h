@@ -19,4 +19,8 @@
 
 void fetchSensorGPS(String &s);
 
+
+/* Render /values-Tabelle. Issue #18 Phase E. */
+void render_gps_values(String &page_content);
+
 #endif

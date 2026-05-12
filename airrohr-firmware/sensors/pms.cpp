@@ -222,3 +222,14 @@ void fetchSensorPMS(String &s)
 
 	debug_outln_verbose(F("/R "), F("PMSx003"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_pms_values(String &page_content)
+{
+	add_table_pm_value(page_content, FPSTR(SENSORS_PMSx003), FPSTR(WEB_PM1), last_value_PMS_P0);
+	add_table_pm_value(page_content, FPSTR(SENSORS_PMSx003), FPSTR(WEB_PM25), last_value_PMS_P2);
+	add_table_pm_value(page_content, FPSTR(SENSORS_PMSx003), FPSTR(WEB_PM10), last_value_PMS_P1);
+	page_content += FPSTR(EMPTY_ROW);
+}

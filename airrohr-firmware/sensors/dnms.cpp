@@ -84,3 +84,18 @@ void fetchSensorDNMS(String &s)
 	debug_outln_info(F("----"));
 	debug_outln_verbose(F("/R "), F("DNMS"));
 }
+
+#include "../web/page_helpers.h"
+#include "../html-content.h"
+
+void render_dnms_values(String &page_content)
+{
+	const String unit_LA(F("dB(A)"));
+	add_table_row_from_value(page_content, FPSTR(SENSORS_DNMS), FPSTR(INTL_LEQ_A),
+							 check_display_value(last_value_dnms_laeq, -1, 1, 0), unit_LA);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_DNMS), FPSTR(INTL_LA_MIN),
+							 check_display_value(last_value_dnms_la_min, -1, 1, 0), unit_LA);
+	add_table_row_from_value(page_content, FPSTR(SENSORS_DNMS), FPSTR(INTL_LA_MAX),
+							 check_display_value(last_value_dnms_la_max, -1, 1, 0), unit_LA);
+	page_content += FPSTR(EMPTY_ROW);
+}
