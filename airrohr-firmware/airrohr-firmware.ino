@@ -1970,7 +1970,14 @@ static unsigned long sendData(const LoggerEntry logger, const String &data, cons
 	HTTPClient http;
 	http.setTimeout(20 * 1000);
 	http.setUserAgent(SOFTWARE_VERSION + '/' + esp_chipid + '/' + esp_mac_id);
-	http.setReuse(false);
+	// Issue #10: setReuse(true) erlaubt der HTTPClient-Instanz, die TCP-Connection
+	// für mehrere Requests innerhalb des Lifecycles offen zu halten. In der aktuellen
+	// Architektur lebt die HTTPClient nur eine sendData()-Call lang, der echte Gewinn
+	// kommt aus dem darunterliegenden BearSSL-Session-Cache (loggerConfigs[logger].
+	// session), der Handshakes über Cycle-Grenzen hinweg resumed. Das Flag schadet
+	// nicht und macht den Code zukunftssicher falls sendData() später mehrere
+	// Sub-Requests bündelt (Issue #11 ESPAsyncTCP).
+	http.setReuse(true);
 	bool send_success = false;
 	if (logger == LoggerCustom && (*cfg::user_custom || *cfg::pwd_custom))
 	{
@@ -3503,7 +3510,8 @@ static unsigned long sendWundergroundUpdate()
 	HTTPClient http;
 	http.setTimeout(20 * 1000);
 	http.setUserAgent(SOFTWARE_VERSION);
-	http.setReuse(false);
+	// Issue #10: siehe sendData()-Kommentar — kein Schaden, BearSSL-Session-Cache greift.
+	http.setReuse(true);
 
 	bool send_success = false;
 	debug_outln_info(F("WU: pushing to "), FPSTR(HOST_WUNDERGROUND));
