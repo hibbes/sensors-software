@@ -691,6 +691,15 @@ int ppd_pin_pm2 = PPD_PIN_PM2;
 // einen harten Disconnect+Reconnect — das Standard-WiFi.status()-Check sieht
 // das nicht.
 uint8_t cycle_send_attempts = 0;
+
+// Issue #11: pro Send-Cycle ein Master-Budget. Wenn ein Target hängt (TLS-Stall
+// gegen kaputten Server, DNS-Timeout, etc.), sollen nachfolgende Pushes nicht
+// blockieren bis hin zum Watchdog-Reset. Bei `millis() > cycle_send_deadline`
+// werden weitere sendData()/sendWundergroundUpdate() früh-returned.
+// 90 s ist großzügig genug für 10-15 Push-Targets bei je 5-8 s realem Push-Time
+// + TLS-Handshake, deckelt aber den Worst Case unter sending_intervall_ms=145s.
+static constexpr unsigned long CYCLE_SEND_BUDGET_MS = 90 * 1000UL;
+unsigned long cycle_send_deadline = 0;
 uint8_t cycle_send_successes = 0;
 uint8_t consecutive_silent_failures = 0;
 constexpr uint8_t SILENT_FAILURE_THRESHOLD = 3;
@@ -1965,10 +1974,20 @@ static unsigned long sendData(const LoggerEntry logger, const String &data, cons
 		break;
 	}
 
+	// Issue #11: wenn das cycle-Budget überschritten ist, früh raus —
+	// nachfolgende Pushes blockieren sonst bis zum Watchdog-Reset.
+	if (cycle_send_deadline && millis() > cycle_send_deadline)
+	{
+		debug_outln_info(F("## Cycle deadline exceeded, skipping push"));
+		return 0;
+	}
+
 	std::unique_ptr<WiFiClient> client(getNewLoggerWiFiClient(logger));
 
 	HTTPClient http;
-	http.setTimeout(20 * 1000);
+	// Issue #11: Per-Push-Timeout 20 s → 15 s. SC mit TLS-Handshake braucht
+	// realistisch 3-8 s, 15 s lässt Slow-Network-Headroom ohne den Cycle zu killen.
+	http.setTimeout(15 * 1000);
 	http.setUserAgent(SOFTWARE_VERSION + '/' + esp_chipid + '/' + esp_mac_id);
 	// Issue #10: setReuse(true) erlaubt der HTTPClient-Instanz, die TCP-Connection
 	// für mehrere Requests innerhalb des Lifecycles offen zu halten. In der aktuellen
@@ -2047,22 +2066,59 @@ static unsigned long sendSensorCommunity(const String &data, const int pin, cons
 
 	if (cfg::send2dusti && data.length())
 	{
-		RESERVE_STRING(data_sensorcommunity, LARGE_STR);
-		data_sensorcommunity = FPSTR(data_first_part);
-
 		debug_outln_info(F("## Sending to sensor.community - "), sensorname);
-		data_sensorcommunity += data;
-		data_sensorcommunity.remove(data_sensorcommunity.length() - 1);
-		// Issue #8: prefix-strip anchored an "value_type":"<prefix>... statt
-		// String-weit, damit ein zufälliger Substring im "value"-Feld nicht
-		// mit gestrippt wird. Volles ArduinoJson-Roundtrip ist Folge-Issue.
-		String anchored;
-		anchored.reserve(strlen(replace_str) + 15);
-		anchored = F("\"value_type\":\"");
-		anchored += replace_str;
-		data_sensorcommunity.replace(anchored, F("\"value_type\":\""));
-		data_sensorcommunity += "]}";
-		sum_send_time = sendData(LoggerSensorCommunity, data_sensorcommunity, pin, HOST_SENSORCOMMUNITY, URL_SENSORCOMMUNITY);
+
+		// Issue #8: ArduinoJson-Roundtrip statt String-Replace-Hack.
+		// Eingangs-`data` ist die rohe Sequenz aus add_Value2Json():
+		//   {"value_type":"SDS_P1","value":"3.5"},{"value_type":"SDS_P2","value":"1.2"},
+		// (mit trailing comma). Wir wrappen sie in ein gültiges Array, parsen,
+		// strippen Sensor-Prefixes pro value_type-Key (statt String-weit), bauen
+		// die finale "{software_version, sensordatavalues:[...]}"-Struktur und
+		// serialisieren zurück. Damit ist ein zufälliger Substring im "value"-Feld
+		// nicht mehr gefährdet.
+		String arr_input;
+		arr_input.reserve(data.length() + 2);
+		arr_input = '[';
+		arr_input += data;
+		arr_input.remove(arr_input.length() - 1); // trailing comma
+		arr_input += ']';
+
+		DynamicJsonDocument doc(JSON_BUFFER_SIZE);
+		DeserializationError err = deserializeJson(doc, arr_input);
+		if (err)
+		{
+			debug_outln_error(F("SC: JSON parse failed"));
+			debug_outln_verbose(F("err: "), String(err.c_str()));
+			return 0;
+		}
+
+		DynamicJsonDocument out(JSON_BUFFER_SIZE);
+		out[F("software_version")] = SOFTWARE_VERSION;
+		JsonArray svv = out.createNestedArray(F("sensordatavalues"));
+		const size_t prefix_len = replace_str ? strlen(replace_str) : 0;
+		for (JsonObject m : doc.as<JsonArray>())
+		{
+			const char *vt = m["value_type"] | "";
+			JsonObject n = svv.createNestedObject();
+			if (prefix_len && strncmp(vt, replace_str, prefix_len) == 0)
+			{
+				// Copy stripped key as String — ArduinoJson v6 kopiert
+				// String-rvalue in den Doc-Buffer, so dass die Lifetime
+				// nach unserer Loop sicher ist.
+				n[F("value_type")] = String(vt + prefix_len);
+			}
+			else
+			{
+				n[F("value_type")] = String(vt);
+			}
+			n[F("value")] = String(m["value"] | "");
+		}
+
+		String json_out;
+		json_out.reserve(measureJson(out) + 1);
+		serializeJson(out, json_out);
+
+		sum_send_time = sendData(LoggerSensorCommunity, json_out, pin, HOST_SENSORCOMMUNITY, URL_SENSORCOMMUNITY);
 	}
 
 	return sum_send_time;
@@ -3506,9 +3562,16 @@ static unsigned long sendWundergroundUpdate()
 	cycle_send_attempts++;
 	unsigned long start_send = millis();
 
+	// Issue #11: cycle-Budget check.
+	if (cycle_send_deadline && millis() > cycle_send_deadline)
+	{
+		debug_outln_info(F("WU: cycle deadline exceeded, skipping"));
+		return 0;
+	}
+
 	std::unique_ptr<WiFiClient> client(getNewLoggerWiFiClient(LoggerWunderground));
 	HTTPClient http;
-	http.setTimeout(20 * 1000);
+	http.setTimeout(15 * 1000);
 	http.setUserAgent(SOFTWARE_VERSION);
 	// Issue #10: siehe sendData()-Kommentar — kein Schaden, BearSSL-Session-Cache greift.
 	http.setReuse(true);
@@ -3887,6 +3950,9 @@ void loop(void)
 
 	if (send_now)
 	{
+		// Issue #11: cycle deadline neu setzen — sobald überschritten,
+		// werden weitere sendData()/sendWundergroundUpdate() früh-returned.
+		cycle_send_deadline = millis() + CYCLE_SEND_BUDGET_MS;
 		last_signal_strength = WiFi.RSSI();
 		RESERVE_STRING(data, LARGE_STR);
 		data = FPSTR(data_first_part);
