@@ -115,6 +115,15 @@ bool BMX280::init() {
 }
 
 /*!
+ *   @brief  Re-read the chip-ID register over I2C and cache it.
+ *   @returns the freshly read chip ID
+ */
+uint32_t BMX280::refreshSensorID(void) {
+  _sensorID = read8(BMX280_REGISTER_CHIPID);
+  return _sensorID;
+}
+
+/*!
  *   @brief  setup sensor with given parameters / settings
  *
  *   This is simply a overload to the normal begin()-function, so SPI users

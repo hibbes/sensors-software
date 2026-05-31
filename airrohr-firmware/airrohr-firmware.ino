@@ -1625,10 +1625,14 @@ static void setup_webserver()
 
 #if defined(ESP8266)
 	// /update endpoint für lokale OTA-Pushes via curl -F "image=@firmware.bin" http://<sensor>/update
-	// Auth folgt cfg::www_basicauth_enabled — wenn an, dann mit configurierten Creds, sonst offen
-	if (cfg::www_basicauth_enabled) {
+	// OTA ist ein Write-to-Flash/RCE-Primitive. Sobald ein www_password
+	// konfiguriert ist, wird /update mit Basic-Auth-Creds registriert —
+	// unabhängig vom optionalen www_basicauth_enabled-Toggle. Nur ein frisches
+	// Gerät ohne Passwort lässt /update offen (sonst Lock-out bei Erst-Setup).
+	if (strlen(cfg::www_password) > 0) {
 		httpUpdater.setup(&server, "/update", cfg::www_username, cfg::www_password);
 	} else {
+		debug_outln_info(F("WARNING: /update mounted WITHOUT auth (no www_password set)"));
 		httpUpdater.setup(&server, "/update");
 	}
 #endif
@@ -1931,10 +1935,14 @@ static WiFiClient *getNewLoggerWiFiClient(const LoggerEntry logger)
 		case LoggerInflux:
 		case LoggerCustom:
 		case LoggerFSapp:
-		case LoggerWunderground:
-			// hibbes-Patch (Issue #16): WU's CDN nutzt nicht die airrohr-CA-Trust-Anchor.
+			// Diese Endpunkte nutzen nicht die airrohr-CA-Trust-Anchor (ISRG X1).
 			// setInsecure() trade-off: kein Cert-Verify, dafür funktioniert TLS-Handshake.
 			static_cast<WiFiClientSecure *>(_client)->setInsecure();
+			break;
+		case LoggerWunderground:
+			// Issue #16: das PWS-Upload-Passwort steckt in der Request — daher
+			// echte Cert-Verifikation gegen Amazon Root CA 1 statt setInsecure().
+			configureWundergroundTrustAnchor(static_cast<WiFiClientSecure *>(_client));
 			break;
 		default:
 			configureCACertTrustAnchor(static_cast<WiFiClientSecure *>(_client));
@@ -3064,20 +3072,31 @@ static bool initBMX280(char addr)
 
 	if (bmx280.begin(addr))
 	{
-		// Issue #5: sensorID() kann direkt nach begin() Garbage liefern,
+		// Issue #5/#12: sensorID() kann direkt nach begin() Garbage liefern,
 		// wenn der I²C-Bus noch nicht stabil ist. 50ms Wait + Retry-Loop
 		// (3 Versuche, Mehrheit gewinnt) macht die BMP/BME-Erkennung robust.
+		// refreshSensorID() liest das CHIPID-Register bei jedem Versuch frisch
+		// über I²C (sensorID() lieferte nur den einmal in begin() gecachten
+		// Wert -> Vote war wirkungslos). Das Mehrheitsergebnis wird per
+		// setSensorID() zurückgeschrieben, damit die Downstream-Checks
+		// (Display, Wunderground-Picker, Send-Pfad) den korrigierten Wert sehen.
 		delay(50);
 		uint8_t ids[3];
 		for (uint8_t i = 0; i < 3; ++i)
 		{
-			ids[i] = bmx280.sensorID();
+			ids[i] = bmx280.refreshSensorID();
 			delay(5);
 		}
 		uint8_t majority_id = (ids[0] == ids[1] || ids[0] == ids[2]) ? ids[0] : ids[1];
 		if (ids[0] != ids[1] || ids[1] != ids[2])
 		{
 			debug_outln_info(F("BMx280 sensorID unstable, using majority: 0x"), String(majority_id, HEX));
+		}
+		// Nur einen plausiblen Chip-ID (BMP280/BME280) als Mehrheit akzeptieren;
+		// sonst den letzten frischen Read behalten.
+		if (majority_id == BMP280_SENSOR_ID || majority_id == BME280_SENSOR_ID)
+		{
+			bmx280.setSensorID(majority_id);
 		}
 
 		debug_outln_info(FPSTR(DBG_TXT_FOUND));

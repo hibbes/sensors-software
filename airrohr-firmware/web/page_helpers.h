@@ -185,6 +185,7 @@ extern LoggerConfig loggerConfigs[LoggerCount];
 
 // Page-spezifische Helper, definiert in airrohr-firmware.ino.
 bool webserver_request_auth();
+bool webserver_request_write_auth();
 void sendHttpRedirect();
 void start_html_page(String &page_content, const String &title);
 void end_html_page(String &page_content);

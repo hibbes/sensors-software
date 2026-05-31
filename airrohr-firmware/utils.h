@@ -75,6 +75,9 @@ extern void add_Value2Json(String& res, const __FlashStringHelper* type, const _
 
 #if defined(ESP8266)
 extern void configureCACertTrustAnchor(WiFiClientSecure* client);
+// Pinnt Amazon Root CA 1 für weatherstation.wunderground.com, damit das
+// PWS-Upload-Passwort cert-verifiziert übertragen wird statt per setInsecure().
+extern void configureWundergroundTrustAnchor(WiFiClientSecure* client);
 extern bool launchUpdateLoader(const String& md5);
 #endif
 

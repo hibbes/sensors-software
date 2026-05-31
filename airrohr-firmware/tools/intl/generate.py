@@ -13,6 +13,13 @@ master.csv-Schema:
 type ∈ {define, const}. const-Keys werden in `#ifdef INTL_DEFINE_VARIABLES`-
 Block gewrappt (siehe Issue #18 Phase B). define-Keys bleiben außerhalb.
 
+Zell-Kontrakt: Die Werte in master.csv sind C-Quelltext-String-Literal-RÜMPFE
+(bereits escaped). Übersetzer müssen literale Anführungszeichen und Backslashes
+selbst escapen (\\" und \\\\) und dürfen keine rohen Zeilenumbrüche/Steuerzeichen
+einbetten. generate.py prüft das (assert_c_string_body) und bricht bei Verstoß
+mit Key+Sprache ab — so wird ein kryptischer Firmware-Compile-Fehler zu einer
+sofortigen, zuordenbaren Tool-Fehlermeldung.
+
 Logo: alle Sprachen außer `bg` inkludieren am Ende `airrohr-logo-common.h`.
 intl_bg.h hat sein eigenes kyrillisches Logo direkt im File — das wird NICHT
 über master.csv gepflegt (nicht übersetzbar, ist Binary-Daten). Der Generator
@@ -31,6 +38,42 @@ MASTER_CSV = Path(__file__).resolve().parent / "master.csv"
 BG_LOGO_FILE = Path(__file__).resolve().parent / "bg_logo.h.fragment"
 
 
+def assert_c_string_body(key: str, lang: str, s: str) -> None:
+    """Validate that `s` is a well-formed C string-literal body (per the
+    master.csv cell contract: already-escaped, no surrounding quotes).
+
+    Raises ValueError naming key+lang+cell on a violation that would produce
+    invalid C when wrapped in double-quotes:
+      - raw newline / carriage return / tab / other control char
+      - a trailing run of an odd number of backslashes (escapes the closing ")
+      - a double-quote that is not escaped (not preceded by an odd backslash run)
+    """
+    for ch in s:
+        if ord(ch) < 32:
+            raise ValueError(
+                f"master.csv key {key!r} lang {lang!r}: contains a raw control "
+                f"character {ch!r}; escape it (e.g. \\n, \\t) in the CSV cell"
+            )
+    # Walk the string tracking backslash parity to find unescaped quotes.
+    backslashes = 0
+    for ch in s:
+        if ch == "\\":
+            backslashes += 1
+            continue
+        if ch == '"' and backslashes % 2 == 0:
+            raise ValueError(
+                f"master.csv key {key!r} lang {lang!r}: contains an unescaped "
+                f'double-quote; write \\" in the CSV cell'
+            )
+        backslashes = 0
+    # A trailing odd backslash run would escape the closing quote we append.
+    if backslashes % 2 == 1:
+        raise ValueError(
+            f"master.csv key {key!r} lang {lang!r}: ends with an odd number of "
+            f"backslashes; a literal backslash must be written as \\\\"
+        )
+
+
 def load_master():
     """Returns (langs, rows: list of (key, type, {lang: value}))."""
     with open(MASTER_CSV, encoding="utf-8") as f:
@@ -43,7 +86,17 @@ def load_master():
                 continue
             key = r[0]
             kind = r[1]
-            values = {langs[i]: r[2 + i] for i in range(len(langs))}
+            if len(r) < 2 + len(langs):
+                missing = langs[len(r) - 2:]
+                print(
+                    f"WARN  master.csv key {key!r}: row has {len(r)} cols, "
+                    f"expected {2 + len(langs)}; treating langs {missing} as empty",
+                    file=sys.stderr,
+                )
+            values = {
+                langs[i]: (r[2 + i] if 2 + i < len(r) else "")
+                for i in range(len(langs))
+            }
             rows.append((key, kind, values))
     return langs, rows
 
@@ -91,6 +144,7 @@ def render_intl_file(lang: str, rows, original: Path) -> str:
     in_var_block = False
     for key, kind, values in rows:
         val = values.get(lang, "")
+        assert_c_string_body(key, lang, val)
         if kind == "define":
             if in_var_block:
                 out.append("#endif // INTL_DEFINE_VARIABLES")
@@ -128,11 +182,11 @@ def diff_summary(a: str, b: str) -> str:
         text = text.replace("\\\n", "")
         out = {}
         for line in text.splitlines():
-            m = re.match(r'^\s*#define\s+(INTL_\w+)\s+"(.*)"\s*$', line)
+            m = re.match(r'^\s*#define\s+(INTL_\w+)\s+"(.*)"\s*(?://.*)?$', line)
             if m:
                 out[m.group(1)] = ("define", m.group(2))
                 continue
-            m = re.match(r'^\s*const\s+char\s+(INTL_\w+)\[\]\s+PROGMEM\s*=\s*"(.*)"\s*;\s*$', line)
+            m = re.match(r'^\s*const\s+char\s+(INTL_\w+)\[\]\s+PROGMEM\s*=\s*"(.*)"\s*;\s*(?://.*)?$', line)
             if m:
                 out[m.group(1)] = ("const", m.group(2))
         return out

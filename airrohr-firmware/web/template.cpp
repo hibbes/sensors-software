@@ -279,6 +279,28 @@ bool webserver_request_auth()
 	return true;
 }
 
+// Auth-Gate für state-changing/OTA-Endpunkte (Config-Write, /update).
+// Strenger als webserver_request_auth(): sobald ein www_password konfiguriert
+// ist, wird auch dann Authentifizierung verlangt, wenn der optionale
+// www_basicauth_enabled-Toggle aus ist. So sperrt man nie ein frisches
+// Gerät ohne Credentials aus (dann offen), schützt aber jedes Gerät mit
+// gesetztem Passwort vor unauthentifizierten LAN-Writes/OTA-Pushes.
+// Im Soft-AP-/Provisioning-Fenster (wificonfig_loop) bleibt es offen, damit
+// die Erst-Einrichtung funktioniert.
+bool webserver_request_write_auth()
+{
+	if (!wificonfig_loop && strlen(cfg::www_password) > 0)
+	{
+		debug_outln_info(F("validate write/OTA auth..."));
+		if (!server.authenticate(cfg::www_username, cfg::www_password))
+		{
+			server.requestAuthentication(BASIC_AUTH, "Sensor Login", F("Authentication failed"));
+			return false;
+		}
+	}
+	return true;
+}
+
 void sendHttpRedirect()
 {
 	const IPAddress defaultIP(default_ip_first_octet, default_ip_second_octet,

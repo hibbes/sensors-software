@@ -22,10 +22,14 @@ INTL_DIR = Path(__file__).resolve().parent.parent.parent
 MASTER_LANG = "en"
 MASTER_FILE = INTL_DIR / "intl_en.h"
 
-DEFINE_RE = re.compile(r'^\s*#define\s+(INTL_\w+)\s+"(.*)"\s*$')
+# Allow an optional trailing // line comment after the closing quote so that
+# a line like `#define INTL_X "hello"  // comment` is parsed as the string body
+# "hello" rather than falling through to the NOSTR fallback (which would capture
+# the quotes and comment verbatim and corrupt the round-trip).
+DEFINE_RE = re.compile(r'^\s*#define\s+(INTL_\w+)\s+"(.*)"\s*(?://.*)?$')
 DEFINE_NOSTR_RE = re.compile(r"^\s*#define\s+(INTL_\w+)\s+(.+?)\s*$")
 CONST_RE = re.compile(
-    r'^\s*const\s+char\s+(INTL_\w+)\[\]\s+PROGMEM\s*=\s*"(.*)"\s*;\s*$'
+    r'^\s*const\s+char\s+(INTL_\w+)\[\]\s+PROGMEM\s*=\s*"(.*)"\s*;\s*(?://.*)?$'
 )
 
 
@@ -48,7 +52,20 @@ def parse_intl_file(path: Path):
             continue
         m = DEFINE_NOSTR_RE.match(line)
         if m and m.group(1) not in out:
-            out[m.group(1)] = ("define", m.group(2))
+            value = m.group(2)
+            # A quote in the NOSTR branch means the strict string regex failed
+            # to parse a string-define — typically a trailing comment the regex
+            # didn't anticipate or adjacent C string concatenation ("a" "b").
+            # Capturing it verbatim would silently corrupt the CSV round-trip,
+            # so warn and skip instead of storing the garbled value.
+            if '"' in value:
+                print(
+                    f"WARN  {path.name}: skipping {m.group(1)} — NOSTR fallback "
+                    f"captured a quote, value not a clean #define string: {value!r}",
+                    file=sys.stderr,
+                )
+                continue
+            out[m.group(1)] = ("define", value)
     return out
 
 

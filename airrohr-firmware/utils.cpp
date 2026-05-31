@@ -161,6 +161,7 @@ String delayToString(unsigned time_ms) {
 
 #if defined(ESP8266)
 BearSSL::X509List x509_dst_root_ca(dst_root_ca_x1);
+BearSSL::X509List x509_amazon_root_ca1(amazon_root_ca1);
 
 void configureCACertTrustAnchor(WiFiClientSecure* client) {
 	constexpr time_t fw_built_year = (__DATE__[ 7] - '0') * 1000 + \
@@ -173,6 +174,26 @@ void configureCACertTrustAnchor(WiFiClientSecure* client) {
 	}
 	else {
 		client->setTrustAnchors(&x509_dst_root_ca);
+	}
+}
+
+// Wunderground (Issue #16): das PWS-Upload-Passwort steckt in der GET-Query,
+// darf also NICHT per setInsecure() ungeprüft rausgehen. weatherstation.
+// wunderground.com kettet auf Amazon Root CA 1 (nicht ISRG Root X1), daher
+// ein eigener Trust-Anchor. Solange die On-Device-Uhr noch nicht gestellt ist,
+// scheitert die Zeit-Validierung der Cert-Chain — dann (und nur dann) fallback
+// auf setInsecure(), analog configureCACertTrustAnchor().
+void configureWundergroundTrustAnchor(WiFiClientSecure* client) {
+	constexpr time_t fw_built_year = (__DATE__[ 7] - '0') * 1000 + \
+							  (__DATE__[ 8] - '0') *  100 + \
+							  (__DATE__[ 9] - '0') *   10 + \
+							  (__DATE__[10] - '0');
+	if (time(nullptr) < (fw_built_year - 1970) * 365 * 24 * 3600) {
+		debug_outln_info(F("Time incorrect; Disabling WU CA verification."));
+		client->setInsecure();
+	}
+	else {
+		client->setTrustAnchors(&x509_amazon_root_ca1);
 	}
 }
 

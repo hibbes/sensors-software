@@ -392,6 +392,14 @@ void webserver_config_json()
 
 	if (server.method() == HTTP_POST)
 	{
+		// Config-Write ist eine privilegierte Operation: sobald ein Passwort
+		// gesetzt ist, muss der POST authentifiziert sein (unabhängig vom
+		// optionalen www_basicauth_enabled-Toggle). Frisches Gerät = offen.
+		if (!webserver_request_write_auth())
+		{
+			return;
+		}
+
 		debug_outln_info(F("ws: config.json POST ..."));
 		String body = server.arg(F("plain"));
 		if (body.length() == 0)
@@ -460,15 +468,29 @@ void webserver_config_json()
 			}
 		}
 
-		writeConfig();
+		// writeConfig() kann fehlschlagen (SPIFFS voll/korrupt/Mount-Fehler).
+		// Erfolg und Restart müssen am tatsächlichen Persist-Ergebnis hängen,
+		// sonst meldet das Gerät "saved" und rebootet, obwohl der frisch
+		// angewandte In-RAM-Cfg verloren geht. Spiegelt webserver_config().
 		String resp;
 		resp.reserve(64);
-		resp = F("{\"status\":\"saved, restarting\",\"applied\":");
-		resp += applied;
-		resp += F("}");
-		server.send(200, FPSTR(TXT_CONTENT_TYPE_JSON), resp);
-		delay(500);
-		sensor_restart();
+		if (writeConfig())
+		{
+			resp = F("{\"status\":\"saved, restarting\",\"applied\":");
+			resp += applied;
+			resp += F("}");
+			server.send(200, FPSTR(TXT_CONTENT_TYPE_JSON), resp);
+			delay(500);
+			sensor_restart();
+		}
+		else
+		{
+			resp = F("{\"error\":\"write failed\",\"applied\":");
+			resp += applied;
+			resp += F("}");
+			server.send(500, FPSTR(TXT_CONTENT_TYPE_JSON), resp);
+			// Kein Restart: Live-Cfg bleibt erhalten, Operator kann erneut versuchen.
+		}
 	}
 }
 

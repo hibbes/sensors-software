@@ -91,6 +91,14 @@ public:
 
   uint32_t sensorID(void) { return _sensorID; }
 
+  // Re-read the chip-ID register over I2C (read8 does a fresh transaction
+  // each call). Used to harden BMP/BME detection against an unstable bus
+  // right after begin(); see initBMX280() in airrohr-firmware.ino.
+  // Defined in bmx280_i2c.cpp (BMX280_REGISTER_CHIPID is only visible there).
+  uint32_t refreshSensorID(void);
+  // Persist a (majority-vote) ID so downstream sensorID() consumers see it.
+  void setSensorID(uint32_t id) { _sensorID = id; }
+
 protected:
   TwoWire *_wire; //!< pointer to a TwoWire object
   void readCoefficients(void);

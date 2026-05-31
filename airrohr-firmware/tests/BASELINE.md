@@ -12,9 +12,18 @@ Stand vor Beginn der HTML-Modularisierung, gemessen auf Branch `refactor/html-mo
 | `firmware.bin` | 726.6 KB |
 | Zeilen `airrohr-firmware.ino` | 5445 |
 
-## Live-Station 192.168.1.251 (IAU617)
+## Live-Station 192.168.1.251
 
 Golden HTML-Snapshots in `golden/` per `curl -s http://192.168.1.251/<page>`:
+
+> **Platzhalter statt echter Daten:** Die Snapshots `config.html`/`debug.html`
+> enthalten KEINE echten Geräte-Werte mehr. Gerätespezifische Felder sind durch
+> klare Platzhalter ersetzt (`EXAMPLE-SSID`, `EXAMPLE-STATION`, `key=REDACTED`,
+> senseboxid = lauter Nullen, `host_custom=example.com`). Beim Neu-Erfassen der
+> Golden-Snapshots muss die Station mit eben diesen Platzhalter-Werten
+> konfiguriert sein, sonst schlägt `diff-golden.sh` fehl (es vergleicht gegen den
+> Live-Output). Der UI-Hilfetext „Station-ID (z.B. IAU617)" bleibt erhalten — er
+> ist fest im Firmware-Template und kein Gerätewert.
 
 | Page | Bytes | HTTP |
 |---|---|---|

@@ -11,3 +11,7 @@ compile_mac.sh
 # Visual Studio Code
 .vscode
 .vs
+
+# Python bytecode (intl/asset build tooling)
+__pycache__/
+*.pyc
