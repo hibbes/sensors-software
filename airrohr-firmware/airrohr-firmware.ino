@@ -3666,11 +3666,20 @@ static unsigned long sendToOffGrid()
 		return 0;
 	}
 
+	// Luftdruck (BMP280/BME280 oder BMP085/180); intern in Pa gespeichert -> hPa fuer push.php.
+	float p_pa = -1.0f;
+	if (cfg::bmx280_read && last_value_BMX280_P > 0.0f) p_pa = last_value_BMX280_P;
+	else if (cfg::bmp_read && last_value_BMP_P > 0.0f) p_pa = last_value_BMP_P;
+
 	String body(F("{\"temp\":"));
 	body += String(t_c, 1);
 	if (h_pct >= 0.0f) {
 		body += F(",\"hum\":");
 		body += String(h_pct, 1);
+	}
+	if (p_pa > 0.0f) {
+		body += F(",\"pres\":");
+		body += String(p_pa / 100.0f, 1);
 	}
 	body += '}';
 
