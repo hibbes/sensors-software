@@ -148,6 +148,17 @@
 
 String SOFTWARE_VERSION(SOFTWARE_VERSION_STR);
 
+// hibbes-Patch (OffGrid): optionaler Push von Temp+Feuchte ans OffGrid-Stadtnetz.
+// Token/URL kommen aus offgrid_secret.h (gitignored, NICHT im Repo). Fehlt der
+// Header, ist das Feature still aus (OFFGRID_ENABLED 0) und die Firmware baut
+// und laeuft voellig unveraendert weiter.
+#if __has_include("offgrid_secret.h")
+#include "offgrid_secret.h"
+#define OFFGRID_ENABLED 1
+#else
+#define OFFGRID_ENABLED 0
+#endif
+
 /******************************************************************
  * The variables inside the cfg namespace are persistent          *
  * configuration values. They have defaults which can be          *
@@ -3625,6 +3636,72 @@ static unsigned long sendWundergroundUpdate()
 	return millis() - start_send;
 }
 
+#if OFFGRID_ENABLED
+// hibbes-Patch (OffGrid): zusaetzlicher Push von NUR Temperatur+Feuchte an das
+// OffGrid-Stadtnetz (push.php). Eigenstaendig (kein LoggerEntry), beeinflusst die
+// uebrigen APIs nicht. Token/URL aus offgrid_secret.h (gitignored).
+static unsigned long sendToOffGrid()
+{
+	const unsigned long start_send = millis();
+
+	// Temperatur + Feuchte in der ueblichen Sensor-Prioritaet auswaehlen.
+	float t_c = -128.0f;
+	float h_pct = -1.0f;
+	if (cfg::sht3x_read && last_value_SHT3X_T > -100.0f) { t_c = last_value_SHT3X_T; h_pct = last_value_SHT3X_H; }
+	else if (cfg::aht20_read && last_value_AHT20_T > -100.0f) { t_c = last_value_AHT20_T; h_pct = last_value_AHT20_H; }
+	else if (cfg::htu21d_read && last_value_HTU21D_T > -100.0f) { t_c = last_value_HTU21D_T; h_pct = last_value_HTU21D_H; }
+	else if (cfg::dht_read && last_value_DHT_T > -100.0f) { t_c = last_value_DHT_T; h_pct = last_value_DHT_H; }
+	// BME280 fuehrt die Feuchte in last_value_BME280_H; reines BMP280 (ohne hum)
+	// laesst sie auf -1.0 -> wird im JSON weggelassen. Spiegelt sendWundergroundUpdate().
+	else if (cfg::bmx280_read && last_value_BMX280_T > -100.0f) { t_c = last_value_BMX280_T; h_pct = last_value_BME280_H; }
+
+	if (t_c <= -100.0f) {
+		debug_outln_info(F("OffGrid: keine Temperatur -> skip"));
+		return 0;
+	}
+
+	// HTTPS braucht RAM; bei zu wenig Heap diesen Zyklus auslassen (kein Absturz).
+	if (ESP.getFreeHeap() < 22000) {
+		debug_outln_info(F("OffGrid: wenig Heap -> skip"));
+		return 0;
+	}
+
+	String body(F("{\"temp\":"));
+	body += String(t_c, 1);
+	if (h_pct >= 0.0f) {
+		body += F(",\"hum\":");
+		body += String(h_pct, 1);
+	}
+	body += '}';
+
+	WiFiClientSecure client;
+	client.setInsecure(); // kein Cert-Pinning (wie influx/custom-APIs der FW)
+	// Mittwald unterstuetzt kein MFLN -> der Empfangspuffer muss die ganze
+	// LE-Zertifikatskette (3 Certs, ~4.2 KB) in EINEM Record halten. Bewusst KEIN
+	// probeMaxFragmentLength: das waere ein zweiter, teurer TLS-Handshake pro Zyklus.
+	// RX 5120 deckt Kette + BearSSL-Overhead; der Heap-Guard oben schuetzt, und ein
+	// fehlgeschlagener Push laesst die anderen APIs unberuehrt (client raeumt per RAII auf).
+	client.setBufferSizes(5120, 512);
+	client.setTimeout(8000);
+
+	HTTPClient http;
+	http.setReuse(false);
+	http.setTimeout(8000);
+	if (!http.begin(client, OFFGRID_PUSH_HOST, 443, OFFGRID_PUSH_PATH, true)) {
+		debug_outln_info(F("OffGrid: http.begin fehlgeschlagen"));
+		return millis() - start_send;
+	}
+	http.addHeader(F("Content-Type"), F("application/json"));
+	http.addHeader(F("Authorization"), F("Bearer " OFFGRID_PUSH_TOKEN));
+	http.setUserAgent(SOFTWARE_VERSION);
+	const int code = http.POST(body);
+	debug_outln_info(F("OffGrid push -> "), String(code));
+	http.end();
+
+	return millis() - start_send;
+}
+#endif
+
 static unsigned long sendDataToOptionalApis(const String &data)
 {
 	unsigned long sum_send_time = 0;
@@ -3697,6 +3774,12 @@ static unsigned long sendDataToOptionalApis(const String &data)
 		debug_outln_info(FPSTR(DBG_TXT_SENDING_TO), F("wunderground.com: "));
 		sum_send_time += sendWundergroundUpdate();
 	}
+
+#if OFFGRID_ENABLED
+	// hibbes-Patch (OffGrid): Temp+Feuchte zusaetzlich ans OffGrid-Stadtnetz
+	debug_outln_info(FPSTR(DBG_TXT_SENDING_TO), F("OffGrid: "));
+	sum_send_time += sendToOffGrid();
+#endif
 
 	return sum_send_time;
 }
