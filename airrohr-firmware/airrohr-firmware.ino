@@ -3644,6 +3644,20 @@ static unsigned long sendToOffGrid()
 {
 	const unsigned long start_send = millis();
 
+	// Drossel auf ~10 min (-ofg3): push.php empfiehlt >=10 min Abstand, der
+	// airrohr-Messzyklus liegt aber bei ~145-160 s. Zeitbasiert statt Zyklen
+	// zaehlen, damit ein geaendertes sending_intervall_ms das Ziel nicht
+	// verschiebt. Schwelle 550 s -> real jeder 4. Zyklus (~9,7-10,5 min).
+	// millis()-Differenz auf unsigned ist rollover-sicher; der erste Push nach
+	// einem Boot geht sofort raus (pushed_once), damit die Station nach Reboot
+	// bzw. OTA zuegig wieder auf der Karte erscheint. Skips weiter unten (kein
+	// Messwert, wenig Heap) setzen den Timer bewusst NICHT.
+	static unsigned long last_push_ms = 0;
+	static bool pushed_once = false;
+	if (pushed_once && (millis() - last_push_ms) < 550UL * 1000UL) {
+		return 0;
+	}
+
 	// Temperatur + Feuchte in der ueblichen Sensor-Prioritaet auswaehlen.
 	float t_c = -128.0f;
 	float h_pct = -1.0f;
@@ -3706,6 +3720,11 @@ static unsigned long sendToOffGrid()
 	const int code = http.POST(body);
 	debug_outln_info(F("OffGrid push -> "), String(code));
 	http.end();
+
+	// Nach jedem POST-Versuch armieren (auch bei Fehler-Code): kein 145-s-Retry-
+	// Gehaemmer gegen den Server, der naechste Versuch kommt im 10-min-Raster.
+	last_push_ms = millis();
+	pushed_once = true;
 
 	return millis() - start_send;
 }
