@@ -1,5 +1,12 @@
 # AHT20+BMP280 Combo-Sensor Support — Implementation Plan
 
+> **Status 2026-07-19: TEILWEISE UMGESETZT.** Die Checkboxen unten wurden nie
+> nachgefuehrt; das meiste ist geliefert (Belege: `docs/superpowers/audits/2026-07-19-plan-triage.md`).
+> Wirklich offen ist nur:
+> - Task C3: Roll-out auf die 19 weiteren Stationen (kein Bulk-OTA-Skript, keine Umbau-Belege gefunden; nur die eine Test-Station läuft). Tooling dafür existiert inzwischen (cfg::ota_host, /config.json-Backup/Restore).
+> - Task C4 (Upstream-PR an opendata-stuttgart): nicht offen, sondern bewusst verworfen (Posture-Pivot 2026-05-10, Upstream seit April 2024 inaktiv). Sollte im Status-Header als "aufgegeben" statt "offen" stehen.
+> - Hinweis: Phase B (fein2wunder) ist erledigt, aber seit 10.05.2026 durch den built-in Wunderground-Push der Firmware ersetzt; fein2wunder-Repo ist archiviert.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** AHT20+BMP280-Combo-Boards (z.B. GY-21P) als DHT22-Ersatz in airrohr-Firmware integrieren, fein2wunder-Wrapper passend erweitern, sodass die Feinstaubsensoren auf saubere Sensoren umgerüstet werden können.
