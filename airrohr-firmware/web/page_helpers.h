@@ -38,6 +38,7 @@ extern unsigned long last_page_load;
 extern unsigned long count_sends;
 extern unsigned long last_update_attempt;
 extern unsigned long time_point_device_start_ms;
+extern uint32_t min_free_heap;
 extern unsigned long sending_time;
 extern unsigned long starttime;
 extern unsigned long act_milli;

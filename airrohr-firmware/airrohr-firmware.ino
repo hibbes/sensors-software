@@ -426,6 +426,19 @@ unsigned long lowpulseoccupancyP2 = 0;
 bool send_now = false;
 unsigned long starttime;
 unsigned long time_point_device_start_ms;
+
+// -ofg4: Tiefststand des freien Heaps seit Boot (Diagnose der Exception-Resets).
+// Wird in loop() und in sendData() bei offener (TLS-)Verbindung nachgeführt
+// und auf /status angezeigt.
+uint32_t min_free_heap = UINT32_MAX;
+static inline void track_min_free_heap()
+{
+	const uint32_t free_heap = ESP.getFreeHeap();
+	if (free_heap < min_free_heap)
+	{
+		min_free_heap = free_heap;
+	}
+}
 unsigned long starttime_SDS;
 unsigned long starttime_GPS;
 unsigned long starttime_NPM;
@@ -1483,6 +1496,10 @@ static void webserver_data_json()
 {
 	String s1;
 	unsigned long age = 0;
+	// -ofg4: vor der ersten Messung ist das Alter negativ (Sekunden bis zur
+	// ersten Messung). Vorher lief "0 - age" auf unsigned in den Unterlauf
+	// und data.json meldete rund 4294900 s.
+	bool age_negative = false;
 
 	debug_outln_info(F("ws: data json..."));
 	if (!count_sends)
@@ -1494,7 +1511,7 @@ static void webserver_data_json()
 		{
 			age = 0;
 		}
-		age = 0 - age;
+		age_negative = true;
 	}
 	else
 	{
@@ -1506,7 +1523,8 @@ static void webserver_data_json()
 		}
 	}
 	String s2 = F(", \"age\":\"");
-	s2 += String((long)((age + 500) / 1000));
+	const long age_s = (long)((age + 500) / 1000);
+	s2 += String(age_negative ? -age_s : age_s);
 	s2 += F("\", \"sensordatavalues\"");
 	s1.replace(F(", \"sensordatavalues\""), s2);
 	server.send(200, FPSTR(TXT_CONTENT_TYPE_JSON), s1);
@@ -2039,6 +2057,8 @@ static unsigned long sendData(const LoggerEntry logger, const String &data, cons
 		}
 
 		result = http.POST(data);
+		// -ofg4: hier stehen die BearSSL-Puffer noch, also nah am Tiefpunkt
+		track_min_free_heap();
 
 		if (result >= HTTP_CODE_OK && result <= HTTP_CODE_ALREADY_REPORTED)
 		{
@@ -3948,6 +3968,7 @@ void loop(void)
 
 	act_micro = micros();
 	act_milli = millis();
+	track_min_free_heap();
 	send_now = msSince(starttime) > cfg::sending_intervall_ms;
 
 	if (send_now)

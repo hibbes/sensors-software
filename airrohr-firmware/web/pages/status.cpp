@@ -47,6 +47,9 @@ void webserver_status()
 	add_table_row_from_value(page_content, F("Free Memory"), String(ESP.getFreeHeap()));
 #if defined(ESP8266)
 	add_table_row_from_value(page_content, F("Heap Fragmentation"), String(ESP.getHeapFragmentation()), "%");
+	// -ofg4: Diagnose der Exception-Resets
+	add_table_row_from_value(page_content, F("Min Free Memory"), String(min_free_heap));
+	add_table_row_from_value(page_content, F("Max Free Block"), String(ESP.getMaxFreeBlockSize()));
 #endif
 	if (cfg::auto_update)
 	{
@@ -78,6 +81,8 @@ void webserver_status()
 	add_table_row_from_value(page_content, F("Uptime"), delayToString(millis() - time_point_device_start_ms));
 #if defined(ESP8266)
 	add_table_row_from_value(page_content, F("Reset Reason"), ESP.getResetReason());
+	// -ofg4: Exception-Nummer und Adressen (epc1, excvaddr) des letzten Resets
+	add_table_row_from_value(page_content, F("Reset Info"), ESP.getResetInfo());
 #endif
 	if (cfg::sds_read)   render_sds011_status_info(page_content);
 	if (cfg::npm_read)   render_npm_status_info(page_content);

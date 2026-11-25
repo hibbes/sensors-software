@@ -1,6 +1,6 @@
 #pragma once
 
-#define SOFTWARE_VERSION_STR "NRZ-2024-135-ofg3"
+#define SOFTWARE_VERSION_STR "NRZ-2024-135-ofg4"
 #define JSON_BUFFER_SIZE 2800
 
 #if defined(ESP8266)
